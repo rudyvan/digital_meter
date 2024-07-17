@@ -4,9 +4,6 @@ Digital Meter Application for Belgian e-Meters
 Todo in the next days:
 - add quarter peak
 
-
-![screenshot](screen_shot.jpg)
-
 ## Installation
 
 The application is written in Python and to ensure that the application runs in a controlled environment, it is recommended to use a virtual environment. The following steps describe how to install the application on a Raspberry Pi.
@@ -67,6 +64,7 @@ Some other keys to use in tmux:
 - `Ctrl+b` followed by `?` to get help
 - `Ctrl+b` followed by `:` to enter a command
 - `Ctrl+b` followed by `x` to close the current pane
+- `Ctrl+b` followed by `d` to detach from the tmux environment
 
 
 ## Connection to the meter
@@ -89,3 +87,59 @@ ls /dev/ttyUSB*
 Should you need to change it, edit the file `digital_meter.py` in the root of the project.
 
 Is the cable too short, you can use a shielded USB extension cable as speed is a fast 100k baud.
+
+## Running the application - manual
+
+To run the application manually, activate the virtual environment and run the application.
+
+```bash 
+source .venv/bin/activate
+python digital_meter.py
+```
+
+## Running the application - tmux
+
+To run the application in a tmux environment, run the following command:
+
+```bash
+tmux new -s digital_meter
+```
+
+Then activate the virtual environment and run the application.
+
+```bash 
+source .venv/bin/activate
+python digital_meter.py
+```
+
+To detach from the tmux environment, press `Ctrl+b` followed by `d`.
+
+To view the application on another terminal, login (f.e. through ssh), then run the following command:
+
+```bash
+tmux a
+``` 
+
+# Screen Output
+
+![screenshot](screen_shot.jpg)
+
+The screen output are panels created by rich and updated every second. 
+
+The panels are as follows:
+- The top panel shows the current date and time.
+- The side panel shows the current meter readings.
+- The left top panel shows the active rates for electricity, gas and water in magenta, the inactive rates in cyan.
+- The left middle panel shows the current consumption and cost for electricity, gas and water, highlighted green when active rate.
+- The left bottom panel shows the month peak power for electricity as reported by the meter.
+- The left bottom panel shows the 10 most recent logging messages
+- The right bottom panel shows the current quarter peak power for electricity as reported by the meter, and the forecasted peak power for the quarter against the month peak power.
+
+## Authors
+
+* **Rudy Vandenberghe** - *Initial work* - [rudyvan]
+
+# License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
