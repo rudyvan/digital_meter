@@ -43,19 +43,12 @@ error_exit() {
     echo -e "Sleep Finished, retrying action!!"
     echo -e "launcher.sh => Sleep Finished, retrying action!!\n" >>$LOG
 }
-# if [[ "$HOST_NAME" = "PI-Notify" || "$HOST_NAME" = "PI-Notify2" || "$HOST_NAME" = "PI-Notify3" ]]; then
-#     sudo setfont /usr/share/consolefonts/Uni2-Terminus28x14.psf.gz;
-# fi
-if [[ "$HOST_NAME" = "PI-Notify" || "$HOST_NAME" = "PI-Notify2" || "$HOST_NAME" = "PI-Notify3" ]]; then
-    echo -e "Sleeping 20 secs extra, for the display to stabilize!!"
-    sleep 20s
-fi
 echo -e "sleep 10 seconds to catch /dev/tty1 when it is free"
-sleep 5s
+sleep 10s
 OUT="/dev/tty1" # define out
 while true; do
-    echo -e "Now Running $HOST_NAME"
-    python3 -u digital_meter.py
+    echo -e "Now Running $HOST_NAME" | sudo tee $OUT
+    python3 -u digital_meter.py | sudo tee $OUT
     if [ $? -eq 1 ]; then
         error_exit
     fi
