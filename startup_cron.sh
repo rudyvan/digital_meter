@@ -7,14 +7,14 @@ case "$(uname)" in
           *"Ubuntu"*)
             HOME_DIR="/home/rudyv"
             HOST_NAME=$(cat /etc/hostname)
-            APP_DIR=$HOME_DIR/digital_meter
+            APP_DIR=$HOME_DIR/lucy
             USER_NAME="rudyv"
             TMUX="/usr/bin/tmux"
           ;;
           *"Raspbian"* | *"Debian"*)
             HOME_DIR="/home/pi"
             HOST_NAME=$(cat /etc/hostname)
-            APP_DIR=$HOME_DIR/digital_meter
+            APP_DIR=$HOME_DIR/lucy
             USER_NAME="pi"
             TMUX="/usr/bin/tmux"
           ;;
@@ -27,7 +27,7 @@ case "$(uname)" in
     *"Darwin"*)
       HOME_DIR="/Users/rudyv"
       HOST_NAME=$(hostname | cut -d '.' -f1)
-      APP_DIR=$HOME_DIR/MyApps/digital_meter
+      APP_DIR=$HOME_DIR/MyApps/lucy
       USER_NAME="rudyv"
       TMUX="tmux"
     ;;
