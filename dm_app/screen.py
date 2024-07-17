@@ -60,13 +60,13 @@ class Screen:
         for sign in ["+", "-"]:
             rend = []
             for tpe in ["Electricity", "Gas", "Water"]:
-                if sign not in self.rate_dict[tpe]:
+                if sign not in self.rates_dct[tpe]:
                     rend.append("")
-                elif isinstance(self.rate_dict[tpe][sign], dict):
-                    rend.append(f"{self.rate_dict[tpe][sign]['Day']:.2f}")
-                    rend.append(f"{self.rate_dict[tpe][sign]['Night']:.2f}")
+                elif isinstance(self.rates_dct[tpe][sign], dict):
+                    rend.append(f"{self.rates_dct[tpe][sign]['Day']:.2f}")
+                    rend.append(f"{self.rates_dct[tpe][sign]['Night']:.2f}")
                 else:
-                    rend.append(f"{self.rate_dict[tpe][sign]:.2f}")
+                    rend.append(f"{self.rates_dct[tpe][sign]:.2f}")
             table.add_row(sign, *rend)
         return table
 

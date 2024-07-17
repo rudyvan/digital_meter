@@ -37,10 +37,10 @@ class Usage:
         if self.log:  # something already added before restore of self.data?
             self.data["log"].update(self.log)
         self.log = self.data["log"]
-        # pointers into rate_dict
-        self.e_rate = self.rate_dict["Electricity"]
-        self.g_rate = self.rate_dict["Gas"]["+"]
-        self.w_rate = self.rate_dict["Water"]["+"]
+        # pointers into rates_dct
+        self.e_rate = self.rates_dct["Electricity"]
+        self.g_rate = self.rates_dct["Gas"]["+"]
+        self.w_rate = self.rates_dct["Water"]["+"]
 
 
     def update_usage(self):

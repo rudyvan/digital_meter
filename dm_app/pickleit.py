@@ -40,10 +40,10 @@ class PickleIt:
             f.write(json.dumps(self.data, indent=4, sort_keys=True, default=encode_JSON))
 
     @property
-    def rate_dict(self):
-        if not hasattr(self, "_rate_dict"):
-            self._rate_dict = json.loads(open("rate.json").read())
-        return self._rate_dict
+    def rates_dct(self):
+        if not hasattr(self, "_rates_dct"):
+            self._rates_dct = json.loads(open("rates.json").read())
+        return self._rates_dct
 
     def add_log(self, msg, save=True):
         """ add a log message to the log file, but keep the log file tidy by only keeping the last 10 messages,
