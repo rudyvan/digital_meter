@@ -1,9 +1,11 @@
 # digital_meter
 Digital Meter Application for Belgian e-Meters
 
-Todo:
+Todo in the next days:
 - split in modules
 - add installation
 - add quarter peak
-- add import of files
-- update installation
+- add import of data.json at startup
+- update readme
+
+
