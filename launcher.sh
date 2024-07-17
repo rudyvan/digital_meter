@@ -46,6 +46,7 @@ error_exit() {
 echo -e "sleep 10 seconds to catch /dev/tty1 when it is free"
 sleep 10s
 OUT="/dev/tty1" # define out
+source .venv/bin/activate
 while true; do
     echo -e "Now Running $HOST_NAME" | sudo tee $OUT
     python3 -u digital_meter.py | sudo tee $OUT
