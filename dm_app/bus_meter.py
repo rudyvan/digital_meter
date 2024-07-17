@@ -8,9 +8,9 @@ from rich import print
 from rich.live import Live
 from rich.text import Text
 
-from usage import Usage
-from pickleit import PickleIt
-from screen import Screen
+from .usage import Usage
+from .pickleit import PickleIt
+from .screen import Screen
 
 
 class BusMeter(Screen, PickleIt, Usage):
