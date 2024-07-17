@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import datetime
 import re
 from collections import namedtuple

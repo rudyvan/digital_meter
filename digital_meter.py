@@ -7,9 +7,9 @@
 # https://github.com/jensdepuydt
 
 
-from rich.traceback import install
-
 from dm_app import BusMeter
+
+from rich.traceback import install
 
 install(width=180, extra_lines=10, show_locals=True)
 
