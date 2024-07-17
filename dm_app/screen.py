@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from rich import Console
+from rich.console import Console
 from rich.layout import Layout
 from rich.panel import Panel
 from rich.table import Table
