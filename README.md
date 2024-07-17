@@ -10,3 +10,11 @@ Todo in the next days:
 
 
 ![screenshot](screen_shot.jpg)
+
+sudo crontab -e -u pi
+
+```bash
+MAILTO="lucy_home_control@outlook.com"
+#Ansible: start startup_cron.sh script at reboot
+@reboot /home/pi/digital_meter/startup_cron.sh &
+```

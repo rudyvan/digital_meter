@@ -6,12 +6,12 @@ case "$(uname)" in
       OS=$(hostnamectl | grep "Operating System:")
       case "$OS" in
           *"Ubuntu"*)
-            HOME_DIR="/home/rudyv/lucy"
+            HOME_DIR="/home/rudyv/digital_meter"
             USER_NAME="rudyv"
             HOST_NAME=$(cat /etc/hostname)
           ;;
           *"Raspbian"* | *"Debian"*)
-            HOME_DIR="/home/pi/lucy"
+            HOME_DIR="/home/pi/digital_meter"
             USER_NAME="pi"
             HOST_NAME=$(cat /etc/hostname)
           ;;
@@ -22,7 +22,7 @@ case "$(uname)" in
       esac
       ;;
     *"Darwin"*)
-      HOME_DIR="/Users/rudyv/MyApps/lucy"
+      HOME_DIR="/Users/rudyv/MyApps/digital_meter"
       USER_NAME="rudyv"
       HOST_NAME=$(hostname | cut -d '.' -f1)
     ;;
