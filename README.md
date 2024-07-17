@@ -9,3 +9,4 @@ Todo in the next days:
 - update readme
 
 
+![screenshot](screen_shot.jpg)
