@@ -126,7 +126,8 @@ class Screen:
         grid.add_row(f"Peak Forecast: {self.quarter_peak:.3f} kW")
         grid.add_row(f"Month Peak: {self.month_peak['value']:.3f} Wh")
         peak_gap = self.month_peak['value']-self.quarter_peak
-        grid.add_row(f"GAP: {peak_gap:.3f} Wh at rate {self.cur_rate}", style="red" if peak_gap < 0 else "green")
+        grid.add_row(f"GAP: {peak_gap:.3f} Wh at rate {self.cur_rate}",
+                     style="red" if peak_gap < 0 else "green", justify="center")
         return grid
 
 
@@ -138,4 +139,4 @@ class Screen:
         layout["log"].update(Panel(self.make_log_table(), title="Log"))
         layout["usage_table"].update(Panel(self.make_usage_table(), title="Usage"))
         layout["rate"].update(Panel(self.make_rate_table(), title="Rate"))
-        layout["quarter_peak"].update(Panel(self.make_quarter_peak(), title="Quarters Peak", border_style="green"))
+        layout["quarter_peak"].update(Panel(self.make_quarter_peak(), title="Quarters Peak", border_style="red"))
