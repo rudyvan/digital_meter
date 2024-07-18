@@ -73,21 +73,21 @@ class Usage:
             self.delta_cumul = [self.now_cumul[x] - self.prev_cumul[x] for x in range(len(self.now_cumul))]
             if self.prev_time.day != self.cur_time.day:
                 # a new day has started, notify the usage at this point
-                self.usage["Day-2"] = self.usage["Day-1"]
-                self.usage["Day-1"] = self.usage["Today"]
-                self.usage["Today"] = self.zero_cumul
+                self.usage["Day-2"] = self.usage["Day-1"].copy()
+                self.usage["Day-1"] = self.usage["Today"].copy()
+                self.usage["Today"] = self.zero_cumul[:]
                 if self.prev_time.weekday() == 6:
-                    self.usage["Week"] = self.zero_cumul
+                    self.usage["Week"] = self.zero_cumul[:]
                 if self.prev_time.month != self.cur_time.month:
-                    self.usage["Month"] = self.zero_cumul
+                    self.usage["Month"] = self.zero_cumul[:]
                 if self.prev_time.year != self.cur_time.year:
-                    self.usage["Year"] = self.zero_cumul
+                    self.usage["Year"] = self.zero_cumul[:]
         else:  # first time, no previous measurement
             self.delta_cumul = self.zero_cumul[:]
         # 5. add the difference between both measurements to the usage
         for period in self._usage_columns():
             if period in ["Day-2", "Day-1"]:
-                continue
+                continue  # these are not updated
             for pos, val in enumerate(self.delta_cumul):
                 self.usage[period][pos] += val
         self.data["cur_time"] = self.cur_time
