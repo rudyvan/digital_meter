@@ -23,11 +23,41 @@ sudo crontab -e -u pi
 then add this line at the end of the file:
 
 ```bash
-@reboot /home/pi/digital_meter/startup_cron.sh &
+@reboot /home/pi/digital_meter/startup_cron.sh
 ```
 
 The application is started by the script `startup_cron.sh` which is located in the root of the project. 
 The script activates the virtual environment and starts the application.
+
+
+Should you want to show the output to a display connected to your raspberry pi at boot? 
+
+First activate automatic login:
+
+```bash
+sudo raspi-config
+```
+
+Then go to System Options -> Boot / Auto Login -> Command Autologin
+
+The edit your .profile file in the home directory of the user pi:
+
+```bash
+sudo nano /home/pi/.profile
+```
+
+and add the following line at the end of the file:
+
+```bash
+tmux a
+```
+
+and exit with ctrl+x, y and enter.
+
+when you reboot the raspberry pi, the application will start automatically and you can view the output on the display.
+if you logout, the application will automatically login and show the result.
+
+use ctrl b + d to detach from the tmux session and continue the terminal.
 
 ## Customisation
 
@@ -66,6 +96,15 @@ Some other keys to use in tmux:
 - `Ctrl+b` followed by `x` to close the current pane
 - `Ctrl+b` followed by `d` to detach from the tmux environment
 
+## check if your P1 port is working
+
+You need to request fluvius to activate the P1 port on your meter via myfluvius.be.
+check the screen output of the meter to see if the P1 port is active:
+
+![P1 port.png](P1 port.png)
+
+An arrow has to appear above P1 (indicated by 8), then the port is active and openend.
+It streams the data every second on high serial speed on the port P1 (below the yellow cover). 
 
 ## Connection to the meter
 
@@ -119,6 +158,9 @@ To view the application on another terminal, login (f.e. through ssh), then run 
 ```bash
 tmux a
 ``` 
+
+
+
 
 # Screen Output
 
