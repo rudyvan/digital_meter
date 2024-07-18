@@ -73,7 +73,7 @@ class BusMeter(Screen, PickleIt, Usage):
         "0-2:24.2.1":  obis_el("water_meter", 4, "Water consumption / capture time, Bus 2"),
         "0-3:24.2.1":  obis_el("water_meter", 4, "Water consumption / capture time, Bus 3"),
         "0-4:24.2.1":  obis_el("water_meter", 4, "Water consumption / capture time, Bus 4"),
-        "0-0:96.3.10": obis_el("breaker_electr", 70, "Electricity Breaker State: 0=disc, 1=conn, 2=ready reconnect"),
+        "0-0:96.3.10": obis_el("breaker_0", 70, "Electricity Breaker: 0=disc, 1=conn, 2=ready reconnect"),
         "0-1:96.3.10": obis_el("breaker_1", 70, "Virtual Relay Bus 1, 0=disc, 1=conn"),
         "0-2:96.3.10": obis_el("breaker_2", 70, "Virtual Relay Bus 2, 0=disc, 1=conn"),
         "0-3:96.3.10": obis_el("breaker_3", 70, "Virtual Relay Bus 3, 0=disc, 1=conn"),
