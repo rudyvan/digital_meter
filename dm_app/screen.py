@@ -109,13 +109,17 @@ class Screen:
         return table
 
     def make_quarter_peak(self) -> Progress:
+        clock_todo = 15*60  # seconds in a quarter
         quarter_progress = Progress("{task.description}",
                                     SpinnerColumn(), BarColumn(),
                                     TextColumn("[progress.percentage]{task.percentage:>3.0f}%"))
-        cq = quarter_progress.add_task("Clock Quarter", total=15*60)
+        cq = quarter_progress.add_task("Clock Quarter", total=clock_todo)
         pb = quarter_progress.add_task("Peak Buildup", total=100)
         pf = quarter_progress.add_task("Peak Forecast", total=100)
-        quarter_progress.update(cq, completed=(self.cur_time.minute % 15) * 60 + self.cur_time.second)
+        clock_done = (self.cur_time.minute % 15) * 60 + self.cur_time.second  # seconds in the current quarter
+        quarter_progress.update(cq, completed=clock_done)
+        quarter_progress.update(pb, total=self.quarter_peak * clock_todo / (clock_todo - clock_done),
+                                    completed=self.quarter_peak)
         return quarter_progress
 
 
