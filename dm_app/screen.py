@@ -110,7 +110,6 @@ class Screen:
 
     def make_quarter_peak(self) -> Progress:
         grid = Table.grid(expand=True)
-        grid.add_column(justify="center", ratio=2)
         grid.add_column(justify="left")
         clock_todo = 15*60  # seconds in a quarter
         quarter_progress = Progress("{task.description}",
@@ -123,7 +122,10 @@ class Screen:
         # beware, when producing energy, the quarter_peak is ZERO
         # peak_forecast = self.quarter_peak * clock_todo / (clock_todo - clock_done)
         quarter_progress.update(pf, completed=self.quarter_peak)
-        grid.add_row(quarter_progress, f"Peak Forecast: {self.quarter_peak:.3f} kW, Month Peak: {self.month_peak['value']:.3f} Wh")
+        grid.add_row(quarter_progress)
+        grid.add_row(f"Peak Forecast: {self.quarter_peak:.3f} kW")
+        grid.add_row(f"Month Peak: {self.month_peak['value']:.3f} Wh")
+        grid.add_row(f"GAP: {self.month_peak['value']-self.quarter_peak:.3f} Wh")
         return grid
 
 
