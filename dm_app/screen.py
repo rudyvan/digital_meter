@@ -115,7 +115,7 @@ class Screen:
         cq = quarter_progress.add_task("Clock Quarter", total=15*60)
         pb = quarter_progress.add_task("Peak Buildup", total=100)
         pf = quarter_progress.add_task("Peak Forecast", total=100)
-        quarter_progress.update(cq, completed=self.cur_time.total_seconds() % (15*60))
+        quarter_progress.update(cq, completed=(self.cur_time.minute % 15) * 60 + self.cur_time.second)
         return quarter_progress
 
 
