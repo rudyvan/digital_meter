@@ -110,7 +110,7 @@ class Screen:
 
     def make_quarter_peak(self) -> Progress:
         grid = Table.grid(expand=True)
-        grid.add_column(justify="left")
+        grid.add_column(justify="centre")
         clock_todo = 15*60  # seconds in a quarter
         quarter_progress = Progress("{task.description}",
                                     SpinnerColumn(), BarColumn(),
