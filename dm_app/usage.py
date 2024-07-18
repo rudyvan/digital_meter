@@ -24,7 +24,7 @@ class Usage:
         self.data = {"meters": {"Electricity": {"+Day": 0, "-Day": 0, "+Night": 0, "-Night": 0, "unit": "kWh"},
                                 "Gas": {"value": 0, "time": datetime.datetime.now(), "unit": "m3"},
                                 "Water": {"value": 0, "time": datetime.datetime.now(), "unit": "m3"} },
-                     "usage": dict((x, self.zero_cumul) for x in self._usage_columns()),
+                     "usage": dict((x, self.zero_cumul[:]) for x in self._usage_columns()),
                      "log": {},
                      "cur_time": datetime.datetime.now()}
 
