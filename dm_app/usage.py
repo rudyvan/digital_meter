@@ -8,7 +8,7 @@ class Usage:
         super().__init__()
 
     # for those counters that are also usage:    do not include labels for hour/minute as these are not reported
-    _usage_columns = lambda self: ["Today", "Week", "Month", "Year"]
+    _usage_columns = lambda self: ["Day-2", "Day-1", "Today", "Week", "Month", "Year"]
     _usage_rows = lambda self: ["+Day", "-Day", "+Night", "-Night", "Σ kWh", "+€ Day", "-€ Day", "+€ Night", "-€ Night",
                                 "Σ € kWh", "m3 Gas", "Σ € Gas", "m3 Water", "Σ € Water"]
     _rate_columns = lambda self: ["Rate", "€/kWh Day", "€/kWh Night", "€/m3 Gas", "€/m3 Water"]
@@ -73,6 +73,8 @@ class Usage:
             self.delta_cumul = [self.now_cumul[x] - self.prev_cumul[x] for x in range(len(self.now_cumul))]
             if self.prev_time.day != self.cur_time.day:
                 # a new day has started, notify the usage at this point
+                self.usage["Day-2"] = self.usage["Day-1"]
+                self.usage["Day-1"] = self.usage["Today"]
                 self.usage["Today"] = self.zero_cumul
                 if self.prev_time.weekday() == 6:
                     self.usage["Week"] = self.zero_cumul
@@ -84,6 +86,8 @@ class Usage:
             self.delta_cumul = self.zero_cumul[:]
         # 5. add the difference between both measurements to the usage
         for period in self._usage_columns():
+            if period in ["Day-2", "Day-1"]:
+                continue
             for pos, val in enumerate(self.delta_cumul):
                 self.usage[period][pos] += val
         self.data["cur_time"] = self.cur_time
