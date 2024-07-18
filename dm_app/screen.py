@@ -123,7 +123,7 @@ class Screen:
         # peak_forecast = self.quarter_peak * clock_todo / (clock_todo - clock_done)
         quarter_progress.update(pf, completed=self.quarter_peak)
         grid.add_row(quarter_progress)
-        grid.add_row(TextColumn(f"Peak Forecast: {self.quarter_peak:.3f} kW"), justify="center")
+        grid.add_row(TextColumn(f"Peak Forecast: {self.quarter_peak:.3f} kW", justify="center"))
         grid.add_row(f"Month Peak: {self.month_peak['value']:.3f} Wh")
         peak_gap = self.month_peak['value']-self.quarter_peak
         grid.add_row(TextColumn(f"GAP: {peak_gap:.3f} Wh at rate {self.cur_rate}",
