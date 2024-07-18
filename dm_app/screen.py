@@ -4,6 +4,7 @@ from rich.console import Console
 from rich.layout import Layout
 from rich.panel import Panel
 from rich.table import Table
+from rich.progress import Progress, SpinnerColumn, BarColumn, TextColumn
 
 
 class Screen:
@@ -107,14 +108,24 @@ class Screen:
             table.add_row(self.ts_str(m), self.ts_str(it[0]), *it[1:])
         return table
 
-    def make_quarter_peak_table(self) -> Table:
-        pass
+    def make_quarter_peak(self) -> Progress:
+        quarter_progress = Progress("{task.description}",
+                                    SpinnerColumn(), BarColumn(),
+                                    TextColumn("[progress.percentage]{task.percentage:>3.0f}%"))
+        cq = quarter_progress.add_task("Clock Quarter", total=15*60)
+        pb = quarter_progress.add_task("Peak Buildup", total=100)
+        pf = quarter_progress.add_task("Peak Forecast", total=100)
+        quarter_progress.update(cq, completed=self.cur_time.total_seconds() % (15*60))
+        return quarter_progress
+
 
     def update_layout(self, layout):
-        """ update the layout with the data from the class"""
+        """ update the layout with the data from the meter"""
         layout["header"].update(self.make_header())
         layout["telegram_table"].update(Panel(self.make_telegram_table(), title="Telegram"))
         layout["month_peak"].update(Panel(self.make_month_peak_table(), title="Months Peak"))
         layout["log"].update(Panel(self.make_log_table(), title="Log"))
         layout["usage_table"].update(Panel(self.make_usage_table(), title="Usage"))
         layout["rate"].update(Panel(self.make_rate_table(), title="Rate"))
+        layout["quarter_peak"].update(Panel(self.make_quarter_peak(), title="Quarters Peak", border_style="green"),
+                                      padding=(2, 2))

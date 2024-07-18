@@ -1,8 +1,74 @@
 # digital_meter
-Digital Meter Application for Belgian e-Meters
+
+Digital Meter Application for Belgian e-Meters.
+Is a standalone application that reads the digital meter and calculates the cost of electricity, gas and water based on the rates in the file `rates.json`.
+
 
 Todo in the next days:
 - add quarter peak
+
+## check if your P1 port is working
+
+You need to request fluvius to activate the P1 port on your meter via myfluvius.be.
+check the screen output of the meter to see if the P1 port is active:
+
+![P1 port.png](P1 port.png)
+
+An arrow has to appear above P1 (indicated by 8), then the port is active and openend.
+It streams the data every second on high serial speed on the port P1 (below the yellow cover). 
+
+## Connection to the meter
+
+- USB to TTL Serial Cable - Debug / Console Cable for Raspberry Pi
+
+The connection to the meter is done through a USB to TTL Serial Cable. The cable is connected to the meter and to the Raspberry Pi. 
+The Raspberry Pi is connected to the internet through a network cable or through WiFi.
+
+![cable.png](cable.png)
+
+serial_port = '/dev/ttyUSB0' by default.
+
+Should the cable be connected to another port, you can find the port by running the following command:
+
+```bash
+ls /dev/ttyUSB*
+```
+
+Should you need to change it, edit the file `digital_meter.py` in the root of the project.
+
+Is the cable too short, you can use a shielded USB extension cable as speed is a fast 100k baud.
+
+# Screen Output
+
+![screenshot](screen_shot.jpg)
+
+The screen output are panels created by rich and updated every second. 
+
+The panels are as follows:
+- The top panel shows the current date and time.
+- The side panel shows the current meter readings.
+- The left top panel shows the active rates for electricity, gas and water in magenta, the inactive rates in cyan.
+- The left middle panel shows the current consumption and cost for electricity, gas and water, highlighted green when active rate.
+- The left bottom panel shows the month peak power for electricity as reported by the meter.
+- The left bottom panel shows the 10 most recent logging messages
+- The right bottom panel shows the current quarter peak power for electricity as reported by the meter, and the forecasted peak power for the quarter against the month peak power.
+
+
+# Management with Energy Storage
+
+Energy storage through batteries allows us to store energy when it is cheap and use it when it is expensive. 
+Vehicle to Grid (V2G) can be used to store energy in your electric vehicle and use it when needed and act as a battery.
+
+This occurs in the following 3 situations in Belgium:
+- Your solar production is higher than your consumption, and you want to store the excess energy.
+- You can leverage the difference between the day and night rate for electricity.
+- Peak power use can be reduced by using stored energy.
+
+In case spot prices are used, the application can be extended to use the lowest spot prices to charge the batteries and the highest spot prices to discharge the batteries.
+
+This is implemented in the application as follows:
+-
+-
 
 ## Installation
 
@@ -96,37 +162,6 @@ Some other keys to use in tmux:
 - `Ctrl+b` followed by `x` to close the current pane
 - `Ctrl+b` followed by `d` to detach from the tmux environment
 
-## check if your P1 port is working
-
-You need to request fluvius to activate the P1 port on your meter via myfluvius.be.
-check the screen output of the meter to see if the P1 port is active:
-
-![P1 port.png](P1 port.png)
-
-An arrow has to appear above P1 (indicated by 8), then the port is active and openend.
-It streams the data every second on high serial speed on the port P1 (below the yellow cover). 
-
-## Connection to the meter
-
-- USB to TTL Serial Cable - Debug / Console Cable for Raspberry Pi
-
-The connection to the meter is done through a USB to TTL Serial Cable. The cable is connected to the meter and to the Raspberry Pi. 
-The Raspberry Pi is connected to the internet through a network cable or through WiFi.
-
-![cable.png](cable.png)
-
-serial_port = '/dev/ttyUSB0' by default.
-
-Should the cable be connected to another port, you can find the port by running the following command:
-
-```bash
-ls /dev/ttyUSB*
-```
-
-Should you need to change it, edit the file `digital_meter.py` in the root of the project.
-
-Is the cable too short, you can use a shielded USB extension cable as speed is a fast 100k baud.
-
 ## Running the application - manual
 
 To run the application manually, activate the virtual environment and run the application.
@@ -162,37 +197,6 @@ tmux a
 
 
 
-# Screen Output
-
-![screenshot](screen_shot.jpg)
-
-The screen output are panels created by rich and updated every second. 
-
-The panels are as follows:
-- The top panel shows the current date and time.
-- The side panel shows the current meter readings.
-- The left top panel shows the active rates for electricity, gas and water in magenta, the inactive rates in cyan.
-- The left middle panel shows the current consumption and cost for electricity, gas and water, highlighted green when active rate.
-- The left bottom panel shows the month peak power for electricity as reported by the meter.
-- The left bottom panel shows the 10 most recent logging messages
-- The right bottom panel shows the current quarter peak power for electricity as reported by the meter, and the forecasted peak power for the quarter against the month peak power.
-
-
-# Management with Energy Storage
-
-Energy storage through batteries allows us to store energy when it is cheap and use it when it is expensive. 
-Vehicle to Grid (V2G) can be used to store energy in your electric vehicle and use it when needed and act as a battery.
-
-This occurs in the following 3 situations in Belgium:
-- Your solar production is higher than your consumption, and you want to store the excess energy.
-- You can leverage the difference between the day and night rate for electricity.
-- Peak power use can be reduced by using stored energy.
-
-In case spot prices are used, the application can be extended to use the lowest spot prices to charge the batteries and the highest spot prices to discharge the batteries.
-
-This is implemented in the application as follows:
--
--
 
 ## Authors
 
