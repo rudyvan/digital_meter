@@ -42,7 +42,6 @@ error_exit() {
     echo -e "Sleep Finished, retrying action!!"
     echo -e "launcher.sh => Sleep Finished, retrying action!!\n" >>$LOG
 }
-# sleep 5s
 while true; do
     .venv/bin/python -u digital_meter.py
     if [ $? -eq 1 ]; then
