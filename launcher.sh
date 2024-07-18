@@ -6,12 +6,12 @@ case "$(uname)" in
       OS=$(hostnamectl | grep "Operating System:")
       case "$OS" in
           *"Ubuntu"*)
-            HOME_DIR="/home/rudyv/lucy"
+            HOME_DIR="/home/rudyv/digital_meter"
             USER_NAME="rudyv"
             HOST_NAME=$(cat /etc/hostname)
           ;;
           *"Raspbian"* | *"Debian"*)
-            HOME_DIR="/home/pi/lucy"
+            HOME_DIR="/home/pi/digital_meter"
             USER_NAME="pi"
             HOST_NAME=$(cat /etc/hostname)
           ;;
@@ -22,7 +22,7 @@ case "$(uname)" in
       esac
       ;;
     *"Darwin"*)
-      HOME_DIR="/Users/rudyv/MyApps/lucy"
+      HOME_DIR="/Users/rudyv/MyApps/digital_meter"
       USER_NAME="rudyv"
       HOST_NAME=$(hostname | cut -d '.' -f1)
     ;;
@@ -43,19 +43,12 @@ error_exit() {
     echo -e "Sleep Finished, retrying action!!"
     echo -e "launcher.sh => Sleep Finished, retrying action!!\n" >>$LOG
 }
-# if [[ "$HOST_NAME" = "PI-Notify" || "$HOST_NAME" = "PI-Notify2" || "$HOST_NAME" = "PI-Notify3" ]]; then
-#     sudo setfont /usr/share/consolefonts/Uni2-Terminus28x14.psf.gz;
-# fi
-if [[ "$HOST_NAME" = "PI-Notify" || "$HOST_NAME" = "PI-Notify2" || "$HOST_NAME" = "PI-Notify3" ]]; then
-    echo -e "Sleeping 20 secs extra, for the display to stabilize!!"
-    sleep 20s
-fi
-echo -e "sleep 10 seconds to catch /dev/tty1 when it is free"
+# echo -e "sleep 10 seconds to catch /dev/tty1 when it is free"
 sleep 5s
-OUT="/dev/tty1" # define out
+# OUT="/dev/tty1" # define out
 while true; do
     echo -e "Now Running $HOST_NAME"
-    python3 -u digital_meter.py
+    .venv/bin/python -u digital_meter.py
     if [ $? -eq 1 ]; then
         error_exit
     fi
