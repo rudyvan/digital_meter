@@ -74,7 +74,7 @@ class Usage:
             if self.prev_time.day != self.cur_time.day:
                 # a new day has started, notify the usage at this point
                 self.usage["Today"] = self.zero_cumul
-                if self.prev_time.week != self.cur_time.isocalendar()[1]:
+                if self.prev_time.weekday() == 6:
                     self.usage["Week"] = self.zero_cumul
                 if self.prev_time.month != self.cur_time.month:
                     self.usage["Month"] = self.zero_cumul
