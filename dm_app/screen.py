@@ -118,8 +118,12 @@ class Screen:
         pf = quarter_progress.add_task("Peak Forecast", total=100)
         clock_done = (self.cur_time.minute % 15) * 60 + self.cur_time.second  # seconds in the current quarter
         quarter_progress.update(cq, completed=clock_done)
-        quarter_progress.update(pb, total=self.quarter_peak * clock_todo / (clock_todo - clock_done),
+        # beware, when producing energy, the quarter_peak is ZERO
+        peak_forecast = self.quarter_peak * clock_todo / (clock_todo - clock_done)
+        quarter_progress.update(pb, total=peak_forecast,
                                     completed=self.quarter_peak)
+        quarter_progress.update(pf, total=self.month_peak['value'],
+                                    completed=peak_forecast)
         return quarter_progress
 
 
