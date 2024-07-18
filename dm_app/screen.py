@@ -22,7 +22,7 @@ class Screen:
         )
         layout["main"].split_row(
             Layout(name="side"),
-            Layout(name="telegram_table", ratio=2, minimum_size=60),
+            Layout(name="telegram_table", minimum_size=60),
         )
         layout["side"].split(Layout(name="usage"), Layout(name="month_peak", size=19))
         layout["footer"].split_row(

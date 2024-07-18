@@ -135,6 +135,23 @@ The panels are as follows:
 - The left bottom panel shows the 10 most recent logging messages
 - The right bottom panel shows the current quarter peak power for electricity as reported by the meter, and the forecasted peak power for the quarter against the month peak power.
 
+
+# Management with Energy Storage
+
+Energy storage through batteries allows us to store energy when it is cheap and use it when it is expensive. 
+Vehicle to Grid (V2G) can be used to store energy in your electric vehicle and use it when needed and act as a battery.
+
+This occurs in the following 3 situations in Belgium:
+- Your solar production is higher than your consumption, and you want to store the excess energy.
+- You can leverage the difference between the day and night rate for electricity.
+- Peak power use can be reduced by using stored energy.
+
+In case spot prices are used, the application can be extended to use the lowest spot prices to charge the batteries and the highest spot prices to discharge the batteries.
+
+This is implemented in the application as follows:
+-
+-
+
 ## Authors
 
 * **Rudy Vandenberghe** - *Initial work* - [rudyvan]
