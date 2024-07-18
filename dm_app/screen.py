@@ -124,7 +124,7 @@ class Screen:
         # peak_forecast = self.quarter_peak * clock_todo / (clock_todo - clock_done)
         quarter_progress.update(pf, completed=self.quarter_peak)
         grid.add_row(quarter_progress, f"Peak Forecast: {self.quarter_peak:.3f} kW, Month Peak: {self.month_peak['value']:.3f} Wh")
-        return quarter_progress
+        return grid
 
 
     def update_layout(self, layout):
