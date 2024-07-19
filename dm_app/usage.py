@@ -26,7 +26,7 @@ class Usage:
                                 "Water": {"value": 0, "time": datetime.datetime.now(), "unit": "m3"} },
                      "usage": dict((x, self.zero_cumul[:]) for x in self._usage_columns()),
                      "log": {},
-                     "cur_time": datetime.datetime.now()
+                     "cur_time": datetime.datetime.now(),
                      "quarter_peak": {"value": 0, "time": datetime.datetime.now(), "unit": "kW"}}
 
     def set_pointers(self):
