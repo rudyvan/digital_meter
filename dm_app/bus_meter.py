@@ -157,7 +157,7 @@ class BusMeter(Screen, PickleIt, Usage):
                     if value not in ["230", "400"]:
                         self.add_log(f"{obis}: Grid expecting 230 or 400: {value=}")
                 return ret_val({"value": value}, value)
-            case 3 | 5 | 21 | 71:  # register, demand register, register monitor, limiter
+            case 3 | 21 | 71:  # register, demand register, register monitor, limiter
                 value_str, _, unit = values[0][1:-1].partition("*")
                 value = float(value_str) if "." in value_str else int(value_str)
                 result_dct = {"value": value, "unit": unit}
@@ -171,7 +171,7 @@ class BusMeter(Screen, PickleIt, Usage):
                         self.add_log(msg)
                         return ret_val(result_dct, Text(msg, "bold red"))
                 return ret_val(result_dct, result_str)
-            case 4:  # extended register
+            case 4 | 5:  # extended register
                 value_time = self.ts_obj(values[0][1:-1])
                 value, _, unit = values[1][1:-1].partition("*")
                 value = float(value) if "." in value else int(value)
