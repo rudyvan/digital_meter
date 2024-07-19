@@ -145,4 +145,4 @@ class Screen:
         layout["log"].update(Panel(self.make_log_table(), title="Log"))
         layout["usage_table"].update(Panel(self.make_usage_table(), title="Usage"))
         layout["rate"].update(Panel(self.make_rate_table(), title="Rate"))
-        layout["quarter_peak"].update(Panel(self.make_quarter_peak(), title="Quarters Peak", border_style="green"))
+        layout["quarter_peak"].update(Panel(self.make_quarter_peak(), title="Quarters Peak", border_style=self.peak_gap_style))
