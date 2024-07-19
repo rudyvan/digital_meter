@@ -121,10 +121,10 @@ class Screen:
         grid.add_row(quarter_progress)
         if not all(hasattr(self, x) for x in ["prev_time", "cur_time"]):
             return grid
-        peak_now = self.quarter_peak["value"]
+        peak_now = self.quarter_peak
         peak_forecast = peak_now
         if clock_step := (self.cur_time - self.prev_time).total_seconds():
-            peak_step = self.quarter_peak["value"] - self.data["prev_quarter_peak"]["value"]
+            peak_step = self.quarter_peak - self.data["prev_quarter_peak"]
             peak_forecast += peak_step / clock_step * (clock_todo - clock_done)
         # beware, when producing energy, the quarter_peak is ZERO
         grid.add_row(f"Peak -> Till Now {peak_now:.3f} kW, Forecast Quarter: {peak_forecast:.3f} kW")

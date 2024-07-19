@@ -27,7 +27,7 @@ class Usage:
                      "usage": dict((x, self.zero_cumul[:]) for x in self._usage_columns()),
                      "log": {},
                      "cur_time": datetime.datetime.now(),
-                     "quarter_peak": {"value": 0, "time": datetime.datetime.now(), "unit": "kW"}}
+                     "quarter_peak": 0}
 
     def set_pointers(self):
         # these pointer must be set before self.data is used (after restore or creation)
@@ -95,6 +95,6 @@ class Usage:
         self.data["cur_time"] = self.cur_time
         self.data["cumul"] = self.now_cumul
         if "quarter_peak" not in self.data:
-            self.data["quarter_peak"] = self.quarter_peak.copy()
+            self.data["quarter_peak"] = 0
         self.data["prev_quarter_peak"], self.data["quarter_peak"] = self.data["quarter_peak"], self.quarter_peak
         self.var_save()
