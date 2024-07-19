@@ -45,13 +45,15 @@ Is the cable too short, you can use a shielded USB extension cable as speed is a
 The screen output are panels created by rich and updated every second. 
 
 The panels are as follows:
-- The top panel shows the current date and time.
-- The side panel shows the current meter readings.
-- The left top panel shows the active rates for electricity, gas and water in magenta, the inactive rates in cyan.
-- The left middle panel shows the current consumption and cost for electricity, gas and water, highlighted green when active rate.
-- The left bottom panel shows the month peak power for electricity as reported by the meter.
-- The left bottom panel shows the 10 most recent logging messages
-- The right bottom panel shows the current quarter peak power for electricity as reported by the meter, and the forecasted peak power for the quarter against the month peak power.
+1. The top panel shows the current date and time as received from the meter.
+2. That panel shows the active rates for electricity, gas and water in magenta, the inactive rates in cyan.
+3. Shows the current consumption and cost for electricity, gas and water, highlighted green for the active rate.
+4. The panel shows the month peak power for electricity as reported by the meter, current and past.
+5. The log panel shows the 10 most recent logging messages
+6. The side panel shows the last processed meter telegram contents.
+7. The right bottom panel shows the current quarter peak power for electricity as reported by the meter, and the forecasted peak power for the quarter against the month peak power.  
+The gap is the amount of power that can be used before the peak power is reached OR the amount the current quarter risks to overshoot the current month peak.
+Then the whole quarter is highlighted in red.   This is crucial input for any energy storage management system.
 
 
 # Management with Energy Storage
