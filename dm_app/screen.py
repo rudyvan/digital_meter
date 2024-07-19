@@ -124,9 +124,9 @@ class Screen:
         quarter_progress.update(pf, completed=self.quarter_peak)
         grid.add_row(quarter_progress)
         grid.add_row(f"Peak Forecast: {self.quarter_peak:.3f} kW")
-        grid.add_row(f"Month Peak: {self.month_peak['value']:.3f} Wh")
+        grid.add_row(f"Month Peak: {self.month_peak['value']:.3f} kW")
         peak_gap = self.month_peak['value']-self.quarter_peak
-        grid.add_row(f"GAP: {peak_gap:.3f} Wh at rate {self.cur_rate}",
+        grid.add_row(f"GAP: {peak_gap:.3f} kW at rate {self.cur_rate}",
                      style="red" if peak_gap < 0 else "green")
         return grid
 

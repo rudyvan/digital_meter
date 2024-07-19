@@ -207,11 +207,11 @@ class BusMeter(Screen, PickleIt, Usage):
                     case "007":  # water
                         device = "water"
                     case _:
-                        return obis, th_n, description, Text(f"Unknown device type: {value}", "bold magenta")
+                        return ret_val({"value": value}, Text(f"?? device type: {value}", "bold magenta"))
                 self.bus[int(obis[2])] = device
                 return ret_val({"value": device}, f"{value} -> {device}")
             case _:  # unknown class_id
-                return "", "", Text(f"?? class_id code {class_id} not recognised", "bold magenta"), p1line
+                return ret_val({"value": "??"}, Text(f"??{class_id=} {p1line=}", "bold magenta"))
 
     def run(self):
         layout = self.make_layout()
@@ -239,7 +239,7 @@ class BusMeter(Screen, PickleIt, Usage):
                                     self.p1_table.append(self.parsetelegramline(line.decode('ascii')))
                             self.update_usage()
                             self.update_layout(layout)
-                            live.refresh()
+                            # live.refresh()
                             self.file_json()
                 except KeyboardInterrupt:
                     print("Stopping...")
