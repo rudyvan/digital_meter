@@ -52,8 +52,10 @@ The panels are as follows:
 5. The log panel shows the 10 most recent logging messages
 6. The side panel shows the last processed meter telegram contents.
 7. The right bottom panel shows the current quarter peak power for electricity as reported by the meter, and the forecasted peak power for the quarter against the month peak power.  
+
 The gap is the amount of power that can be used before the peak power is reached OR the amount the current quarter risks to overshoot the current month peak.
-Then the whole quarter is highlighted in red.   This is crucial input for any energy storage management system.
+Then the whole quarter is highlighted in red.   
+This is crucial input for an energy storage management system.
 
 
 # Management with Energy Storage
@@ -62,15 +64,24 @@ Energy storage through batteries allows us to store energy when it is cheap and 
 Vehicle to Grid (V2G) can be used to store energy in your electric vehicle and use it when needed and act as a battery.
 
 This occurs in the following 3 situations in Belgium:
-- Your solar production is higher than your consumption, and you want to store the excess energy.
+- Your solar production is higher than your consumption, and you want to store the excess energy to use yourself.
 - You can leverage the difference between the day and night rate for electricity.
 - Peak power use can be reduced by using stored energy.
 
 In case spot prices are used, the application can be extended to use the lowest spot prices to charge the batteries and the highest spot prices to discharge the batteries.
+This "brokering" can be done by a smart energy contract. 
 
-This is implemented in the application as follows:
--
--
+Specific for Belgium, installing a battery has consequences:
+- you have to do an attestation of your installation after you update the schematics of your electrical installation
+- you can only use a certified battery
+- you have to limit the power output of the battery to 10kW for 3 phases and 5kW for 1 phase
+- and you have to announce the installation on myfluvius.be 
+
+![fluvius.png](./docs/fluvius.png)
+
+Most batteries are not certified for Belgium, so you have to check with the manufacturer if the battery is certified for Belgium.
+
+And most suppliers come with their own energy management system, not adapted for the spot pricing and peak capacity in Belgium.
 
 ## Installation
 
