@@ -120,19 +120,20 @@ class Screen:
         quarter_progress.update(cq, completed=clock_done)
         grid.add_row(quarter_progress)
         if not all(hasattr(self, x) for x in ["prev_time", "cur_time"]):
+            self.peak_gap_style = "green"
             return grid
-        peak_now = self.quarter_peak
-        peak_forecast = peak_now
+        self.peak_forecast = self.quarter_peak
         if clock_step := (self.cur_time - self.prev_time).total_seconds():
             peak_step = self.quarter_peak - self.data["prev_quarter_peak"]
-            peak_forecast += peak_step / clock_step * (clock_todo - clock_done)
+            self.peak_forecast += peak_step / clock_step * (clock_todo - clock_done)
         # beware, when producing energy, the quarter_peak is ZERO
-        grid.add_row(f"Peak -> Till Now {peak_now:.3f} kW, Forecast Quarter: {peak_forecast:.3f} kW")
-        peak_gap = self.month_peak['value']-peak_forecast
-        grid.add_row(f"Month Peak: {self.month_peak['value']:.3f} kW <> Quarter Forecast: {peak_forecast:.3f} kW",
-                     style="green" if peak_gap > 0 else "red")
-        grid.add_row(f"GAP: {peak_gap:.3f} kW at rate {self.cur_rate}",
-                     style="green" if peak_gap > 0 else "red")
+        grid.add_row(f"Peak -> Till Now {self.quarter_peak:.3f} kW, Forecast Quarter: {self.peak_forecast:.3f} kW")
+        self.peak_gap = self.month_peak['value']-self.peak_forecast
+        self.peak_gap_style = "green" if self.peak_gap > 0 else "red"
+        grid.add_row(f"Month Peak: {self.month_peak['value']:.3f} kW <> Quarter Forecast: {self.peak_forecast:.3f} kW",
+                     style=self.peak_gap_style)
+        grid.add_row(f"GAP: {self.peak_gap:.3f} kW at rate {self.cur_rate}",
+                     style=self.peak_gap_style)
         return grid
 
 
@@ -144,4 +145,5 @@ class Screen:
         layout["log"].update(Panel(self.make_log_table(), title="Log"))
         layout["usage_table"].update(Panel(self.make_usage_table(), title="Usage"))
         layout["rate"].update(Panel(self.make_rate_table(), title="Rate"))
-        layout["quarter_peak"].update(Panel(self.make_quarter_peak(), title="Quarters Peak", border_style="red"))
+        layout["quarter_peak"].update(Panel(self.make_quarter_peak(), title="Quarters Peak",
+                                            border_style=self.peak_gap_style))

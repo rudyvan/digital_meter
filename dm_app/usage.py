@@ -86,6 +86,7 @@ class Usage:
         else:  # first time, no previous measurement
             self.delta_cumul = self.zero_cumul[:]
             self.prev_time = self.cur_time
+            self.data["quarter_peak"] = 0
         # 5. add the difference between both measurements to the usage
         for period in self._usage_columns():
             if period in ["Day-2", "Day-1"]:
@@ -94,7 +95,5 @@ class Usage:
                 self.usage[period][pos] += val
         self.data["cur_time"] = self.cur_time
         self.data["cumul"] = self.now_cumul
-        if "quarter_peak" not in self.data:
-            self.data["quarter_peak"] = 0
         self.data["prev_quarter_peak"], self.data["quarter_peak"] = self.data["quarter_peak"], self.quarter_peak
         self.var_save()
