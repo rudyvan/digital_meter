@@ -116,18 +116,23 @@ class Screen:
                                     SpinnerColumn(), BarColumn(),
                                     TextColumn("[progress.percentage]{task.percentage:>3.0f}%"))
         cq = quarter_progress.add_task("Clock Quarter", total=clock_todo)
-        pf = quarter_progress.add_task("Peak Forecast -> Month Peak", total=self.month_peak['value'])
         clock_done = (self.cur_time.minute % 15) * 60 + self.cur_time.second  # seconds in the current quarter
         quarter_progress.update(cq, completed=clock_done)
-        # beware, when producing energy, the quarter_peak is ZERO
-        # peak_forecast = self.quarter_peak * clock_todo / (clock_todo - clock_done)
-        quarter_progress.update(pf, completed=self.quarter_peak)
         grid.add_row(quarter_progress)
-        grid.add_row(f"Peak Forecast: {self.quarter_peak:.3f} kW")
-        grid.add_row(f"Month Peak: {self.month_peak['value']:.3f} kW")
-        peak_gap = self.month_peak['value']-self.quarter_peak
+        if not all(hasattr(self, x) for x in ["prev_time", "cur_time"]):
+            return grid
+        peak_now = self.quarter_peak["value"]
+        peak_forecast = peak_now
+        if clock_step := (self.cur_time - self.prev_time).total_seconds():
+            peak_step = self.quarter_peak["value"] - self.data["prev_quarter_peak"]["value"]
+            peak_forecast += peak_step / clock_step * (clock_todo - clock_done)
+        # beware, when producing energy, the quarter_peak is ZERO
+        grid.add_row(f"Peak -> Till Now {peak_now:.3f} kW, Forecast Quarter: {peak_forecast:.3f} kW")
+        peak_gap = self.month_peak['value']-peak_forecast
+        grid.add_row(f"Month Peak: {self.month_peak['value']:.3f} kW <> Quarter Forecast: {peak_forecast:.3f} kW",
+                     style="green" if peak_gap > 0 else "red")
         grid.add_row(f"GAP: {peak_gap:.3f} kW at rate {self.cur_rate}",
-                     style="red" if peak_gap < 0 else "green")
+                     style="green" if peak_gap > 0 else "red")
         return grid
 
 

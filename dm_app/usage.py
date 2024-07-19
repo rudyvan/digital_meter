@@ -26,7 +26,8 @@ class Usage:
                                 "Water": {"value": 0, "time": datetime.datetime.now(), "unit": "m3"} },
                      "usage": dict((x, self.zero_cumul[:]) for x in self._usage_columns()),
                      "log": {},
-                     "cur_time": datetime.datetime.now()}
+                     "cur_time": datetime.datetime.now()
+                     "quarter_peak": {"value": 0, "time": datetime.datetime.now(), "unit": "kW"}}
 
     def set_pointers(self):
         # these pointer must be set before self.data is used (after restore or creation)
@@ -84,6 +85,7 @@ class Usage:
                     self.usage["Year"] = self.zero_cumul[:]
         else:  # first time, no previous measurement
             self.delta_cumul = self.zero_cumul[:]
+            self.prev_time = self.cur_time
         # 5. add the difference between both measurements to the usage
         for period in self._usage_columns():
             if period in ["Day-2", "Day-1"]:
@@ -92,4 +94,5 @@ class Usage:
                 self.usage[period][pos] += val
         self.data["cur_time"] = self.cur_time
         self.data["cumul"] = self.now_cumul
+        self.data["prev_quarter_peak"], self.data["quarter_peak"] = self.data["quarter_peak"], self.quarter_peak
         self.var_save()
