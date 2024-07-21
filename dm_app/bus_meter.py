@@ -217,7 +217,7 @@ class BusMeter(Screen, PickleIt, Usage):
         layout = self.make_layout()
         self.set_data()
         self.var_restore()
-        with Live(layout, console=self.console, refresh_per_second=0.2) as live:
+        with Live(layout, console=self.console, refresh_per_second=0.3) as live:
             while True:
                 try:
                     # read input from serial port
