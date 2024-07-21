@@ -81,7 +81,7 @@ class Screen:
         for x in self._usage_columns():
             # change the header text to the day of the week if it is a past day
             txt = x if "Day-" not in x else (self.data["cur_time"]-datetime.timedelta(days=int(x.split("-")[1]))).strftime("%A")
-            table.add_column(txt, justify="right", style="cyan" if x == "Today" else "green")
+            table.add_column(txt, justify="right", style="magenta" if x == "Today" else "green")
 
         for pos, line in enumerate(self._usage_rows()):
             # highlight day or night usage depending on the current rate
@@ -153,6 +153,8 @@ class Screen:
         layout["telegram_table"].update(Panel(self.make_telegram_table(), title="Telegram"))
         layout["month_peak"].update(Panel(self.make_month_peak_table(), title="Months Peak"))
         layout["log"].update(Panel(self.make_log_table(), title="Log"))
-        layout["usage_table"].update(Panel(self.make_usage_table(), title=f"Usage, since {self.ts_str(self.data['start_time'])}"))
+        layout["usage_table"].update(Panel(self.make_usage_table(),
+                                           title=f"Usage since {self.ts_str(self.data['start_time'])}"))
         layout["rate"].update(Panel(self.make_rate_table(), title="Rate"))
-        layout["quarter_peak"].update(Panel(self.make_quarter_peak(), title="Quarters Peak", border_style=self.peak_gap_style))
+        layout["quarter_peak"].update(Panel(self.make_quarter_peak(),
+                                            title="Quarters Peak", border_style=self.peak_gap_style))

@@ -46,18 +46,12 @@ class Usage:
 
 
     def update_usage(self):
-        # calculate delta between 2 readings for electricity day/night produced/consumed, water and or gas
-        # use the meter timestamp for the day/week/month/year transition and reset
+        """ calculate delta between 2 readings for electricity day/night produced/consumed, water and or gas
+            use the meter timestamp for the day/week/month/year transition and reset
+        return True if usage has been calculated, else False"""
         # 1. if no current time then return
         if not hasattr(self, "cur_time"):
             return False
-
-        if "Day-3" not in self.usage:
-            self.usage["Day-3"] = self.zero_cumul[:]
-            if "start_time" not in self.data:
-                self.data["start_time"] = self.cur_time
-            self.var_save()
-
         # 2. update meters values in self.data
         self.e_meter["+Day"] = self.kwH_day_plus
         self.e_meter["-Day"] = self.kwH_day_min
