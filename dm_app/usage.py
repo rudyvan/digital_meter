@@ -50,7 +50,7 @@ class Usage:
         # use the meter timestamp for the day/week/month/year transition and reset
         # 1. if no current time then return
         if not hasattr(self, "cur_time"):
-            return
+            return False
 
         if "Day-3" not in self.usage:
             self.usage["Day-3"] = self.zero_cumul[:]
@@ -106,3 +106,4 @@ class Usage:
         self.data["cumul"] = self.now_cumul
         self.data["prev_quarter_peak"], self.data["quarter_peak"] = self.data["quarter_peak"], self.quarter_peak
         self.var_save()
+        return True
