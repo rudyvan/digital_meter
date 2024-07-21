@@ -241,7 +241,7 @@ class BusMeter(Screen, PickleIt, Usage):
                             if self.update_usage():
                                 self.update_layout(layout)
                             loops += 1
-                            if loops > 3:
+                            if loops > 5:
                                 live.refresh()
                                 self.file_json()
                                 loops = 0
