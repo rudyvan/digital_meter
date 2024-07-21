@@ -8,7 +8,7 @@ class Usage:
         super().__init__()
 
     # for those counters that are also usage:    do not include labels for hour/minute as these are not reported
-    _usage_columns = lambda self: ["Day-2", "Day-1", "Today", "Week", "Month", "Year"]
+    _usage_columns = lambda self: ["Day-3", "Day-2", "Day-1", "Today", "Week", "Month", "Year"]
     _usage_rows = lambda self: ["+Day", "-Day", "+Night", "-Night", "Σ kWh", "+€ Day", "-€ Day", "+€ Night", "-€ Night",
                                 "Σ € kWh", "m3 Gas", "Σ € Gas", "m3 Water", "Σ € Water"]
     _rate_columns = lambda self: ["Rate", "€/kWh Day", "€/kWh Night", "€/m3 Gas", "€/m3 Water"]
@@ -27,6 +27,7 @@ class Usage:
                      "usage": dict((x, self.zero_cumul[:]) for x in self._usage_columns()),
                      "log": {},
                      "cur_time": datetime.datetime.now(),
+                     "start_time": datetime.datetime.now(),
                      "quarter_peak": 0}
 
     def set_pointers(self):
@@ -50,6 +51,13 @@ class Usage:
         # 1. if no current time then return
         if not hasattr(self, "cur_time"):
             return
+
+        if "Day-3" not in self.usage:
+            self.usage["Day-3"] = self.zero_cumul[:]
+            if "start_time" not in self.data:
+                self.data["start_time"] = self.cur_time
+            self.var_save()
+
         # 2. update meters values in self.data
         self.e_meter["+Day"] = self.kwH_day_plus
         self.e_meter["-Day"] = self.kwH_day_min
@@ -73,7 +81,8 @@ class Usage:
             # day processing is possible as we have a previous measurement
             self.delta_cumul = [self.now_cumul[x] - self.prev_cumul[x] for x in range(len(self.now_cumul))]
             if self.prev_time.day != self.cur_time.day:
-                # a new day has started, notify the usage at this point
+                # a new day has started, ?notify usage at this point
+                self.usage["Day-3"] = self.usage["Day-2"].copy()
                 self.usage["Day-2"] = self.usage["Day-1"].copy()
                 self.usage["Day-1"] = self.usage["Today"].copy()
                 self.usage["Today"] = self.zero_cumul[:]

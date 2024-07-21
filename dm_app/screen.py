@@ -6,6 +6,8 @@ from rich.panel import Panel
 from rich.table import Table
 from rich.progress import Progress, SpinnerColumn, BarColumn, TextColumn
 
+import datetime
+
 
 class Screen:
     """ this is a class to make a screen for the console"""
@@ -75,8 +77,12 @@ class Screen:
         """ beware, styling is contingent on the text in the first column, such as "Day" or "Night" or "Total" """
         table = Table(show_lines=False, expand=True)
         table.add_column("Usage/Cost", justify="left", style="magenta")
+
         for x in self._usage_columns():
-            table.add_column(x, justify="right", style="cyan")
+            # change the header text to the day of the week if it is a past day
+            txt = x if "Day-" not in x else (self.data["cur_time"]-datetime.timedelta(days=int(x.split("-")[1]))).strftime("%A")
+            table.add_column(txt, justify="right", style="cyan" if x == "Today" else "green")
+
         for pos, line in enumerate(self._usage_rows()):
             # highlight day or night usage depending on the current rate
             hit = (self.cur_rate == 1 and "Day" in line or self.cur_rate == 2 and "Night" in line)
@@ -122,18 +128,22 @@ class Screen:
         if not all(hasattr(self, x) for x in ["prev_time", "cur_time"]):
             self.peak_gap_style = "green"
             return grid
-        self.peak_forecast = self.quarter_peak
+        self.new_peak_forecast = self.quarter_peak
         if clock_step := (self.cur_time - self.prev_time).total_seconds():
             peak_step = self.quarter_peak - self.data["prev_quarter_peak"]
-            self.peak_forecast += peak_step / clock_step * (clock_todo - clock_done)
+            self.new_peak_forecast += peak_step / clock_step * (clock_todo - clock_done)
+        # for the first 5 seconds in the quarter, if the peak forecast is not within 1kW of the prev_quarter_peak,
+        # then use the prev_quarter_peak as the forecast peak
+        if clock_done > 5 or abs(self.peak_forecast - self.new_peak_forecast) < 1.0:
+            self.peak_forecast = self.new_peak_forecast
         # beware, when producing energy, the quarter_peak is ZERO
         grid.add_row(f"Peak -> Till Now {self.quarter_peak:.3f} kW, Forecast Quarter: {self.peak_forecast:.3f} kW")
         self.peak_gap = self.month_peak['value']-self.peak_forecast
         self.peak_gap_style = "green" if self.peak_gap > 0 else "red"
         grid.add_row(f"Month Peak: {self.month_peak['value']:.3f} kW <> Quarter Forecast: {self.peak_forecast:.3f} kW",
-                     style=self.peak_gap_style)
+                         style=self.peak_gap_style)
         grid.add_row(f"GAP: {self.peak_gap:.3f} kW at rate {self.cur_rate}",
-                     style=self.peak_gap_style)
+                         style=self.peak_gap_style)
         return grid
 
 
@@ -143,6 +153,6 @@ class Screen:
         layout["telegram_table"].update(Panel(self.make_telegram_table(), title="Telegram"))
         layout["month_peak"].update(Panel(self.make_month_peak_table(), title="Months Peak"))
         layout["log"].update(Panel(self.make_log_table(), title="Log"))
-        layout["usage_table"].update(Panel(self.make_usage_table(), title="Usage"))
+        layout["usage_table"].update(Panel(self.make_usage_table(), title=f"Usage, since {self.ts_str(self.data['start_time'])}"))
         layout["rate"].update(Panel(self.make_rate_table(), title="Rate"))
         layout["quarter_peak"].update(Panel(self.make_quarter_peak(), title="Quarters Peak", border_style=self.peak_gap_style))

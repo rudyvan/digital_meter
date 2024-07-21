@@ -217,7 +217,8 @@ class BusMeter(Screen, PickleIt, Usage):
         layout = self.make_layout()
         self.set_data()
         self.var_restore()
-        with Live(layout, console=self.console, refresh_per_second=0.3) as live:
+        loops = 0
+        with Live(layout, console=self.console) as live:
             while True:
                 try:
                     # read input from serial port
@@ -237,10 +238,13 @@ class BusMeter(Screen, PickleIt, Usage):
                             for line in self.p1telegram.split(b'\r\n'):
                                 if line:
                                     self.p1_table.append(self.parsetelegramline(line.decode('ascii')))
-                            self.update_usage()
-                            self.update_layout(layout)
-                            # live.refresh()
-                            self.file_json()
+                            if self.update_usage():
+                                self.update_layout(layout)
+                            loops += 1
+                            if loops > 3:
+                                live.refresh()
+                                self.file_json()
+                                loops = 0
                 except KeyboardInterrupt:
                     print("Stopping...")
                     # flush the buffer
