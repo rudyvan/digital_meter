@@ -119,7 +119,7 @@ sudo raspi-config
 
 Then go to System Options -> Boot / Auto Login -> Command Autologin
 
-The edit your .profile file in the home directory of the user pi:
+Then edit your .profile file in the home directory of the user pi:
 
 ```bash
 sudo nano /home/pi/.profile
@@ -133,27 +133,8 @@ tmux a
 
 and exit with ctrl+x, y and enter.
 
-when you reboot the raspberry pi, the application will start automatically and you can view the output on the display.
-if you logout, the application will automatically login and show the result.
-
-use ctrl b + d to detach from the tmux session and continue the terminal.
-
-## Customisation
-
-The rates used in the application are example the rates for a Belgian utility provider. 
-To change the rates, edit the file `rates.json` in the root of the project. 
-The file contains the rates for the different periods of the day for electricity, gas and water.
-
-```json
-{
-  "Gas": {"+": 0.5},
-  "Water": {"+": 0.5},
-  "Electricity": {"+": {"Day": 0.4, "Night": 0.3},
-                  "-": {"Day": 0.1, "Night": 0.1}}
-}
-```
-
-## Running the application - tmux
+when you reboot the raspberry pi, the application will start automatically in a tmux window and you can view the output on the display.
+if you logout, the application will automatically login and bring you back.
 
 The application is started in a tmux environment, which allows to run the application in the background and to view the application on another terminal.
 To view the application on another terminal, login (f.e. through ssh), then run the following command:
@@ -175,6 +156,9 @@ Some other keys to use in tmux:
 - `Ctrl+b` followed by `x` to close the current pane
 - `Ctrl+b` followed by `d` to detach from the tmux environment
 
+The application will continue when you detach from the tmux environment, but you will not see the output.
+The application will stop when you close the current pane.
+
 ## Running the application - manual
 
 To run the application manually, activate the virtual environment and run the application.
@@ -184,22 +168,7 @@ source .venv/bin/activate
 python digital_meter.py
 ```
 
-## Running the application - tmux
-
-To run the application in a tmux environment, run the following command:
-
-```bash
-tmux new -s digital_meter
-```
-
-Then activate the virtual environment and run the application.
-
-```bash 
-source .venv/bin/activate
-python digital_meter.py
-```
-
-To detach from the tmux environment, press `Ctrl+b` followed by `d`.
+## Remotely Accessing the application
 
 To view the application on another terminal, login (f.e. through ssh), then run the following command:
 
@@ -207,9 +176,20 @@ To view the application on another terminal, login (f.e. through ssh), then run 
 tmux a
 ``` 
 
+## Customisation
 
+The rates used in the application are example the rates for a Belgian utility provider. 
+To change the rates, edit the file `rates.json` in the root of the project. 
+The file contains the rates for the different periods of the day for electricity, gas and water.
 
-
+```json
+{
+  "Gas": {"+": 0.5},
+  "Water": {"+": 0.5},
+  "Electricity": {"+": {"Day": 0.4, "Night": 0.3},
+                  "-": {"Day": 0.1, "Night": 0.1}}
+}
+```
 
 ## Authors
 
