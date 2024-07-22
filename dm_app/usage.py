@@ -107,7 +107,7 @@ class Usage:
                     if prev in self.usage:
                         self.usage[old] = self.usage[prev].copy()
                     if prev in self.day_peak:
-                        self.day_peak[old] = self.day_peak[prev]
+                        self.day_peak[old] = self.day_peak[prev].copy()
                 self.usage["Today"] = self.zero_cumul[:]
                 self.day_peak["Today"] = [self.cur_time, 0]
                 # check if a new week, month or year has started
@@ -123,7 +123,7 @@ class Usage:
             self.data["quarter_peak"] = 0
         # 5. add the difference between both measurements to the usage
         for period in self._usage_columns():
-            if period in ["Day-2", "Day-1"]:
+            if "Day-" in period:
                 continue  # these are not updated
             for pos, val in enumerate(self.delta_cumul):
                 self.usage[period][pos] += val
