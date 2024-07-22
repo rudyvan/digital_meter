@@ -92,9 +92,12 @@ class Screen:
                 # add the 2 quarter peak lines
                 p, dp = [], []
                 for x in self._usage_columns():
-                    _peak, _when = self.day_peak[x]
-                    p.append(f"{_peak:.2f}" if "day" in x.lower() else "-")
-                    dp.append(f"{_when.strftime('%H:%M')}" if "day" in x.lower() and _when else "-")
+                    if "day" in x.lower() and (_when := getattr(self.day_peak[x], "when", None)):
+                        _peak, _when = f"{getattr(self.day_peak[x], 'peak'):.2f}", f"{_when.strftime('%H:%M')}"
+                    else:
+                        _peak, _when = "-", "-"
+                    p.append(_peak)
+                    dp.append(_when)
                 table.add_row("Peak kW", *p, style="blue"),
                 table.add_row("¼ @ hh:mm",   *dp, style="blue", end_section=True)
         return table
