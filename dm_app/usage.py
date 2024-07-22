@@ -33,9 +33,6 @@ class Usage:
                      "day_peak": dict((x, [0, None]) for x in self._day_peak_columns()),
                      "quarter_peak": 0}
 
-        self.var_save()
-
-
     def set_pointers(self):
         # these pointer must be set before self.data is used (after restore or creation)
         self.water_meter = self.data["meters"]["Water"]  # beware, self.water_meter is updated automatically
