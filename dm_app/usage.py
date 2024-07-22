@@ -64,6 +64,7 @@ class Usage:
         if (self.clock_todo - self.clock_done) < 5:
             if self.peak_forecast > self.day_peak["Today"][0]:
                 self.day_peak["Today"] = [self.peak_forecast, self.cur_time()-datetime.timedelta(seconds=self.clock_done)]
+                self.var_save()
         # beware, when producing energy, the quarter_peak is ZERO
         self.peak_gap = self.month_peak['value']-self.peak_forecast
         self.peak_gap_style = "green" if self.peak_gap > 0 else "red"
@@ -129,7 +130,6 @@ class Usage:
         self.data["cur_time"] = self.cur_time
         self.data["cumul"] = self.now_cumul
         self.data["prev_quarter_peak"], self.data["quarter_peak"] = self.data["quarter_peak"], self.quarter_peak
-        ret_val = self.update_quarter_peak()
         self.var_save()
-        return ret_val
+        return self.update_quarter_peak()
 
