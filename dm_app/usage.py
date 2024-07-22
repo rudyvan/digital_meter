@@ -14,7 +14,6 @@ class Usage:
                                 "Σ € kWh", "m3 Gas", "Σ € Gas", "m3 Water", "Σ € Water"]
     _rate_columns = lambda self: ["Rate", "€/kWh Day", "€/kWh Night", "€/m3 Gas", "€/m3 Water"]
     _day_peak_columns = lambda self: ["Day-3", "Day-2", "Day-1", "Today"]
-    _peak_tuple = namedtuple('peak_tuple', ['peak', 'when'], defaults=[0, None])
 
     @property
     def zero_cumul(self):
@@ -31,7 +30,7 @@ class Usage:
                      "log": {},
                      "cur_time": datetime.datetime.now(),
                      "start_time": datetime.datetime.now(),
-                     "day_peak": dict((x, Usage._peak_tuple()) for x in self._day_peak_columns()),
+                     "day_peak": dict((x, [0, None]) for x in self._day_peak_columns()),
                      "quarter_peak": 0}
 
         self.var_save()
@@ -70,8 +69,7 @@ class Usage:
         if (self.clock_todo - self.clock_done) < 5:
             if self.peak_forecast > getattr(self.day_peak["Today"], "peak"):
                 # add nty new peak for the day
-                self.day_peak["Today"] = Usage._peak_tuple(self.peak_forecast,
-                                                           self.cur_time-datetime.timedelta(seconds=self.clock_done))
+                self.day_peak["Today"] = [self.peak_forecast, self.cur_time-datetime.timedelta(seconds=self.clock_done)]
                 self.var_save()
         # beware, when producing energy, the quarter_peak is ZERO
         self.peak_gap = self.month_peak['value']-self.peak_forecast
