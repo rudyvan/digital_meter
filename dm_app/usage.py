@@ -28,6 +28,7 @@ class Usage:
                      "log": {},
                      "cur_time": datetime.datetime.now(),
                      "start_time": datetime.datetime.now(),
+                     "day_peak": {},
                      "quarter_peak": 0}
 
     def set_pointers(self):
@@ -35,6 +36,11 @@ class Usage:
         self.water_meter = self.data["meters"]["Water"]  # beware, self.water_meter is updated automatically
         self.gas_meter = self.data["meters"]["Gas"]      # beware, self.gas_meter is updated automatically
         self.usage = self.data["usage"]                  # beware, self.usage is updated automatically
+
+        if 'day_peak' not in self.data:
+            self.data['day_peak'] = {}
+
+        self.day_peak = self.data["day_peak"]
         self.e_meter = self.data["meters"]["Electricity"]
         if self.log:  # something already added before restore of self.data?
             self.data["log"].update(self.log)
@@ -52,6 +58,11 @@ class Usage:
         # 1. if no current time then return
         if not hasattr(self, "cur_time"):
             return False
+
+        if "day_peak" not in self.data:
+            self.data["day_peak"] = {}
+            self.var_save()
+
         # 2. update meters values in self.data
         self.e_meter["+Day"] = self.kwH_day_plus
         self.e_meter["-Day"] = self.kwH_day_min
@@ -76,10 +87,16 @@ class Usage:
             self.delta_cumul = [self.now_cumul[x] - self.prev_cumul[x] for x in range(len(self.now_cumul))]
             if self.prev_time.day != self.cur_time.day:
                 # a new day has started, ?notify usage at this point
-                self.usage["Day-3"] = self.usage["Day-2"].copy()
-                self.usage["Day-2"] = self.usage["Day-1"].copy()
-                self.usage["Day-1"] = self.usage["Today"].copy()
+
+                # move the usage and day_peak one day back
+                for old, prev in [("Day-3", "Day-2"), ("Day-2", "Day-1"), ("Day-1", "Today")]:
+                    if prev in self.usage:
+                        self.usage[old] = self.usage[prev].copy()
+                    if prev in self.day_peak:
+                        self.day_peak[old] = self.day_peak[prev]
                 self.usage["Today"] = self.zero_cumul[:]
+                self.day_peak["Today"] = [self.cur_time, 0]
+                # check if a new week, month or year has started
                 if self.prev_time.weekday() == 6:
                     self.usage["Week"] = self.zero_cumul[:]
                 if self.prev_time.month != self.cur_time.month:

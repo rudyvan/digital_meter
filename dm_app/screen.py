@@ -88,6 +88,14 @@ class Screen:
             hit = (self.cur_rate == 1 and "Day" in line or self.cur_rate == 2 and "Night" in line)
             table.add_row(line, *[f"{self.usage[x][pos]:.2f}" for x in self._usage_columns()],
                           style="green" if hit else "blue", end_section=True if "Σ" in line else False)
+            if line == "Σ € kWh":
+                # add the 2 quarter peak lines
+                p, dp = [], []
+                for x in self._usage_columns():
+                    p.append(f"{self.day_peak[x][1]:.2f}" if "day" in x.lower() else "-")
+                    dp.append(f"{self.day_peak[x][0].strftime('%H:%M')}" if "day" in x.lower() else "-")
+                table.add_row("Day Peak kW", *p),
+                table.add_row("¼ @ hh:mm",   *dp)
         return table
 
     def make_log_table(self) -> Table:
