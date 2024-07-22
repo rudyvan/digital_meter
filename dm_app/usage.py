@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import datetime
+from collections import namedtuple
 
 
 class Usage:
@@ -12,6 +13,10 @@ class Usage:
     _usage_rows = lambda self: ["+Day", "-Day", "+Night", "-Night", "Σ kWh", "+€ Day", "-€ Day", "+€ Night", "-€ Night",
                                 "Σ € kWh", "m3 Gas", "Σ € Gas", "m3 Water", "Σ € Water"]
     _rate_columns = lambda self: ["Rate", "€/kWh Day", "€/kWh Night", "€/m3 Gas", "€/m3 Water"]
+    _day_peak_columns = lambda self: ["Day-3", "Day-2", "Day-1", "Today"]
+
+    peak_tuple = namedtuple('peak_tuple', ['peak', 'when'], defaults=[0, None])
+
 
     @property
     def zero_cumul(self):
@@ -28,7 +33,7 @@ class Usage:
                      "log": {},
                      "cur_time": datetime.datetime.now(),
                      "start_time": datetime.datetime.now(),
-                     "day_peak": {"Day-1": [0, None], "Day-2": [0, None], "Day-3": [0, None], "Today": [0, None]},
+                     "day_peak": dict((x, Usage.peak_tuple()) for x in self._day_peak_columns()),
                      "quarter_peak": 0}
 
     def set_pointers(self):
@@ -37,6 +42,10 @@ class Usage:
         self.gas_meter = self.data["meters"]["Gas"]      # beware, self.gas_meter is updated automatically
         self.usage = self.data["usage"]                  # beware, self.usage is updated automatically
         self.day_peak = self.data["day_peak"]
+
+        self.day_peak = dict((x, Usage.peak_tuple()) for x in self._day_peak_columns()),
+        self.var_save()
+
         self.e_meter = self.data["meters"]["Electricity"]
         if self.log:  # something already added before restore of self.data?
             self.data["log"].update(self.log)
@@ -63,7 +72,7 @@ class Usage:
         # check against the day peak
         if (self.clock_todo - self.clock_done) < 5:
             if self.peak_forecast > self.day_peak["Today"][0]:
-                self.day_peak["Today"] = [self.peak_forecast, self.cur_time-datetime.timedelta(seconds=self.clock_done)]
+                self.day_peak["Today"] = Usage.peak_tuple(self.peak_forecast, self.cur_time-datetime.timedelta(seconds=self.clock_done))
                 self.var_save()
         # beware, when producing energy, the quarter_peak is ZERO
         self.peak_gap = self.month_peak['value']-self.peak_forecast
