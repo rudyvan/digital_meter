@@ -43,7 +43,7 @@ class Usage:
         self.usage = self.data["usage"]                  # beware, self.usage is updated automatically
         self.day_peak = self.data["day_peak"]
 
-        self.day_peak = dict((x, Usage.peak_tuple()) for x in self._day_peak_columns()),
+        self.day_peak = dict((x, Usage.peak_tuple(0, None)) for x in self._day_peak_columns()),
         self.var_save()
 
         self.e_meter = self.data["meters"]["Electricity"]
