@@ -65,7 +65,7 @@ class Usage:
             self.peak_forecast = self.new_peak_forecast
         # check against the day peak
         if (self.clock_todo - self.clock_done) < 5:
-            if self.peak_forecast > self.day_peak["Today"][0]:
+            if self.peak_forecast > getattr(self.day_peak["Today"], "peak"):
                 # add nty new peak for the day
                 self.day_peak["Today"] = Usage._peak_tuple(self.peak_forecast,
                                                            self.cur_time-datetime.timedelta(seconds=self.clock_done))
