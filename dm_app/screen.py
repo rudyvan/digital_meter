@@ -94,10 +94,10 @@ class Screen:
                 for x in self._usage_columns():
 
                     if "day" in x.lower() and x not in self.day_peak:
-                        self.day_peak[x] = (0, datetime.datetime.now())
+                        self.day_peak[x] = (0, None)
 
-                    p.append(f"{self.day_peak[x][1]:.2f}" if "day" in x.lower() else "-")
-                    dp.append(f"{self.day_peak[x][0].strftime('%H:%M')}" if "day" in x.lower() else "-")
+                    p.append(f"{self.day_peak[x][0]:.2f}" if "day" in x.lower() else "-")
+                    dp.append(f"{self.day_peak[x][1].strftime('%H:%M')}" if "day" in x.lower() and self.day_peak[x][1] else "-")
                 table.add_row("Day Peak kW", *p),
                 table.add_row("¼ @ hh:mm",   *dp)
         return table

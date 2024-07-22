@@ -28,7 +28,7 @@ class Usage:
                      "log": {},
                      "cur_time": datetime.datetime.now(),
                      "start_time": datetime.datetime.now(),
-                     "day_peak": {},
+                     "day_peak": {"Day-1": [0, None], "Day-2": [0, None], "Day-3": [0, None], "Today": [0, None]},
                      "quarter_peak": 0}
 
     def set_pointers(self):
@@ -38,7 +38,7 @@ class Usage:
         self.usage = self.data["usage"]                  # beware, self.usage is updated automatically
 
         if 'day_peak' not in self.data:
-            self.data['day_peak'] = {}
+            self.data['day_peak'] = {"Day-1": [0, None], "Day-2": [0, None], "Day-3": [0, None], "Today": [0, None]}
 
         self.day_peak = self.data["day_peak"]
         self.e_meter = self.data["meters"]["Electricity"]
@@ -60,7 +60,7 @@ class Usage:
             return False
 
         if "day_peak" not in self.data:
-            self.data["day_peak"] = {}
+            self.data["day_peak"] = {"Day-1": [0, None], "Day-2": [0, None], "Day-3": [0, None], "Today": [0, None]}
             self.var_save()
 
         # 2. update meters values in self.data
