@@ -92,6 +92,7 @@ class Screen:
                 # add the 2 quarter peak lines
                 p, dp = [], []
                 for x in self._usage_columns():
+                    # make the columns for the day_peak "-" if it is not a day peak or when not time set
                     if "day" in x.lower() and (_when := getattr(self.day_peak[x], "when", None)):
                         _peak, _when = f"{getattr(self.day_peak[x], 'peak'):.2f}", f"{_when.strftime('%H:%M')}"
                     else:
@@ -151,6 +152,7 @@ class Screen:
         layout["log"].update(Panel(self.make_log_table(), title="Log"))
         layout["usage_table"].update(Panel(self.make_usage_table(),
                                            title=f"Usage since {self.ts_str(self.data['start_time'])}"))
-        layout["rate"].update(Panel(self.make_rate_table(), title="Rate"))
+        layout["rate"].update(Panel(self.make_rate_table(),
+                                    title="Rate => [magenta]1:day 07:00 22:00, [blue]2:night 22:00 07:00 + weekend + holidays"))
         layout["quarter_peak"].update(Panel(self.make_quarter_peak(),
                                             title="Quarters Peak", border_style=self.peak_gap_style))
