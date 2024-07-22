@@ -44,6 +44,7 @@ class Usage:
         self.day_peak = self.data["day_peak"]
 
         self.day_peak = dict((x, Usage.peak_tuple()) for x in self._day_peak_columns()),
+        print(self.day_peak)
         self.var_save()
 
         self.e_meter = self.data["meters"]["Electricity"]
