@@ -94,7 +94,7 @@ class Screen:
                 for x in self._usage_columns():
                     p.append(f"{self.day_peak[x][0]:.2f}" if "day" in x.lower() else "-")
                     dp.append(f"{self.day_peak[x][1].strftime('%H:%M')}" if "day" in x.lower() and self.day_peak[x][1] else "-")
-                table.add_row("Day Peak kW", *p, style="blue"),
+                table.add_row("Peak kW", *p, style="blue"),
                 table.add_row("¼ @ hh:mm",   *dp, style="blue", end_section=True)
         return table
 

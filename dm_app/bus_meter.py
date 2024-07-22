@@ -91,6 +91,13 @@ class BusMeter(Screen, PickleIt, Usage):
         self.bus = {}
         super().__init__()
 
+    def serial_bye(self, msg):
+        self.add_log(msg)
+        print(msg)
+        # flush the buffer and close
+        self.serial.flush()
+        self.serial.close()
+
     def checkcrc(self, p1telegram):
         # check CRC16 checksum of telegram and return False if not matching
         # split telegram in contents and CRC16 checksum (format:contents!crc)
@@ -214,9 +221,13 @@ class BusMeter(Screen, PickleIt, Usage):
                 return ret_val({"value": "??"}, Text(f"??{class_id=} {p1line=}", "bold magenta"))
 
     def run(self):
+        # 1. build the screen layout upfront
         layout = self.make_layout()
+        # 2. set the default data in case no pickle file is present
         self.set_data()
+        # 3. restore the data from pickle file if present
         self.var_restore()
+        # 4. start the main loop with the live screen
         with Live(layout, console=self.console, refresh_per_second=0.3) as live:
             while True:
                 try:
@@ -242,16 +253,9 @@ class BusMeter(Screen, PickleIt, Usage):
                             # live.refresh()
                             self.file_json()
                 except KeyboardInterrupt:
-                    print("Stopping...")
-                    # flush the buffer
-                    self.serial.flush()
-                    self.serial.close()
+                    self.serial_bye("KeyboardInterrupt")
                     break
                 except Exception as e:
                     self.console.print_exception(extra_lines=10, show_locals=True, width=200, word_wrap=True)
-                    # traceback.print_exc()
-                    print(f"Something went wrong...{e}")
-                    # flush the buffer
-                    self.serial.flush()
-                    self.serial.close()
+                    self.serial_bye(f"Something went wrong...{e}")
                     break
