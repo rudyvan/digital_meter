@@ -36,10 +36,6 @@ class Usage:
         self.water_meter = self.data["meters"]["Water"]  # beware, self.water_meter is updated automatically
         self.gas_meter = self.data["meters"]["Gas"]      # beware, self.gas_meter is updated automatically
         self.usage = self.data["usage"]                  # beware, self.usage is updated automatically
-
-        if 'day_peak' not in self.data:
-            self.data['day_peak'] = {"Day-1": [0, None], "Day-2": [0, None], "Day-3": [0, None], "Today": [0, None]}
-
         self.day_peak = self.data["day_peak"]
         self.e_meter = self.data["meters"]["Electricity"]
         if self.log:  # something already added before restore of self.data?
@@ -50,6 +46,24 @@ class Usage:
         self.g_rate = self.rates_dct["Gas"]["+"]
         self.w_rate = self.rates_dct["Water"]["+"]
 
+    def update_quarter_peak(self):
+        self.clock_todo = 15*60  # seconds in a quarter
+        self.clock_done = (self.cur_time.minute % 15) * 60 + self.cur_time.second  # seconds in the current quarter
+        if not all(hasattr(self, x) for x in ["prev_time", "cur_time"]):
+            self.peak_gap_style = "green"
+            return False
+        self.new_peak_forecast = self.quarter_peak
+        if clock_step := (self.cur_time - self.prev_time).total_seconds():
+            peak_step = self.quarter_peak - self.data["prev_quarter_peak"]
+            self.new_peak_forecast += peak_step / clock_step * (self.clock_todo - self.clock_done)
+        # for the first 5 seconds in the quarter, if the peak forecast is not within 1kW of the prev_quarter_peak,
+        # then use the prev_quarter_peak as the forecast peak
+        if self.clock_done > 5 or abs(self.peak_forecast - self.new_peak_forecast) < 1.0:
+            self.peak_forecast = self.new_peak_forecast
+        # beware, when producing energy, the quarter_peak is ZERO
+        self.peak_gap = self.month_peak['value']-self.peak_forecast
+        self.peak_gap_style = "green" if self.peak_gap > 0 else "red"
+        return True
 
     def update_usage(self):
         """ calculate delta between 2 readings for electricity day/night produced/consumed, water and or gas
@@ -58,11 +72,6 @@ class Usage:
         # 1. if no current time then return
         if not hasattr(self, "cur_time"):
             return False
-
-        if "day_peak" not in self.data:
-            self.data["day_peak"] = {"Day-1": [0, None], "Day-2": [0, None], "Day-3": [0, None], "Today": [0, None]}
-            self.var_save()
-
         # 2. update meters values in self.data
         self.e_meter["+Day"] = self.kwH_day_plus
         self.e_meter["-Day"] = self.kwH_day_min
@@ -116,5 +125,7 @@ class Usage:
         self.data["cur_time"] = self.cur_time
         self.data["cumul"] = self.now_cumul
         self.data["prev_quarter_peak"], self.data["quarter_peak"] = self.data["quarter_peak"], self.quarter_peak
+        ret_val = self.update_quarter_peak()
         self.var_save()
-        return True
+        return ret_val
+

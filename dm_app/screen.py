@@ -125,29 +125,13 @@ class Screen:
     def make_quarter_peak(self) -> Progress:
         grid = Table.grid(expand=True)
         grid.add_column(justify="centre")
-        clock_todo = 15*60  # seconds in a quarter
         quarter_progress = Progress("{task.description}",
                                     SpinnerColumn(), BarColumn(),
                                     TextColumn("[progress.percentage]{task.percentage:>3.0f}%"))
-        cq = quarter_progress.add_task("Clock Quarter", total=clock_todo)
-        clock_done = (self.cur_time.minute % 15) * 60 + self.cur_time.second  # seconds in the current quarter
-        quarter_progress.update(cq, completed=clock_done)
+        cq = quarter_progress.add_task("Clock Quarter", total=self.clock_todo)
+        quarter_progress.update(cq, completed=self.clock_done)
         grid.add_row(quarter_progress)
-        if not all(hasattr(self, x) for x in ["prev_time", "cur_time"]):
-            self.peak_gap_style = "green"
-            return grid
-        self.new_peak_forecast = self.quarter_peak
-        if clock_step := (self.cur_time - self.prev_time).total_seconds():
-            peak_step = self.quarter_peak - self.data["prev_quarter_peak"]
-            self.new_peak_forecast += peak_step / clock_step * (clock_todo - clock_done)
-        # for the first 5 seconds in the quarter, if the peak forecast is not within 1kW of the prev_quarter_peak,
-        # then use the prev_quarter_peak as the forecast peak
-        if clock_done > 5 or abs(self.peak_forecast - self.new_peak_forecast) < 1.0:
-            self.peak_forecast = self.new_peak_forecast
-        # beware, when producing energy, the quarter_peak is ZERO
         grid.add_row(f"Peak -> Till Now {self.quarter_peak:.3f} kW, Forecast Quarter: {self.peak_forecast:.3f} kW")
-        self.peak_gap = self.month_peak['value']-self.peak_forecast
-        self.peak_gap_style = "green" if self.peak_gap > 0 else "red"
         grid.add_row(f"Month Peak: {self.month_peak['value']:.3f} kW <> Quarter Forecast: {self.peak_forecast:.3f} kW",
                          style=self.peak_gap_style)
         grid.add_row(f"GAP: {self.peak_gap:.3f} kW at rate {self.cur_rate}",
