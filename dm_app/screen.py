@@ -94,8 +94,8 @@ class Screen:
                 p, dp = [], []
                 for x in self._usage_columns():
                     # make the columns for the day_peak "-" if it is not a day peak or when not time set
-                    if "day" in x.lower() and (_when := getattr(self.day_peak[x], "when", None)):
-                        _peak, _when = f"{getattr(self.day_peak[x], 'peak'):.2f}", f"{_when.strftime('%H:%M')}"
+                    if "day" in x.lower() and (_when := self.day_peak[x].when):
+                        _peak, _when = f"{self.day_peak[x].peak:.2f}", f"{_when.strftime('%H:%M')}"
                     else:
                         _peak, _when = "-", "-"
                     p.append(_peak)

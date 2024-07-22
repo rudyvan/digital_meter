@@ -34,17 +34,15 @@ class Usage:
                      "day_peak": dict((x, Usage._peak_tuple()) for x in self._day_peak_columns()),
                      "quarter_peak": 0}
 
+        self.var_save()
+
+
     def set_pointers(self):
         # these pointer must be set before self.data is used (after restore or creation)
         self.water_meter = self.data["meters"]["Water"]  # beware, self.water_meter is updated automatically
         self.gas_meter = self.data["meters"]["Gas"]      # beware, self.gas_meter is updated automatically
         self.usage = self.data["usage"]                  # beware, self.usage is updated automatically
         self.day_peak = self.data["day_peak"]
-
-        self.day_peak = dict((x, Usage._peak_tuple()) for x in self._day_peak_columns())
-        print(self.day_peak["Today"].peak)
-        print(self.day_peak["Today"].when)
-
         self.e_meter = self.data["meters"]["Electricity"]
         if self.log:  # something already added before restore of self.data?
             self.data["log"].update(self.log)
