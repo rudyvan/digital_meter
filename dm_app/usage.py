@@ -63,7 +63,7 @@ class Usage:
         # check against the day peak
         if (self.clock_todo - self.clock_done) < 5:
             if self.peak_forecast > self.day_peak["Today"][0]:
-                self.day_peak["Today"] = [self.peak_forecast, self.cur_time()-datetime.timedelta(seconds=self.clock_done)]
+                self.day_peak["Today"] = [self.peak_forecast, self.cur_time-datetime.timedelta(seconds=self.clock_done)]
                 self.var_save()
         # beware, when producing energy, the quarter_peak is ZERO
         self.peak_gap = self.month_peak['value']-self.peak_forecast
