@@ -23,6 +23,7 @@ class Usage:
 
     def set_data(self):
         # make a default data structure, read actual from pickle if any, else start from this
+        # unfortunately namedtuples cannot be used in pickle, so for day_peak we have to use a list
         self.data = {"meters": {"Electricity": {"+Day": 0, "-Day": 0, "+Night": 0, "-Night": 0, "unit": "kWh"},
                                 "Gas": {"value": 0, "time": datetime.datetime.now(), "unit": "m3"},
                                 "Water": {"value": 0, "time": datetime.datetime.now(), "unit": "m3"} },
@@ -31,6 +32,7 @@ class Usage:
                      "cur_time": datetime.datetime.now(),
                      "start_time": datetime.datetime.now(),
                      "day_peak": dict((x, [0, None]) for x in self._day_peak_columns()),
+                                           #  peak value, time of peak
                      "quarter_peak": 0}
 
     def set_pointers(self):
@@ -103,8 +105,8 @@ class Usage:
             # day processing is possible as we have a previous measurement
             self.delta_cumul = [self.now_cumul[x] - self.prev_cumul[x] for x in range(len(self.now_cumul))]
             if self.prev_time.day != self.cur_time.day:
-                # a new day has started, ?notify usage at this point
-
+                # a new day has started, push the last data as json file
+                self.file_json(f"./history/{self.prev_time.strftime('%Y-%m-%d')}.json")
                 # move the usage and day_peak one day back
                 for old, prev in [("Day-3", "Day-2"), ("Day-2", "Day-1"), ("Day-1", "Today")]:
                     if prev in self.usage:
