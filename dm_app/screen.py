@@ -81,6 +81,7 @@ class Screen:
         for x in self._usage_columns():
             # change the header text to the day of the week if it is a past day
             txt = x if "Day-" not in x else (self.data["cur_time"]-datetime.timedelta(days=int(x.split("-")[1]))).strftime("%A")
+            txt += " (R1)" if "day" in x.lower() else " (R2)" if "night" in x.lower() else ""
             table.add_column(txt, justify="right", style="magenta" if x == "Today" else "green")
 
         for pos, line in enumerate(self._usage_rows()):
