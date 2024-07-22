@@ -86,7 +86,7 @@ class Screen:
         for pos, line in enumerate(self._usage_rows()):
             # highlight day or night usage depending on the current rate
             hit = (self.cur_rate == 1 and "Day" in line or self.cur_rate == 2 and "Night" in line)
-            line_1st = " (R1)" if "day" in line.lower() else " (R2)" if "night" in line.lower() else ""
+            line_1st = "   (R1)" if "day" in line.lower() else " (R2)" if "night" in line.lower() else ""
             table.add_row(f"{line}{line_1st}", *[f"{self.usage[x][pos]:.2f}" for x in self._usage_columns()],
                           style="green" if hit else "blue", end_section=True if "Σ" in line else False)
             if line == "Σ € kWh":
