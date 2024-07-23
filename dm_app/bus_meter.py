@@ -265,28 +265,33 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
                 try:
                     # read input from serial port
                     self.protocol.resume_reading()
+                    # read line by line
                     # if P1 telegram starts with /, a new telegram is started
                     if "/" in p1line.decode('ascii'):  # "Found beginning of P1 telegram"
+                        p1line = p1line[p1line.find(b"/"):]
                         self.p1telegram = bytearray()
-                    # add line to telegram
-                    self.p1telegram.extend(p1line)
-                    # P1 telegram ends with ! + CRC16 checksum
-                    if "!" in p1line.decode('ascii'):
-                        if self.checkcrc(self.p1telegram):  # "Checksum correct"
-                            # make the table
-                            self.obis_dict = {}
-                            self.p1_table = []
-                            # parse telegram contents, line by line
-                            for line in self.p1telegram.split(b'\r\n'):
-                                if line:
-                                    self.p1_table.append(self.parsetelegramline(line.decode('ascii')))
-                            if self.update_usage():
-                                self.update_layout(self.layout)
-                            if not last_live or (datetime.datetime.now() - last_live).seconds > 3:
-                                await self.loop.run_in_executor(None, live.refresh)
-                                last_live = datetime.datetime.now()
-                                continue
-                            self.file_json()
+                    elif b'\r\n' in p1line:
+                        # if P1 telegram ends with \r\n, the line is complete
+                        line, p1line = p1line.split(b'\r\n', 1)
+                        # add line to telegram
+                        self.p1telegram.extend(line)
+                        # P1 telegram ends with ! + CRC16 checksum
+                        if "!" in p1line.decode('ascii'):
+                            if self.checkcrc(self.p1telegram):  # "Checksum correct"
+                                # make the table
+                                self.obis_dict = {}
+                                self.p1_table = []
+                                # parse telegram contents, line by line
+                                for line in self.p1telegram.split(b'\r\n'):
+                                    if line:
+                                        self.p1_table.append(self.parsetelegramline(line.decode('ascii')))
+                                if self.update_usage():
+                                    self.update_layout(self.layout)
+                                if not last_live or (datetime.datetime.now() - last_live).seconds > 3:
+                                    await self.loop.run_in_executor(None, live.refresh)
+                                    last_live = datetime.datetime.now()
+                                    continue
+                                self.file_json()
                     await asyncio.sleep(0.1)
                 except KeyboardInterrupt:
                     self.serial_bye("KeyboardInterrupt")
