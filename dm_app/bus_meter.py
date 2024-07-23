@@ -283,16 +283,14 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
                         if self.checkcrc(self.p1telegram):  # "Checksum correct"
                             # make the table
                             self.obis_dict = {}
-                            self.p1_table = []
-                            # parse telegram contents, line by line
-                            for line in self.p1telegram.split(b'\r\n'):
-                                if line:
-                                    self.p1_table.append(self.parsetelegramline(line.decode('ascii')))
+                            self.p1_table = [self.parsetelegramline(line.decode('ascii'))
+                                             for line in self.p1telegram.split(b'\r\n') if line]
                             if self.update_usage():
                                 self.update_layout(self.layout)
-                            if not last_live or (datetime.datetime.now() - last_live).seconds > 3:
+                            if not last_live or (datetime.datetime.now() - last_live).total_seconds() > 3:
                                 await self.loop.run_in_executor(None, live.refresh)
                                 last_live = datetime.datetime.now()
+                                continue  # continue, don't wait
                             self.file_json()
                     await asyncio.sleep(0.1)
                 except KeyboardInterrupt:
