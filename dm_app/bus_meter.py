@@ -268,31 +268,32 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
                     self.protocol.resume_reading()
                     # read line by line
                     # if P1 telegram starts with /, a new telegram is started
-                    if "/" in p1line.decode('ascii'):  # "Found beginning of P1 telegram"
+                    if "/" in p1line.decode('ascii'):  # "Found beginning of P1 telegram, cut off previous data"
                         p1line = p1line[p1line.find(b"/"):]
                         self.p1telegram = bytearray()
-                    elif b'\r\n' in p1line:
-                        # if P1 telegram ends with \r\n, the line is complete
+                    # catch up with the newlines
+                    done_gram = False
+                    while b'\r\n' in p1line:
                         line, p1line = p1line.split(b'\r\n', 1)
-                        # add line to telegram
                         self.p1telegram.extend(line)
+                        if (done_gram := "!" in line.decode('ascii')):
+                            break
                         # P1 telegram ends with ! + CRC16 checksum
-                        if "!" in p1line.decode('ascii'):
-                            if self.checkcrc(self.p1telegram):  # "Checksum correct"
-                                # make the table
-                                self.obis_dict = {}
-                                self.p1_table = []
-                                # parse telegram contents, line by line
-                                for line in self.p1telegram.split(b'\r\n'):
-                                    if line:
-                                        self.p1_table.append(self.parsetelegramline(line.decode('ascii')))
-                                if self.update_usage():
-                                    self.update_layout(self.layout)
-                                if not last_live or (datetime.datetime.now() - last_live).seconds > 3:
-                                    live.refresh()
-                                    #await self.loop.run_in_executor(None, live.refresh)
-                                    last_live = datetime.datetime.now()
-                                self.file_json()
+                    if done_gram:
+                        if self.checkcrc(self.p1telegram):  # "Checksum correct"
+                            # make the table
+                            self.obis_dict = {}
+                            self.p1_table = []
+                            # parse telegram contents, line by line
+                            for line in self.p1telegram.split(b'\r\n'):
+                                if line:
+                                    self.p1_table.append(self.parsetelegramline(line.decode('ascii')))
+                            if self.update_usage():
+                                self.update_layout(self.layout)
+                            if not last_live or (datetime.datetime.now() - last_live).seconds > 3:
+                                await self.loop.run_in_executor(None, live.refresh)
+                                last_live = datetime.datetime.now()
+                            self.file_json()
                     await asyncio.sleep(0.1)
                 except KeyboardInterrupt:
                     self.serial_bye("KeyboardInterrupt")
