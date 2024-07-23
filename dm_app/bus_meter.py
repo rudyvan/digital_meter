@@ -254,6 +254,7 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
 
 
     async def main_loop(self):
+        global p1line
         self.loop = asyncio.get_running_loop()
         await self.serial_start()
         # 4. start the socket server
