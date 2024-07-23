@@ -54,6 +54,7 @@ class SocketApp:
     async def process_frame(self, data, ip):
         """process the frame"""
         await asyncio.sleep(1)
+        self.log_add(f"processed {len(data)} bytes from {ip}")
         return f"processed {len(data)} bytes from {ip}"
 
 
