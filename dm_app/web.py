@@ -75,7 +75,7 @@ class SocketApp:
         app.add_routes([web.get('/ws', self.websocket_handler)])
         runner = web.AppRunner(app)
         await runner.setup()
-        site = web.TCPSite(runner, host="192.168.15.223", port=self.socket_info["server_port"])
+        site = web.TCPSite(runner, host="localhost", port=self.socket_info["server_port"])
         await site.start()
 
     async def websocket_handler(self, request):
