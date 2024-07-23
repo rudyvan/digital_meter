@@ -14,6 +14,8 @@ class Usage:
                                 "Σ € kWh", "m3 Gas", "Σ € Gas", "m3 Water", "Σ € Water"]
     _rate_columns = lambda self: ["Rate", "€/kWh Day", "€/kWh Night", "€/m3 Gas", "€/m3 Water"]
     _day_peak_columns = lambda self: ["Day-3", "Day-2", "Day-1", "Today"]
+    # unfortunately namedtuples cannot be used in pickle, so for day_peak we have to use a list
+    _day_peak_zero = [0, None]
 
     @property
     def zero_cumul(self):
@@ -23,7 +25,6 @@ class Usage:
 
     def set_data(self):
         # make a default data structure, read actual from pickle if any, else start from this
-        # unfortunately namedtuples cannot be used in pickle, so for day_peak we have to use a list
         self.data = {"meters": {"Electricity": {"+Day": 0, "-Day": 0, "+Night": 0, "-Night": 0, "unit": "kWh"},
                                 "Gas": {"value": 0, "time": datetime.datetime.now(), "unit": "m3"},
                                 "Water": {"value": 0, "time": datetime.datetime.now(), "unit": "m3"} },
@@ -31,7 +32,7 @@ class Usage:
                      "log": {},
                      "cur_time": datetime.datetime.now(),
                      "start_time": datetime.datetime.now(),
-                     "day_peak": dict((x, [0, None]) for x in self._day_peak_columns()),
+                     "day_peak": dict((x, Usage._day_peak_zero[:]) for x in self._day_peak_columns()),
                                            #  peak value, time of peak
                      "quarter_peak": 0}
 
@@ -49,6 +50,8 @@ class Usage:
         self.e_rate = self.rates_dct["Electricity"]
         self.g_rate = self.rates_dct["Gas"]["+"]
         self.w_rate = self.rates_dct["Water"]["+"]
+
+        self.day_peak["Today"] = [0, self.cur_time]
 
     def update_quarter_peak(self):
         self.clock_todo = 15*60  # seconds in a quarter
@@ -114,7 +117,7 @@ class Usage:
                     if prev in self.day_peak:
                         self.day_peak[old] = self.day_peak[prev].copy()
                 self.usage["Today"] = self.zero_cumul[:]
-                self.day_peak["Today"] = [self.cur_time, 0]
+                self.day_peak["Today"] = Usage._day_peak_zero
                 # check if a new week, month or year has started
                 if self.prev_time.weekday() == 6:
                     self.usage["Week"] = self.zero_cumul[:]
