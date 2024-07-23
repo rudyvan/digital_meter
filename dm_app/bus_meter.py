@@ -94,7 +94,7 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
         super().__init__()
 
     def serial_bye(self, msg):
-        self.add_log(msg)
+        self.log_add(msg)
         print(msg)
         # flush the buffer and close
         self.serial.flush()
@@ -111,7 +111,7 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
         calccrc = hex(crcmod.predefined.mkPredefinedCrcFun('crc16')(p1contents))
         # check if given and calculated match
         if givencrc != calccrc:
-            self.add_log(f"Error telegram checksum mismatch: {givencrc=}, {calccrc=}")
+            self.log_add(f"Error telegram checksum mismatch: {givencrc=}, {calccrc=}")
             self.serial.flush()
         return True
 
@@ -120,13 +120,13 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
         # format:YYMMDDhhmmssX, where X is the daylight saving time flag S or W
         # convert to format:YYYY-MM-DD hh:mm:ss or YYYY-MM-DD if time is zero
         if len(ts) != 13:
-            self.add_log(f"Error expecting 13 characters: {ts=}")
+            self.log_add(f"Error expecting 13 characters: {ts=}")
         if ts[12] not in ["S", "W"]:
-            self.add_log(f"Error expecting S or W at the end of {ts=}")
+            self.log_add(f"Error expecting S or W at the end of {ts=}")
         try:
             dt = datetime.datetime.strptime(ts[:-1], '%y%m%d%H%M%S')
         except Exception as e:
-            self.add_log(f"Error parsing timestamp: {ts=} {e=}")
+            self.log_add(f"Error parsing timestamp: {ts=} {e=}")
             dt=datetime.datetime.now()
         return dt
 
@@ -164,7 +164,7 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
                     value = bytearray.fromhex(value).decode()
                 if obis == "1-0:94.32.1":  # vgrid
                     if value not in ["230", "400"]:
-                        self.add_log(f"{obis}: Grid expecting 230 or 400: {value=}")
+                        self.log_add(f"{obis}: Grid expecting 230 or 400: {value=}")
                 return ret_val({"value": value}, value)
             case 3 | 5 | 21 | 71:  # register, demand register, register monitor, limiter
                 value_str, _, unit = values[0][1:-1].partition("*")
@@ -177,7 +177,7 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
                     any(x == obis for x in ["1-0:32.7.0", "1-0:52.7.0", "1-0:72.7.0"])):
                     if int(value) < 200:
                         msg = f"!! PHASE DEACTIVE {result_str}"
-                        self.add_log(msg)
+                        self.log_add(msg)
                         return ret_val(result_dct, Text(msg, "bold red"))
                 return ret_val(result_dct, result_str)
             case 4:  # extended register
@@ -192,7 +192,7 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
                 ids = [r[1:-1] for r in values[1:1+lines]]
                 # expect class 4 at this point, check it for all id's
                 if not all(BusMeter.obiscodes.get(x).class_id == 4 for x in ids):
-                    self.add_log(f"!!Expecting class_id == 4 -> {ids=} in {obis=}")
+                    self.log_add(f"!!Expecting class_id == 4 -> {ids=} in {obis=}")
                 get_val = lambda x: [x.partition("*")[0], x.partition("*")[2]]
                 table = {self.ts_obj(values[x][1:-1]): [self.ts_obj(values[x+1][1:-1]), *get_val(values[x+2][1:-1])]\
                          for x in range(lines+1, len(values)-1, 3)}

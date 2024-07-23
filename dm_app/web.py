@@ -66,6 +66,15 @@ class SocketApp:
         except:  # ignore errors, such as in case no event loop exists as the program is terminating..
             pass
 
+    @property
+    def my_ip(self):  # return my ip address
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sc:
+                sc.connect(("8.8.8.8", 80))
+                return sc.getsockname()[0]
+        except Exception:
+            return ""
+
 
     async def server_start(self):
         """start the aiohttp websocket server"""
@@ -75,12 +84,11 @@ class SocketApp:
         app.add_routes([web.get('/ws', self.websocket_handler)])
         runner = web.AppRunner(app)
         await runner.setup()
-        site = web.TCPSite(runner, host="127.0.0.1", port=self.socket_info["server_port"])
+        site = web.TCPSite(runner, host=self.my_ip, port=self.socket_info["server_port"])
         await site.start()
 
     async def websocket_handler(self, request):
         """aiohttp websocket request handler"""
-        self.log_add(f"accepted")
         if request.remote != self.remote_ip:
             self.log_add(f"rejected {request.remote=}")
             return web.Response(text=f"<p>NOK - rejected</p>", status=400)

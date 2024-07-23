@@ -27,9 +27,9 @@ class PickleIt:
                 with open(self.file_n, "rb") as f:
                     self.data = pickle.load(f)
             except Exception as e:
-                self.add_log(f"!! err_pickle_load {self.file_n} {e}", save=False)
+                self.log_add(f"!! err_pickle_load {self.file_n} {e}", save=False)
         else:
-            self.add_log(f"{self.file_n} not found, started from zero", save=False)
+            self.log_add(f"{self.file_n} not found, started from zero", save=False)
             self.var_save()
         self.set_pointers()
 
@@ -45,7 +45,7 @@ class PickleIt:
             self._rates_dct = json.loads(open("rates.json").read())
         return self._rates_dct
 
-    def add_log(self, msg, save=True):
+    def log_add(self, msg, save=True):
         """ add a log message to the log file, but keep the log file tidy by only keeping the last 10 messages,
             and refresh the time on repeat messages"""
         if msg in self.log.values():
