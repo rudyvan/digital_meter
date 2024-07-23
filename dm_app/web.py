@@ -90,6 +90,7 @@ class SocketApp:
                 match msg.type:
                     case aiohttp.WSMsgType.TEXT:
                         id = f"process_frames={len(msg.data)} of {self.remote_ip}"
+                        self.log_add(f"processed {len(msg.data)} bytes from {self.remote_ip}")
                         tsk = asyncio.create_task(self.process_frame(msg.data, self.remote_ip))
                         tsk.add_done_callback(self.task_done)
                         tsk.set_name(id)
