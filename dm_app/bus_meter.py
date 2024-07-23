@@ -16,7 +16,6 @@ from .pickleit import PickleIt
 from .screen import Screen
 from .web import SocketApp
 
-fragment = bytearray()
 p1line = bytearray()
 
 class InputChunkProtocol(asyncio.Protocol):
@@ -28,12 +27,8 @@ class InputChunkProtocol(asyncio.Protocol):
 
     def data_received(self, data):
         # stop callbacks again immediately
-        global p1line, fragment
-        if b'\n' in data:
-            p1line = fragment + data[:data.index(b'\n')]
-            fragment = data[data.index(b'\n')+1:]
-        else:
-            fragment += data
+        global p1line
+        p1line += data
         self.pause_reading()
 
     def pause_reading(self):
@@ -270,13 +265,6 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
                 try:
                     # read input from serial port
                     self.protocol.resume_reading()
-                    if not p1line:
-                        if not last_live or (datetime.datetime.now() - last_live).seconds > 3:
-                            await self.loop.run_in_executor(None, live.refresh)
-                            last_live = datetime.datetime.now()
-                        else:
-                            await asyncio.sleep(0.3)
-                        continue
                     # if P1 telegram starts with /, a new telegram is started
                     if "/" in p1line.decode('ascii'):  # "Found beginning of P1 telegram"
                         self.p1telegram = bytearray()
@@ -294,9 +282,12 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
                                     self.p1_table.append(self.parsetelegramline(line.decode('ascii')))
                             if self.update_usage():
                                 self.update_layout(self.layout)
-                            # live.refresh()
+                            if not last_live or (datetime.datetime.now() - last_live).seconds > 3:
+                                await self.loop.run_in_executor(None, live.refresh)
+                                last_live = datetime.datetime.now()
+                                continue
                             self.file_json()
-                    await asyncio.sleep(0)
+                    await asyncio.sleep(0.1)
                 except KeyboardInterrupt:
                     self.serial_bye("KeyboardInterrupt")
                     break
