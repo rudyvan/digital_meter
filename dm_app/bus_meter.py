@@ -16,8 +16,8 @@ from .pickleit import PickleIt
 from .screen import Screen
 from .web import SocketApp
 
-fragment = b''
-p1line = b''
+fragment = bytearray()
+p1line = bytearray()
 
 class InputChunkProtocol(asyncio.Protocol):
     def connection_made(self, transport):
