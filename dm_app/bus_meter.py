@@ -132,8 +132,8 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
         self.log_add(msg)
         print(msg)
         # flush the buffer and close
-        self.serial.flush()
-        self.serial.close()
+        #self.serial.flush()
+        #self.serial.close()
 
     def checkcrc(self, p1telegram):
         # check CRC16 checksum of telegram and return False if not matching
