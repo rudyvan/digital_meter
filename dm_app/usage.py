@@ -51,8 +51,6 @@ class Usage:
         self.g_rate = self.rates_dct["Gas"]["+"]
         self.w_rate = self.rates_dct["Water"]["+"]
 
-        self.day_peak["Today"] = Usage._day_peak_zero[:]
-
     def update_quarter_peak(self):
         self.clock_todo = 15*60  # seconds in a quarter
         self.clock_done = (self.cur_time.minute % 15) * 60 + self.cur_time.second  # seconds in the current quarter
