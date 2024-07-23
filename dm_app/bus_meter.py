@@ -142,7 +142,7 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
         # check if given and calculated match
         if givencrc != calccrc:
             self.log_add(f"Error telegram checksum mismatch: {givencrc=}, {calccrc=}")
-            self.serial.flush()
+            # self.serial.flush()
         return True
 
     def ts_obj(self, ts):
