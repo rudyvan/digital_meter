@@ -1,3 +1,5 @@
 crcmod==1.7
 pyserial==3.5
 rich==13.7.1
+aiohttp==3.9.5
+websockets==12.0

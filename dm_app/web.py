@@ -81,6 +81,7 @@ class SocketApp:
     async def websocket_handler(self, request):
         """aiohttp websocket request handler"""
         if request.remote != self.remote_ip:
+            self.log_add(f"rejected {request.remote=}")
             return web.Response(text=f"<p>NOK - rejected</p>", status=400)
         ws = web.WebSocketResponse()
         try:
