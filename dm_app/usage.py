@@ -51,7 +51,7 @@ class Usage:
         self.g_rate = self.rates_dct["Gas"]["+"]
         self.w_rate = self.rates_dct["Water"]["+"]
 
-        self.day_peak["Today"] = [0, self.cur_time]
+        self.day_peak["Today"] = Usage._day_peak_zero[:]
 
     def update_quarter_peak(self):
         self.clock_todo = 15*60  # seconds in a quarter
@@ -117,7 +117,7 @@ class Usage:
                     if prev in self.day_peak:
                         self.day_peak[old] = self.day_peak[prev].copy()
                 self.usage["Today"] = self.zero_cumul[:]
-                self.day_peak["Today"] = Usage._day_peak_zero
+                self.day_peak["Today"] = Usage._day_peak_zero[:]
                 # check if a new week, month or year has started
                 if self.prev_time.weekday() == 6:
                     self.usage["Week"] = self.zero_cumul[:]
