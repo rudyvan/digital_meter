@@ -276,7 +276,7 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
                     while b'\r\n' in p1line:
                         line, p1line = p1line.split(b'\r\n', 1)
                         self.p1telegram.extend(line)
-                        if (done_gram := "!" in line.decode('ascii')):
+                        if done_gram := ("!" in line.decode('ascii')):
                             break
                         # P1 telegram ends with ! + CRC16 checksum
                     if done_gram:
