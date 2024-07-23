@@ -268,7 +268,7 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
                     # read input from serial port
                     self.protocol.resume_reading()
                     p1line = InputChunkProtocol.p1line
-                    # read line by line
+                    # read line by line, but cut between / and the ! + CRC16 checksum in the last line
                     # if P1 telegram starts with /, a new telegram is started
                     if "/" in InputChunkProtocol.p1line.decode('ascii'):  # "Found beginning of P1 telegram, cut off previous data"
                         p1line = p1line[p1line.find(b"/"):]
