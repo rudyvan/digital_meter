@@ -13,9 +13,10 @@ from rich.text import Text
 from .usage import Usage
 from .pickleit import PickleIt
 from .screen import Screen
+from .web import SocketApp
 
 
-class BusMeter(Screen, PickleIt, Usage):
+class BusMeter(Screen, PickleIt, Usage, SocketApp):
     """ this is a class to read data from a digital meter connected to the P1 port """
 
     obis_el = namedtuple('OBIS', ['th_n', 'class_id', 'description'])
@@ -84,8 +85,9 @@ class BusMeter(Screen, PickleIt, Usage):
         "0-4:24.4.0":  obis_el("gas_breaker_4", 70, "Gas Valve Bus 4, 0=OFF, 1=ON, 2=Ready Reconnect")
     }
 
-    def __init__(self, serial_port):
+    def __init__(self, serial_port, socket_info):
         self.serial = serial.Serial(serial_port, 115200, xonxoff=1)
+        self.socket_info = socket_info
         self.p1telegram = bytearray()
         self.obis_dict = {}
         self.bus = {}
@@ -227,7 +229,9 @@ class BusMeter(Screen, PickleIt, Usage):
         self.set_data()
         # 3. restore the data from pickle file if present
         self.var_restore()
-        # 4. start the main loop with the live screen
+        # 4. start the socket server
+        self.server_init()
+        # 5. start the main loop with the live screen
         with Live(layout, console=self.console, refresh_per_second=0.3) as live:
             while True:
                 try:
