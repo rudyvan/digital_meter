@@ -5,8 +5,8 @@ import re
 from collections import namedtuple
 
 import crcmod.predefined
-import serial
 import serial_asyncio
+
 from rich import print
 from rich.live import Live
 from rich.text import Text
@@ -16,9 +16,11 @@ from .pickleit import PickleIt
 from .screen import Screen
 from .web import SocketApp
 
-p1line = bytearray()
 
 class InputChunkProtocol(asyncio.Protocol):
+
+    p1line = bytearray()
+
     def connection_made(self, transport):
         self.transport = transport
 
@@ -27,8 +29,7 @@ class InputChunkProtocol(asyncio.Protocol):
 
     def data_received(self, data):
         # stop callbacks again immediately
-        global p1line
-        p1line += data
+        InputChunkProtocol.p1line += data
         self.pause_reading()
 
     def pause_reading(self):
@@ -120,7 +121,7 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
     async def serial_start(self):
         self.transport, self.protocol = await serial_asyncio.create_serial_connection(
             asyncio.get_event_loop(), InputChunkProtocol, self.serial_port, baudrate=115200, xonxoff=1)
-        # self.serial = serial.Serial(self.serial_port, 115200, xonxoff=1)
+        return InputChunkProtocol.p1line
 
 
     def serial_bye(self, msg):
@@ -254,12 +255,14 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
 
 
     async def main_loop(self):
-        global p1line
+        # 1. get the event loop
         self.loop = asyncio.get_running_loop()
-        await self.serial_start()
-        # 4. start the socket server
+        # 2. start the socket server and get the buffer
+        p1line = await self.serial_start()
+        # 3. start the socket server
         await self.server_start()
-        last_live = None
+        # 4. set the last live refresh time
+        last_live, refresh_s = None, 3
         # 5. start the main loop with the live screen
         with Live(self.layout, console=self.console) as live:
             while True:
@@ -268,7 +271,7 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
                     self.protocol.resume_reading()
                     # read line by line
                     # if P1 telegram starts with /, a new telegram is started
-                    if "/" in p1line.decode('ascii'):  # "Found beginning of P1 telegram, cut off previous data"
+                    if "/" in InputChunkProtocol.p1line.decode('ascii'):  # "Found beginning of P1 telegram, cut off previous data"
                         p1line = p1line[p1line.find(b"/"):]
                         self.p1telegram = bytearray()
                     # catch up with the newlines
@@ -287,7 +290,7 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
                                              for line in self.p1telegram.split(b'\r\n') if line]
                             if self.update_usage():
                                 self.update_layout(self.layout)
-                            if not last_live or (datetime.datetime.now() - last_live).total_seconds() > 3:
+                            if not last_live or (datetime.datetime.now() - last_live).total_seconds() > refresh_s:
                                 await self.loop.run_in_executor(None, live.refresh)
                                 last_live = datetime.datetime.now()
                                 continue  # continue, don't wait
