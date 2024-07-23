@@ -66,13 +66,12 @@ class SocketApp:
             pass
 
 
-    async def server_init(self):
+    async def server_start(self):
         """start the aiohttp websocket server"""
         if not self.socket_info or not all(self.socket_info.get(k, False) for k in ["server_port", "remote_ip"]):
             return self.log_add("server_init failed: no server port or remote ip")
-        if self.socket_info and "remote_ip" in self.socket_info:
-            self.remote_ip = self.socket_info["remote_ip"]
-            app.add_routes([web.get('/ws', self.websocket_handler)])
+        self.remote_ip = self.socket_info["remote_ip"]
+        app.add_routes([web.get('/ws', self.websocket_handler)])
         runner = web.AppRunner(app)
         await runner.setup()
         site = web.TCPSite(runner, host="192.168.15.223", port=self.socket_info["server_port"])

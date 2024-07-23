@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-
+import asyncio
 import datetime
 import re
 from collections import namedtuple
@@ -222,17 +222,12 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
             case _:  # unknown class_id
                 return ret_val({"value": "??"}, Text(f"??{class_id=} {p1line=}", "bold magenta"))
 
-    def run(self):
-        # 1. build the screen layout upfront
-        layout = self.make_layout()
-        # 2. set the default data in case no pickle file is present
-        self.set_data()
-        # 3. restore the data from pickle file if present
-        self.var_restore()
+
+    async def main_loop(self):
         # 4. start the socket server
-        self.server_init()
+        await self.server_start()
         # 5. start the main loop with the live screen
-        with Live(layout, console=self.console, refresh_per_second=0.3) as live:
+        with Live(self.layout, console=self.console, refresh_per_second=0.3) as live:
             while True:
                 try:
                     # read input from serial port
@@ -253,9 +248,10 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
                                 if line:
                                     self.p1_table.append(self.parsetelegramline(line.decode('ascii')))
                             if self.update_usage():
-                                self.update_layout(layout)
+                                self.update_layout(self.layout)
                             # live.refresh()
                             self.file_json()
+                    await asyncio.sleep(0)
                 except KeyboardInterrupt:
                     self.serial_bye("KeyboardInterrupt")
                     break
@@ -263,3 +259,12 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
                     self.console.print_exception(extra_lines=10, show_locals=True, width=200, word_wrap=True)
                     self.serial_bye(f"Something went wrong...{e}")
                     break
+
+    def run(self):
+        # 1. build the screen layout upfront
+        self.layout = self.make_layout()
+        # 2. set the default data in case no pickle file is present
+        self.set_data()
+        # 3. restore the data from pickle file if present
+        self.var_restore()
+        asyncio.run(self.main_loop())
