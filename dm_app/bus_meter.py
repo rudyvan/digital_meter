@@ -6,6 +6,7 @@ from collections import namedtuple
 
 import crcmod.predefined
 import serial
+import serial_asyncio
 from rich import print
 from rich.live import Live
 from rich.text import Text
@@ -14,6 +15,31 @@ from .usage import Usage
 from .pickleit import PickleIt
 from .screen import Screen
 from .web import SocketApp
+
+fragment = b''
+p1line = b''
+
+class InputChunkProtocol(asyncio.Protocol):
+    def connection_made(self, transport):
+        self.transport = transport
+
+    def data_received(self, data):
+        # stop callbacks again immediately
+        global p1line, fragment
+        if b'\n' in data:
+            p1line = fragment + data[:data.index(b'\n')]
+            fragment = data[data.index(b'\n')+1:]
+        else:
+            fragment += data
+        self.pause_reading()
+
+    def pause_reading(self):
+        # This will stop the callbacks to data_received
+        self.transport.pause_reading()
+
+    def resume_reading(self):
+        # This will start the callbacks to data_received again with all data that has been received in the meantime.
+        self.transport.resume_reading()
 
 
 class BusMeter(Screen, PickleIt, Usage, SocketApp):
@@ -86,12 +112,18 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
     }
 
     def __init__(self, serial_port, socket_info):
-        self.serial = serial.Serial(serial_port, 115200, xonxoff=1)
+        self.serial_port = serial_port
         self.socket_info = socket_info
         self.p1telegram = bytearray()
         self.obis_dict = {}
         self.bus = {}
         super().__init__()
+
+    async def serial_start(self):
+        self.transport, self.protocol = await serial_asyncio.create_serial_connection(
+            asyncio.get_event_loop(), InputChunkProtocol, self.serial_port, baudrate=115200, xonxoff=1)
+        # self.serial = serial.Serial(self.serial_port, 115200, xonxoff=1)
+
 
     def serial_bye(self, msg):
         self.log_add(msg)
@@ -224,14 +256,24 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
 
 
     async def main_loop(self):
+        self.loop = asyncio.get_running_loop()
+        await self.serial_start()
         # 4. start the socket server
         await self.server_start()
+        last_live = None
         # 5. start the main loop with the live screen
-        with Live(self.layout, console=self.console, refresh_per_second=0.3) as live:
+        with Live(self.layout, console=self.console) as live:
             while True:
                 try:
                     # read input from serial port
-                    p1line = self.serial.readline()
+                    self.protocol.resume_reading()
+                    if not p1line:
+                        if not last_live or (datetime.datetime.now() - last_live).seconds > 3:
+                            await self.loop.run_in_executor(None, live.refresh)
+                            last_live = datetime.datetime.now()
+                        else:
+                            await asyncio.sleep(0.3)
+                        continue
                     # if P1 telegram starts with /, a new telegram is started
                     if "/" in p1line.decode('ascii'):  # "Found beginning of P1 telegram"
                         self.p1telegram = bytearray()
