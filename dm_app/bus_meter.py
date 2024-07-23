@@ -289,9 +289,9 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
                                 if self.update_usage():
                                     self.update_layout(self.layout)
                                 if not last_live or (datetime.datetime.now() - last_live).seconds > 3:
-                                    await self.loop.run_in_executor(None, live.refresh)
+                                    live.refresh()
+                                    #await self.loop.run_in_executor(None, live.refresh)
                                     last_live = datetime.datetime.now()
-                                    continue
                                 self.file_json()
                     await asyncio.sleep(0.1)
                 except KeyboardInterrupt:
