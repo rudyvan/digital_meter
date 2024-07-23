@@ -121,19 +121,17 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
     async def serial_start(self):
         self.transport, self.protocol = await serial_asyncio.create_serial_connection(
             asyncio.get_event_loop(), InputChunkProtocol, self.serial_port, baudrate=115200, xonxoff=1)
-        return InputChunkProtocol.p1line
 
 
     def serial_bye(self, msg):
         self.log_add(msg)
         print(msg)
-        # flush the buffer and close
-        #self.serial.flush()
-        #self.serial.close()
+        self.transport.close()
 
     def checkcrc(self, p1telegram):
         # check CRC16 checksum of telegram and return False if not matching
         # split telegram in contents and CRC16 checksum (format:contents!crc)
+        p1contents = ""
         for match in re.compile(b'\r\n(?=!)').finditer(p1telegram):
             p1contents = p1telegram[:match.end() + 1]
             # CRC is in hex, so we need to make sure the format is correct
@@ -143,7 +141,7 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
         # check if given and calculated match
         if givencrc != calccrc:
             self.log_add(f"Error telegram checksum mismatch: {givencrc=}, {calccrc=}")
-            # self.serial.flush()
+            return False
         return True
 
     def ts_obj(self, ts):
@@ -257,8 +255,9 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
     async def main_loop(self):
         # 1. get the event loop
         self.loop = asyncio.get_running_loop()
-        # 2. start the socket server and get the buffer
-        p1line = await self.serial_start()
+        # 2. start the socket server and set the buffer
+        await self.serial_start()
+        p1line = InputChunkProtocol.p1line
         # 3. start the socket server
         await self.server_start()
         # 4. set the last live refresh time
