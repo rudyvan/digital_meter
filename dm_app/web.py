@@ -55,7 +55,7 @@ class SocketApp:
         """process the frame"""
         await asyncio.sleep(1)
         self.log_add(f"processed {len(data)} bytes from {ip}")
-        return f"processed {len(data)} bytes from {ip}"
+        return
 
 
     def task_done(self, task):
@@ -99,10 +99,9 @@ class SocketApp:
                 match msg.type:
                     case aiohttp.WSMsgType.TEXT:
                         id = f"process_frames={len(msg.data)} of {self.remote_ip}"
-                        self.log_add(f"processed {len(msg.data)} bytes from {self.remote_ip}")
-                        #tsk = asyncio.create_task(self.process_frame(msg.data, self.remote_ip))
-                        #tsk.add_done_callback(self.task_done)
-                        #tsk.set_name(id)
+                        tsk = asyncio.create_task(self.process_frame(msg.data, self.remote_ip))
+                        tsk.add_done_callback(self.task_done)
+                        tsk.set_name(id)
                         # no logging, it fills up to quickly
                     case aiohttp.WSMsgType.ERROR:
                         self.log_add(f"error web socket {self.remote_ip} {ws.exception()!s} {msg.type=}")
