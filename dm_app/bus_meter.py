@@ -280,8 +280,8 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
                             break
                         # P1 telegram ends with ! + CRC16 checksum
                     if done_gram:
-                        print(self.p1telegram.decode('ascii'))
-                        i=input("continue?")
+                        self.console.print(self.p1telegram.decode('ascii'))
+                        i = self.console.input("continue?")    
                         if self.checkcrc(self.p1telegram):  # "Checksum correct"
                             # make the table
                             self.obis_dict = {}
