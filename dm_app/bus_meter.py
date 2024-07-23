@@ -257,7 +257,6 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
         self.loop = asyncio.get_running_loop()
         # 2. start the socket server and set the buffer
         await self.serial_start()
-        p1line = InputChunkProtocol.p1line
         # 3. start the socket server
         await self.server_start()
         # 4. set the last live refresh time
@@ -268,6 +267,7 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
                 try:
                     # read input from serial port
                     self.protocol.resume_reading()
+                    p1line = InputChunkProtocol.p1line
                     # read line by line
                     # if P1 telegram starts with /, a new telegram is started
                     if "/" in InputChunkProtocol.p1line.decode('ascii'):  # "Found beginning of P1 telegram, cut off previous data"
