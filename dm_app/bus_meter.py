@@ -23,6 +23,9 @@ class InputChunkProtocol(asyncio.Protocol):
     def connection_made(self, transport):
         self.transport = transport
 
+    def connection_lost(self, exc):
+        self.transport.loop.stop()
+
     def data_received(self, data):
         # stop callbacks again immediately
         global p1line, fragment
