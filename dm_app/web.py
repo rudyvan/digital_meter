@@ -80,7 +80,7 @@ class SocketApp:
 
     async def websocket_handler(self, request):
         """aiohttp websocket request handler"""
-        self.log_add(f"accepted {request=}")
+        self.log_add(f"accepted")
         if request.remote != self.remote_ip:
             self.log_add(f"rejected {request.remote=}")
             return web.Response(text=f"<p>NOK - rejected</p>", status=400)
