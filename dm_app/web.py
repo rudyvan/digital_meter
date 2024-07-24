@@ -13,8 +13,8 @@ app = web.Application()
 class SocketApp:
     """aiohttp web application"""
     def __init__(self):
-        super().__init__()
         self.ws_url = "ws://{dest_ip}:{dest_port}/ws"
+        super().__init__()
 
     @property
     def ws_ep(self):
