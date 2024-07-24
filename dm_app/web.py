@@ -57,7 +57,7 @@ class SocketApp:
         """process the frame"""
         await asyncio.sleep(1)
         if data == "?":
-            await self.send_ws(self.data)
+            await self.send_ws(data)
         self.log_add(f"processed {len(data)} bytes from {ip}")
         return
 
