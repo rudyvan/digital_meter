@@ -28,6 +28,7 @@ class SocketApp:
         if not self.ws_ep:
             self.log_add(f"send_ws failed as no end point")
             return False
+        self.log_add(f"send_ws {self.ws_ep} {len(to_snd)} bytes")
         tries = 0
         while True:
             try:
