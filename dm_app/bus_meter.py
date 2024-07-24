@@ -276,7 +276,7 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
                     # catch up with the newlines
                     done_gram = False
                     while b'\r\n' in p1line:
-                        line, _, p1line = p1line.partition(b'\r\n')
+                        line, _, InputChunkProtocol.p1line = p1line.partition(b'\r\n')
                         self.p1telegram.extend(line+b'\r\n')
                         # P1 telegram ends with ! + CRC16 checksum
                         if done_gram := ("!" in line.decode('ascii')):
