@@ -20,11 +20,11 @@ class SocketApp:
     def ws_ep(self):
         """return websocket end point"""
         return "" if not all(self.socket_info.get(k, False) for k in ["dest_ip", "dest_port"]) else\
-            self.ws_url.format_map(self.socket_info)
+            self.ws_url.format_map(**self.socket_info)
 
     async def send_ws(self, data, **_) -> (bool, "success"):
         """send data to a socket for a host with ip, port, and path"""
-        self.log_add(f"send_ws  {len(data)} bytes")
+        self.log_add(f"send_ws {self.ws_ep} {len(data)} bytes")
         to_snd = data if isinstance(data, str) else json.dumps({"type": "dm", "cmd": "data", "data": data})
         if not self.ws_ep:
             self.log_add(f"send_ws failed as no end point")
