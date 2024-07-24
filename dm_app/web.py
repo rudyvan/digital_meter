@@ -13,12 +13,12 @@ app = web.Application()
 class SocketApp:
     """aiohttp web application"""
     def __init__(self):
-        self.ws_url = "ws://{dest_ip}:{dest_port}/ws"
         super().__init__()
 
     @property
     def ws_ep(self):
         """return websocket end point"""
+        self.ws_url = "ws://{dest_ip}:{dest_port}/ws"
         return "" if not all(self.socket_info.get(k, False) for k in ["dest_ip", "dest_port"]) else\
             self.ws_url.format(dest_ip=self.socket_info["dest_ip"], dest_port=self.socket_info["dest_port"])
 
