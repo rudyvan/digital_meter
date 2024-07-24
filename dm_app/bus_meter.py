@@ -264,6 +264,7 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
         # 5. start the main loop with the live screen
         with Live(self.layout, console=self.console) as live:
             while True:
+                self.togather = []
                 try:
                     # read input from serial port
                     self.protocol.resume_reading()
@@ -291,11 +292,12 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
                             if self.update_usage():
                                 self.update_layout(self.layout)
                             if not last_live or (datetime.datetime.now() - last_live).total_seconds() > refresh_s:
-                                await self.loop.run_in_executor(None, live.refresh)
+                                self.togather.append(self.loop.run_in_executor(None, live.refresh))
                                 last_live = datetime.datetime.now()
-                                continue  # continue, don't wait
                             self.file_json()
-                    await asyncio.sleep(0.1)
+                    # make the async magic happen, but sleep for a minimum
+                    self.togather.append(asyncio.sleep(0))
+                    await asyncio.gather(*self.togather)
                 except KeyboardInterrupt:
                     self.serial_bye("KeyboardInterrupt")
                     break

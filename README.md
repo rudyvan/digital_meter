@@ -191,6 +191,12 @@ The file contains the rates for the different periods of the day for electricity
 }
 ```
 
+## Websocker Server and Client
+
+```bash
+python -m websockets  ws://PI-DM:8080/ws
+```
+
 ## Authors
 
 * **Rudy Vandenberghe** - *Initial work* - [rudyvan]
