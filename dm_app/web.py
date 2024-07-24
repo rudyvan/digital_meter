@@ -22,9 +22,9 @@ class SocketApp:
         return "" if not all(self.socket_info.get(k, False) for k in ["dest_ip", "dest_port"]) else\
             self.ws_url.format(dest_ip=self.socket_info["dest_ip"], dest_port=self.socket_info["dest_port"])
 
-    async def send_ws(self, data) -> (bool, "success"):
+    async def send_ws(self, data, **_) -> (bool, "success"):
         """send data to a socket for a host with ip, port, and path"""
-        self.log_add(f"send_ws {self.ws_ep} {len(data)} bytes")
+        self.log_add(f"send_ws  {len(data)} bytes")
         to_snd = data if isinstance(data, str) else json.dumps({"type": "dm", "cmd": "data", "data": data})
         if not self.ws_ep:
             self.log_add(f"send_ws failed as no end point")
@@ -57,7 +57,7 @@ class SocketApp:
         """process the frame"""
         await asyncio.sleep(1)
         if data == "?":
-            await self.send_ws(data)
+            await self.send_ws(self.data)
         self.log_add(f"processed {len(data)} bytes from {ip}")
         return
 
