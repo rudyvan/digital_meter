@@ -57,7 +57,7 @@ class SocketApp:
 
     async def reply_ws(self, data, ip, ws):
         """reply to a websocket server request"""
-        await ws.send_str(self.json_it({"type": "dm", "cmd": "data", "data": data}) if "?" in data else f"reply to {data}")
+        await ws.send_str(self.json_it({"type": "dm", "cmd": "data", "data": self.data}) if data == "?" else f"reply to {data}")
         self.log_add(f"processed {len(data)} bytes from {ip}")
         return
 
