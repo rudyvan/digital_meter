@@ -24,7 +24,7 @@ class SocketApp:
 
     async def send_ws(self, data, **_) -> (bool, "success"):
         """send data to a socket for a host with ip, port, and path"""
-        self.log_add(f"send_ws {self.ws_url} {len(data)} bytes")
+        self.log_add(f"send_ws {self.ws_ep} {len(data)} bytes")
         to_snd = data if isinstance(data, str) else json.dumps({"type": "dm", "cmd": "data", "data": data})
         if not self.ws_ep:
             self.log_add(f"send_ws failed as no end point")
