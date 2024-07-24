@@ -1,10 +1,7 @@
 #!/usr/bin/python3
 
-# This script will read data from serial connected to the digital meter P1 port
-
-# Created by Jens Depuydt
-# https://www.jensd.be
-# https://github.com/jensdepuydt
+# This script will read and process data from serial P1 port of the digital meter as used in Belgium.
+# https://github.com/rudyvan/digital_meter
 
 
 from dm_app import BusMeter
@@ -21,6 +18,7 @@ socket_info = {
     "server_port": 8080,              # port for the digital meter server
     "dest_ip": "192.168.15.89",       # destination ip for meter data and notifications
     "dest_port": 8080,                # destination port for meter data and notifications
-    "ws_url": "ws://{dest_ip}:{dest_port}/ws"} # websocket url
+    "ws_url": "ws://{dest_ip}:{dest_port}/ws"}  # websocket url
+
 if __name__ == '__main__':
     BusMeter(serial_port, socket_info).run()

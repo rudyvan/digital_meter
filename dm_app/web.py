@@ -57,18 +57,17 @@ class SocketApp:
 
     async def reply_ws(self, data, ip, ws):
         """reply to a websocket server request"""
-        await ws.send_str(self.json_it({"type": "dm", "cmd": "data", "data": self.data}) if data == "?" else f"reply to {data}")
-        self.log_add(f"processed {len(data)} bytes from {ip}")
+        match data:
+            case "?":
+                resp_str = self.json_it({"type": "dm", "cmd": "data", "data": self.data})
+            case "!":
+                resp_str = self.json_it({"type": "dm", "cmd": "rates", "rates": self.rates_dct})
+            case _:
+                resp_str = f"reply to {data}"
+        await ws.send_str(resp_str)
+        self.log_add(f"processed {data} from {ip} and returned {len(resp_str)} bytes")
         return
 
-
-    def task_done(self, task):
-        """show the result if the task ended in Exception"""
-        try:
-            if isinstance(task.result(), Exception):
-                self.log_add(f"!!TaskDone {task.get_name()=} => {task.result()=}")
-        except:  # ignore errors, such as in case no event loop exists as the program is terminating..
-            pass
 
     @property
     def my_ip(self):  # return my ip address
@@ -101,11 +100,6 @@ class SocketApp:
             async for msg in ws:
                 match msg.type:
                     case aiohttp.WSMsgType.TEXT:
-                        # id = f"process_frames={len(msg.data)} of {request.remote}"
-                        # tsk = asyncio.create_task(self.reply_ws(msg.data, request.remote, ws))
-                        # tsk.add_done_callback(self.task_done)
-                        # tsk.set_name(id)
-                        # no logging, it fills up to quickly
                         await self.reply_ws(msg.data, request.remote, ws)
                     case aiohttp.WSMsgType.ERROR:
                         self.log_add(f"error web socket {request.remote} {ws.exception()} {msg.type=}")

@@ -193,9 +193,22 @@ The file contains the rates for the different periods of the day for electricity
 
 ## Websocker Server and Client
 
+The application can be extended with a websocket server and client to stream the data to an energy management application.
+The server is started by the application and listens on the port as specified in socket_info.
+
+One can install a socket client on another machine to receive / test the responses from the application.
+
+Configure a remote machine to receive the data by installing the websockets package, and making sure the ip address and port are correcty specified in socket_info.
+
+Then run the following command to start the websocket client:  
+(PI-DM is the hostname of the raspberry pi)
+
 ```bash
 python -m websockets  ws://PI-DM:8080/ws
 ```
+
+Anything you type will be sent to the server and the server will respond with the data.
+With "?" you can request the current data, with "!" you can request the current rates.
 
 ## Authors
 
