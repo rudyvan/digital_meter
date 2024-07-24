@@ -33,10 +33,10 @@ class PickleIt:
             self.var_save()
         self.set_pointers()
 
-    def json_it(self):
+    def json_it(self, dct):
         """ dump the data in json format"""
         encode_JSON = lambda x: self.ts_str(x) if isinstance(x, datetime.datetime) else repr(x)
-        return json.dumps(self.data, indent=4, sort_keys=True, default=encode_JSON)
+        return json.dumps(dct, indent=4, sort_keys=True, default=encode_JSON)
 
     def json_file(self, dct, file_n):
         """ dump the data in json format in file_n"""
