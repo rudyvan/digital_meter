@@ -21,7 +21,7 @@ class SocketApp:
         """return websocket end point"""
         self.ws_url = "ws://{dest_ip}:{dest_port}/ws"
         return "" if not all(self.socket_info.get(k, False) for k in ["dest_ip", "dest_port"]) else\
-            self.ws_url.format(dest_ip=self.socket_info["dest_ip"], dest_port=self.socket_info["dest_port"])
+            self.ws_url.format_map(self.socket_info)
 
     async def send_ws(self, data, **_) -> (bool, "success"):
         """send data to a socket for a host with ip, port, and path"""
