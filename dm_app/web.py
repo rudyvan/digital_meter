@@ -19,17 +19,18 @@ class SocketApp:
     @property
     def ws_ep(self):
         """return websocket end point"""
-        return "" if not all(self.socket_info.get(k, False) for k in ["dest_ip", "dest_port", "ws_url"]) else\
-            self.socket_info["ws_url"].format_map(self.socket_info)
+        if not hasattr(self, "_ws_ep"):
+            if not all(self.socket_info.get(k, False) for k in ["dest_ip", "dest_port", "ws_url"]):
+                self.log_add(f"send_ws failed as no end point")
+                return ""
+            self._ws_ep = self.socket_info["ws_url"].format_map(self.socket_info)
+        return self._ws_ep
 
     async def send_ws(self, data, **_) -> (bool, "success"):
         """send data to a socket for a host with ip, port, and path"""
         if not self.ws_ep:
-            self.log_add(f"send_ws failed as no end point")
             return False
-        encode_JSON = lambda x: self.ts_str(x) if isinstance(x, datetime.datetime) else repr(x)
-        to_snd = data if isinstance(data, str) else json.dumps({"type": "dm", "cmd": "data", "data": data},
-                                                               indent=4, sort_keys=True, default=encode_JSON)
+        to_snd = data if isinstance(data, str) else self.json_it({"type": "dm", "cmd": "data", "data": data})
         self.log_add(f"send_ws {self.ws_ep} {len(to_snd)=} bytes")
         tries = 0
         while True:
@@ -54,11 +55,9 @@ class SocketApp:
                     asyncio.create_task(self.websocket.close())
 
 
-    async def process_frame(self, data, ip):
-        """process the frame"""
-        await asyncio.sleep(1)
-        if data == "?":
-            await self.send_ws(self.data)
+    async def reply_ws(self, data, ip, ws):
+        """reply to a websocket server request"""
+        await ws.send_str(self.json_it({"type": "dm", "cmd": "data", "data": data}) if "?" in data else f"reply to {data}")
         self.log_add(f"processed {len(data)} bytes from {ip}")
         return
 
@@ -102,11 +101,12 @@ class SocketApp:
             async for msg in ws:
                 match msg.type:
                     case aiohttp.WSMsgType.TEXT:
-                        id = f"process_frames={len(msg.data)} of {request.remote}"
-                        tsk = asyncio.create_task(self.process_frame(msg.data, request.remote))
-                        tsk.add_done_callback(self.task_done)
-                        tsk.set_name(id)
+                        # id = f"process_frames={len(msg.data)} of {request.remote}"
+                        # tsk = asyncio.create_task(self.reply_ws(msg.data, request.remote, ws))
+                        # tsk.add_done_callback(self.task_done)
+                        # tsk.set_name(id)
                         # no logging, it fills up to quickly
+                        await self.reply_ws(msg.data, request.remote, ws)
                     case aiohttp.WSMsgType.ERROR:
                         self.log_add(f"error web socket {request.remote} {ws.exception()} {msg.type=}")
                     case _:

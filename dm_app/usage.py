@@ -108,7 +108,7 @@ class Usage:
             self.delta_cumul = [self.now_cumul[x] - self.prev_cumul[x] for x in range(len(self.now_cumul))]
             if self.prev_time.day != self.cur_time.day:
                 # a new day has started, push the last data as json file
-                self.file_json(f"./history/{self.prev_time.strftime('%Y-%m-%d')}.json")
+                self.json_file(self.data, f"./history/{self.prev_time.strftime('%Y-%m-%d')}.json")
                 # move the usage and day_peak one day back
                 for old, prev in [("Day-3", "Day-2"), ("Day-2", "Day-1"), ("Day-1", "Today")]:
                     if prev in self.usage:

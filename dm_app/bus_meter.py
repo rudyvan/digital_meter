@@ -294,7 +294,7 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
                             if not last_live or (datetime.datetime.now() - last_live).total_seconds() > refresh_s:
                                 self.togather.append(self.loop.run_in_executor(None, live.refresh))
                                 last_live = datetime.datetime.now()
-                            self.file_json()
+                            self.json_file(self.data, f"data.json")
                     # make the async magic happen, but add sleep to avoid 100% cpu
                     self.togather.append(asyncio.sleep(0))
                     await asyncio.gather(*self.togather)
