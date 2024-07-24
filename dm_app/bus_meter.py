@@ -295,11 +295,11 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
                                 self.togather.append(self.loop.run_in_executor(None, live.refresh))
                                 last_live = datetime.datetime.now()
                             self.file_json()
-                    # make the async magic happen, but sleep for a minimum
+                    # make the async magic happen, but add sleep to avoid 100% cpu
                     self.togather.append(asyncio.sleep(0))
                     await asyncio.gather(*self.togather)
-                except KeyboardInterrupt:
-                    self.serial_bye("KeyboardInterrupt")
+                except (asyncio.CancelledError, KeyboardInterrupt) as error:
+                    self.serial_bye(f"{error}")
                     break
                 except Exception as e:
                     self.console.print_exception(extra_lines=10, show_locals=True, width=200, word_wrap=True)
