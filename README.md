@@ -184,7 +184,7 @@ The file contains the rates for the different periods of the day for electricity
 
 ```json
 {
-  "Gas": {"+": 0.5},
+  "Gas": {"+": 0.5, "cnv":  ["kWh", 11.510]},
   "Water": {"+": 0.5},
   "Electricity": {"+": {"Day": 0.4, "Night": 0.3},
                   "-": {"Day": 0.1, "Night": 0.1}}

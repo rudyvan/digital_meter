@@ -37,9 +37,11 @@ case "$(uname)" in
     ;;
 esac
 PATH=/usr/bin:$PATH
-source $HOME_DIR/.bashrc
-source $HOME_DIR/.profile
-source $HOME_DIR/.venv/bin/activate
+cd $HOME_DIR
+source .bashrc
+source .profile
+cd $APP_DIR
+source .venv/bin/activate
 # Run  tmux and create new-session, detach all sessions
 $TMUX kill-session -t dm
 $TMUX new-session -ds dm
@@ -48,4 +50,4 @@ $TMUX set-option -g default-shell /bin/bash
 # run bash to save output
 $TMUX send-keys -t dm "exec bash" C-m
 # run launcher.sh inside tmux window
-$TMUX send-keys -t dm "cd $APP_DIR;./do_dm.sh" C-m
+$TMUX send-keys -t dm "./do_dm.sh" C-m
