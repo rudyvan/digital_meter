@@ -13,6 +13,8 @@ They can run therefore on the same raspberry pi or on different machines.
 For Electrical Vehicle Management, NRGKick is used to manage the power consumption of the electrical vehicle.
 NRGKick is a mobile charging station that can be controlled through a mobile app and through a web interface.
 
+# Digital Meter Application
+
 ## check if your P1 port is working
 
 You need to request fluvius to activate the P1 port on your meter via myfluvius.be.
@@ -64,7 +66,37 @@ Then the whole quarter is highlighted in red.
 This is crucial input for an energy storage management system.
 
 
-# Management with Energy Storage
+
+# Electrical Vehicle Management
+
+As example is created for the management of an electrical vehicle with a NRGKick charging station.
+The NRGKick charging station is connected to the electrical vehicle and to the electrical installation by standard connectors making this a very flexible setup.
+
+
+![nrgkick.jpg](./docs/nrgkick.jpg)
+
+For the ev_app to work, one must request to enable the json NRGKick API by NRGKick.
+The NRGKick API is a json API that allows to control the NRGKick charging station.
+
+![nrgkick_app.jpg](./docs/nrgkick_app.jpg)
+
+If the Local API is not enabled, the ev_app will not work.
+See therefore the NRG Kick app, select Extended and press the Local API button.
+This allows to enroll for the lastest firmware and to enable the Local API, but at time of writing, this can take up to 17 days!
+
+The strategy of the ev_app is as follows:
+- charge the electrical vehicle when excess electricity is produced as indicated by the digital meter
+- or when rates are 2 (night)
+- and stay below the peak capacity of the current month
+- but ensures the car fully charged when needed for an upcoming trip
+
+This is different from the NRGKick app or other energy management solutions that charges the vehicle with all generated solar power.
+Maybe half is consumed by the house and therefore only the other half is available to charge the vehicle.
+
+Trips are retrieved from the Google Calendar API, and the car is charged to the required level before the trip.
+Car use in the calendar is indicated by the word @car_x@ in the title of the event with car_x the name of the car in the config.py file.
+
+# Management of Energy Storage
 
 Energy storage through batteries allows us to store energy when it is cheap and use it when it is expensive. 
 Vehicle to Grid (V2G) can be used to store energy in your electric vehicle and use it when needed and act as a battery.
@@ -89,7 +121,8 @@ Most batteries are not certified for Belgium, so you have to check with the manu
 
 And most suppliers come with their own energy management system, not adapted for the spot pricing and peak capacity in Belgium.
 
-## Installation
+
+# Installation
 
 The application is written in Python and to ensure that the application runs in a controlled environment, it is recommended to use a virtual environment. The following steps describe how to install the application on a Raspberry Pi.
 
@@ -227,36 +260,6 @@ python -m websockets  ws://PI-DM:8080/ws
 
 Anything you type will be sent to the server and the server will respond with the data.
 With "?" you can request the current data, with "!" you can request the current rates.
-
-## Electrical Vehicle Management
-
-As example is created for the management of an electrical vehicle with a NRGKick charging station.
-The NRGKick charging station is connected to the electrical vehicle and to the electrical installation by standard connectors making this a very flexible setup.
-
-
-![nrgkick.jpg](./docs/nrgkick.jpg)
-
-For the ev_app to work, one must request to enable the json NRGKick API by NRGKick.
-The NRGKick API is a json API that allows to control the NRGKick charging station.
-
-![nrgkick_app.jpg](./docs/nrgkick_app.jpg)
-
-If the Local API is not enabled, the ev_app will not work.
-See therefore the NRG Kick app, select Extended and press the Local API button.
-This allows to enroll for the lastest firmware and to enable the Local API, but at time of writing, this can take up to 17 days!
-
-The strategy of the ev_app is as follows:
-- charge the electrical vehicle when excess electricity is produced as indicated by the digital meter
-- or when rates are 2 (night)
-- and stay below the peak capacity of the current month
-- but ensures the car fully charged when needed for an upcoming trip
-
-This is different from the NRGKick app or other energy management solutions that charges the vehicle with all generated solar power.
-Maybe half is consumed by the house and therefore only the other half is available to charge the vehicle.
-
-Trips are retrieved from the Google Calendar API, and the car is charged to the required level before the trip.
-Car use in the calendar is indicated by the word @car_x@ in the title of the event with car_x the name of the car in the config.py file.
-
 
 ## Authors
 
