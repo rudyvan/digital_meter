@@ -42,10 +42,6 @@ source .bashrc
 source .profile
 cd $APP_DIR
 $TMUX set-option -g default-shell /bin/bash
-$TMUX send-keys -t dm "sudo /bin/bash" C-m
-$TMUX send-keys -t dm "source .venv/bin/activate" C-m
-$TMUX send-keys -t dm "exit" C-m
-$TMUX send-keys -t dm "source .venv/bin/activate" C-m
 # Run  tmux and create new-session, detach all sessions
 $TMUX kill-session -t dm
 $TMUX new-session -ds dm
