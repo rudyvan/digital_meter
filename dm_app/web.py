@@ -26,7 +26,7 @@ class SocketApp:
             self._ws_ep = self.socket_info["ws_url"].format_map(self.socket_info)
         return self._ws_ep
 
-    async def send_ws(self, data, **_) -> (bool, "success"):
+    async def send_ws(self, data) -> (bool, "success"):
         """send data to a socket for a host with ip, port, and path"""
         if not self.ws_ep:
             return False

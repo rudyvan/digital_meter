@@ -297,7 +297,7 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
                             self.json_file(self.data, f"data.json")
                     # make the async magic happen, but add sleep to avoid 100% cpu
                     self.togather.append(asyncio.sleep(0))
-                    await asyncio.gather(*self.togather)
+                    await asyncio.gather(*self.togather, return_exceptions=True)
                 except (asyncio.CancelledError, KeyboardInterrupt) as error:
                     self.serial_bye(f"{error}")
                     break

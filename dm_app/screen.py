@@ -89,19 +89,25 @@ class Screen:
             line_1st = "   (R1)" if "day" in line.lower() else " (R2)" if "night" in line.lower() else ""
             table.add_row(f"{line}{line_1st}", *[f"{self.usage[x][pos]:.2f}" for x in self._usage_columns()],
                           style="green" if hit else "blue", end_section=True if "Σ" in line else False)
-            if line == "Σ € kWh":
-                # add the 2 quarter peak lines
-                p, dp = [], []
-                for x in self._usage_columns():
-                    # make the columns for the day_peak "-" if it is not a day peak or when not time set
-                    if "day" in x.lower() and (_when := self.day_peak[x][1]):
-                        _peak, _when = f"{self.day_peak[x][0]:.2f}", f"{_when.strftime('%H:%M')}"
-                    else:
-                        _peak, _when = "-", "-"
-                    p.append(_peak)
-                    dp.append(_when)
-                table.add_row("Peak kW", *p, style="blue"),
-                table.add_row("¼ @ hh:mm",   *dp, style="blue", end_section=True)
+            match line:
+                case "m3 Gas":
+                    if "cnv" in self.rates_dct["Gas"]:
+                        cnv_str, cnv = self.rates_dct["Gas"]["cnv"]
+                        table.add_row(line.replace("m3", cnv_str), 
+                                      *[f"{self.usage[x][pos]*cnv:.2f}" for x in self._usage_columns()], style="green")
+                case "Σ € kWh":
+                    # add the 2 quarter peak lines
+                    p, dp = [], []
+                    for x in self._usage_columns():
+                        # make the columns for the day_peak "-" if it is not a day peak or when not time set
+                        if "day" in x.lower() and (_when := self.day_peak[x][1]):
+                            _peak, _when = f"{self.day_peak[x][0]:.2f}", f"{_when.strftime('%H:%M')}"
+                        else:
+                            _peak, _when = "-", "-"
+                        p.append(_peak)
+                        dp.append(_when)
+                    table.add_row("Peak kW", *p, style="blue"),
+                    table.add_row("¼ @ hh:mm",   *dp, style="blue", end_section=True)
         return table
 
     def make_log_table(self) -> Table:
