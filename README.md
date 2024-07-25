@@ -177,7 +177,7 @@ tmux a -t dm
 Finish with `Ctrl+x`, `y` and `enter`.
 
 When you reboot the raspberry pi, the application will start automatically in the tmux window "dm" and you can view the output on the display.
-if you logout, the application will automatically login and bring you back.
+if you log out, the application will automatically login and bring you back.
 
 The application is started in a tmux environment, which allows to run the application in the background and to view the application on another terminal.
 To view the application on another terminal, login (f.e. through ssh), then run the following command:

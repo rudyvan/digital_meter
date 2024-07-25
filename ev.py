@@ -1,9 +1,13 @@
 #!/usr/bin/python3
+from time import sleep
 
 # This script will manage the charging of electrical vehicles.
 
 
 # from ev_app import ElectricVehicle
+from rich import print
+from rich.live import Live
+from rich.text import Text
 
 from rich.traceback import install
 
@@ -21,6 +25,8 @@ socket_info = {
     "ws_url": "ws://{dest_ip}:{dest_port}/ws"}  # websocket url
 
 if __name__ == '__main__':
-    print("electrical vehicle still to make")
-    i = input("press enter to continue")
     # ElectricalVehicle(socket_info, vehicle_info).run()
+    with Live(Text("electrical vehicle still to make"), refresh_per_second=4) as live:
+        for i in range(100):
+            live.update(Text(f"electrical vehicle still to make {i}"))
+            sleep(0.1)
