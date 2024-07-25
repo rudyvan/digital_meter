@@ -35,7 +35,7 @@ cd $HOME_DIR
 sudo /bin/bash -c "source .venv/bin/activate"
 source .venv/bin/activate
 while true; do
-    python -u dm.py
+    python -u $1
     if [ $? -eq 1 ]; then
       echo -e "Crashed!! Email then sleep 15s\n"
       echo -e "do_dm.sh => i crashed!!\n"

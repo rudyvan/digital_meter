@@ -50,4 +50,4 @@ $TMUX new-session -ds dm
 # run bash to save output
 $TMUX send-keys -t dm "exec bash" C-m
 # run do_dm.sh inside tmux window
-$TMUX send-keys -t dm "./do_dm.sh" C-m
+$TMUX send-keys -t dm "./do_dm.sh dm.py" C-m
