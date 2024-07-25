@@ -41,14 +41,16 @@ cd $HOME_DIR
 source .bashrc
 source .profile
 cd $APP_DIR
-# set the default shell zsh
-$TMUX set-option -g default-shell /bin/zsh
-$TMUX send-keys -t dm "source .venv/bin/activate"
+$TMUX set-option -g default-shell /bin/bash
+$TMUX send-keys -t dm "sudo /bin/bash" C-m
+$TMUX send-keys -t dm "source .venv/bin/activate" C-m
+$TMUX send-keys -t dm "exit" C-m
+$TMUX send-keys -t dm "source .venv/bin/activate" C-m
 # Run  tmux and create new-session, detach all sessions
 $TMUX kill-session -t dm
 $TMUX new-session -ds dm
 # set the default shell
-$TMUX set-option -g default-shell /bin/bash
+# $TMUX set-option -g default-shell /bin/bash
 # run bash to save output
 $TMUX send-keys -t dm "exec bash" C-m
 # run do_dm.sh inside tmux window
