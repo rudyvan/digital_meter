@@ -205,6 +205,8 @@ Some other keys to use in tmux:
 - `Ctrl+b` followed by `?` to get help
 - `Ctrl+b` followed by `:` to enter a command
 - `Ctrl+b` followed by `x` to close the current pane
+- `Ctrl+b` followed by `(` to visit the previous pane -> previous app 
+- `Ctrl+b` followed by `)` to visit the next pane -> next app
 - `Ctrl+b` followed by `d` to detach from the tmux environment
 
 The application will continue when you detach from the tmux environment, but you will not see the output.
