@@ -67,10 +67,23 @@ This is crucial input for an energy storage management system.
 
 
 
-# Electrical Vehicle Management
+# Electrical Vehicle Charging Application
 
 As example is created for the management of an electrical vehicle with a NRGKick charging station.
 The NRGKick charging station is connected to the electrical vehicle and to the electrical installation by standard connectors making this a very flexible setup.
+
+The vehicle charging strategy of the ev_app is as follows:
+- charge the electrical vehicle when excess electricity is produced as indicated by the digital meter
+- or when rates are lowest (rate = 2 night)
+- and stay below the peak capacity of the current month
+- but ensures the car fully charged when needed for an upcoming trip
+- with multiple cars, manage the resources to ensure all cars are charged when needed
+
+This is different from the NRGKick app or other energy management solutions that charges the vehicle with all generated solar power.
+Maybe half is consumed by the house and therefore only the other half is available to charge the vehicle.
+
+Trips are retrieved from the Google Calendar API, and the car is charged to the required level before the trip.
+Car use in the calendar is indicated by the word @car_x@ in the title of the event with car_x the name of the car in the config.py file.
 
 
 ![nrgkick.jpg](./docs/nrgkick.jpg)
@@ -84,17 +97,6 @@ If the Local API is not enabled, the ev_app will not work.
 See therefore the NRG Kick app, select Extended and press the Local API button.
 This allows to enroll for the lastest firmware and to enable the Local API, but at time of writing, this can take up to 17 days!
 
-The strategy of the ev_app is as follows:
-- charge the electrical vehicle when excess electricity is produced as indicated by the digital meter
-- or when rates are 2 (night)
-- and stay below the peak capacity of the current month
-- but ensures the car fully charged when needed for an upcoming trip
-
-This is different from the NRGKick app or other energy management solutions that charges the vehicle with all generated solar power.
-Maybe half is consumed by the house and therefore only the other half is available to charge the vehicle.
-
-Trips are retrieved from the Google Calendar API, and the car is charged to the required level before the trip.
-Car use in the calendar is indicated by the word @car_x@ in the title of the event with car_x the name of the car in the config.py file.
 
 # Management of Energy Storage
 
