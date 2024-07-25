@@ -41,8 +41,7 @@ cd $HOME_DIR
 source .bashrc
 source .profile
 cd $APP_DIR
-eval "$(pyenv init - --no-rehash)"
-source .venv/bin/activate
+exec zsh -c "source .venv/bin/activate"
 # Run  tmux and create new-session, detach all sessions
 $TMUX kill-session -t dm
 $TMUX new-session -ds dm
