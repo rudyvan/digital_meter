@@ -29,7 +29,7 @@ case "$(uname)" in
       HOST_NAME=$(hostname | cut -d '.' -f1)
       APP_DIR=$HOME_DIR/MyApps/digital_meter
       USER_NAME="rudyv"
-      TMUX="tmux"
+      TMUX="/usr/local/bin/tmux"
     ;;
     *)
       echo -e "$OS not supported"
@@ -39,12 +39,13 @@ esac
 PATH=/usr/bin:$PATH
 source $HOME_DIR/.bashrc
 source $HOME_DIR/.profile
+source $HOME_DIR/.venv/bin/activate
 # Run  tmux and create new-session, detach all sessions
-$TMUX kill-session -t luce
-$TMUX new-session -ds luce
+$TMUX kill-session -t dm
+$TMUX new-session -ds dm
 # set the default shell
 $TMUX set-option -g default-shell /bin/bash
 # run bash to save output
-$TMUX send-keys -t luce "exec bash" C-m
+$TMUX send-keys -t dm "exec bash" C-m
 # run launcher.sh inside tmux window
-$TMUX send-keys -t luce "cd $APP_DIR;./launcher.sh" C-m
+$TMUX send-keys -t dm "cd $APP_DIR;./do_dm.sh" C-m

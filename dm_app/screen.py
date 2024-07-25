@@ -89,14 +89,14 @@ class Screen:
             line_1st = "   (R1)" if "day" in line.lower() else " (R2)" if "night" in line.lower() else ""
             table.add_row(f"{line}{line_1st}", *[f"{self.usage[x][pos]:.2f}" for x in self._usage_columns()],
                           style="green" if hit else "blue", end_section=True if "Σ" in line else False)
+            # insert some lines at the right point
             match line:
-                case "m3 Gas":
+                case "m3 Gas":  # if cnv for gas is in the rates_dct, convert the m3 to the unit in the rates_dct
                     if "cnv" in self.rates_dct["Gas"]:
                         cnv_str, cnv = self.rates_dct["Gas"]["cnv"]
-                        table.add_row(line.replace("m3", cnv_str), 
-                                      *[f"{self.usage[x][pos]*cnv:.2f}" for x in self._usage_columns()], style="green")
-                case "Σ € kWh":
-                    # add the 2 quarter peak lines
+                        table.add_row(line.replace("m3", cnv_str),
+                                      *[f"{self.usage[x][pos]*cnv:.2f}" for x in self._usage_columns()], style="blue")
+                case "Σ € kWh":  # add the 2 quarter peak lines when a day in the column to mark a day peak
                     p, dp = [], []
                     for x in self._usage_columns():
                         # make the columns for the day_peak "-" if it is not a day peak or when not time set

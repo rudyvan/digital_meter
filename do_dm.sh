@@ -33,10 +33,10 @@ case "$(uname)" in
 esac
 cd $HOME_DIR
 while true; do
-    .venv/bin/python -u digital_meter.py
+    python -u dm.py
     if [ $? -eq 1 ]; then
       echo -e "Crashed!! Email then sleep 15s\n"
-      echo -e "launcher.sh => i crashed!!\n"
+      echo -e "do_dm.sh => i crashed!!\n"
       sleep 15s   # wait for 15 seconds to allow the job to be killed or restart
       echo -e "Sleep Finished, retrying action!!"
     fi
