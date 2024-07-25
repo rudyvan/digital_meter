@@ -17,7 +17,9 @@ install(width=180, extra_lines=10, show_locals=True)
 
 if __name__ == '__main__':
     # BatteryStorage(socket_info, battery_info).run()
-    with Live(Text("battery management still to make"), refresh_per_second=4) as live:
-        for i in range(100):
-            live.update(Text(f"electrical vehicle still to make {i}"))
-            sleep(0.1)
+    with Live(Text("[bold red]battery management still to make"), refresh_per_second=4) as live:
+        while True:
+            for i in range(100):
+                live.update(Text(f"[bold red]battery management still to make {i}"))
+                sleep(0.1)
+

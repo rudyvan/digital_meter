@@ -26,7 +26,8 @@ socket_info = {
 
 if __name__ == '__main__':
     # ElectricalVehicle(socket_info, vehicle_info).run()
-    with Live(Text("electrical vehicle still to make"), refresh_per_second=4) as live:
-        for i in range(100):
-            live.update(Text(f"electrical vehicle still to make {i}"))
-            sleep(0.1)
+    with Live(Text("[bold red]vehicle management still to make"), refresh_per_second=4) as live:
+        while True:
+            for i in range(100):
+                live.update(Text(f"[bold red]vehicle management still to make {i}"))
+                sleep(0.1)
