@@ -1,11 +1,17 @@
-# digital_meter
+# Digital_meter with Energy Management Apps
 
 Digital Meter Application for Belgian e-Meters.
 Is a standalone application that reads the digital meter and calculates the cost of electricity, gas and water based on the rates in the file `rates.json`.
 
+2 satellite applications are included:
+- an electrical vehicle management application
+- a battery storage management application
 
-Todo in the next days:
-- add quarter peak
+They all communicate with the digital meter application through a websocket server and client.
+They can run therefore on the same raspberry pi or on different machines.
+
+For Electrical Vehicle Management, NRGKick is used to manage the power consumption of the electrical vehicle.
+NRGKick is a mobile charging station that can be controlled through a mobile app and through a web interface.
 
 ## check if your P1 port is working
 
@@ -34,7 +40,7 @@ Should the cable be connected to another port, you can find the port by running 
 ls /dev/ttyUSB*
 ```
 
-Should you need to change it, edit the file `digital_meter.py` in the root of the project.
+Should you need to change it, edit the file `dm.py` in the root of the project.
 
 Is the cable too short, you can use a shielded USB extension cable as speed is a fast 100k baud.
 
@@ -88,7 +94,7 @@ And most suppliers come with their own energy management system, not adapted for
 The application is written in Python and to ensure that the application runs in a controlled environment, it is recommended to use a virtual environment. The following steps describe how to install the application on a Raspberry Pi.
 
 ```bash
-python3 -m venv .venv
+python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 ```
@@ -99,15 +105,16 @@ To autostart at boot, add the following line to the crontab of the user pi:
 sudo crontab -e -u pi
 ```
 
-then add this line at the end of the file:
+select nano as editor, then add this line at the end of the file:
 
 ```bash
 @reboot /home/pi/digital_meter/startup_cron.sh
 ```
 
-The application is started by the script `startup_cron.sh` which is located in the root of the project. 
-The script activates the virtual environment and starts the application.
+Finish with `Ctrl+x`, `y` and `enter`.
 
+The application is started by the script `startup_cron.sh` which is located in the root of the project. 
+The script activates the virtual environment and starts the different applications each in a tmux session.
 
 Should you want to show the output to a display connected to your raspberry pi at boot? 
 
@@ -128,19 +135,28 @@ sudo nano /home/pi/.profile
 and add the following line at the end of the file:
 
 ```bash
-tmux a
+sleep 5s
+tmux a -t dm
 ```
 
-and exit with ctrl+x, y and enter.
+Finish with `Ctrl+x`, `y` and `enter`.
 
-when you reboot the raspberry pi, the application will start automatically in a tmux window and you can view the output on the display.
+When you reboot the raspberry pi, the application will start automatically in the tmux window "dm" and you can view the output on the display.
 if you logout, the application will automatically login and bring you back.
 
 The application is started in a tmux environment, which allows to run the application in the background and to view the application on another terminal.
 To view the application on another terminal, login (f.e. through ssh), then run the following command:
 
 ```bash
-tmux a
+tmux a -t dm
+
+or to attach to the electrical vehicle management application:
+
+tmux a -t ev 
+
+or to attach to the battery storage management application:
+
+tmux a -t bs 
 ```
 
 To detach from the tmux environment, press `Ctrl+b` followed by `d`.
@@ -165,7 +181,7 @@ To run the application manually, activate the virtual environment and run the ap
 
 ```bash 
 source .venv/bin/activate
-python digital_meter.py
+python dm.py
 ```
 
 ## Remotely Accessing the application
@@ -173,8 +189,10 @@ python digital_meter.py
 To view the application on another terminal, login (f.e. through ssh), then run the following command:
 
 ```bash
-tmux a
-``` 
+tmux a -t dm
+```
+  
+or attach to another tmux pane as explained before.
 
 ## Customisation
 
@@ -191,9 +209,9 @@ The file contains the rates for the different periods of the day for electricity
 }
 ```
 
-## Websocker Server and Client
+## Websocket Server and Client
 
-The application can be extended with a websocket server and client to stream the data to an energy management application.
+Each application has a websocket server and client to stream to receive commands or to forward the data.
 The server is started by the application and listens on the port as specified in socket_info.
 
 One can install a socket client on another machine to receive / test the responses from the application.
@@ -209,6 +227,36 @@ python -m websockets  ws://PI-DM:8080/ws
 
 Anything you type will be sent to the server and the server will respond with the data.
 With "?" you can request the current data, with "!" you can request the current rates.
+
+## Electrical Vehicle Management
+
+As example is created for the management of an electrical vehicle with a NRGKick charging station.
+The NRGKick charging station is connected to the electrical vehicle and to the electrical installation by standard connectors making this a very flexible setup.
+
+
+![nrgkick.jpg](./docs/nrgkick.jpg)
+
+For the ev_app to work, one must request to enable the json NRGKick API by NRGKick.
+The NRGKick API is a json API that allows to control the NRGKick charging station.
+
+![nrgkick_app.jpg](./docs/nrgkick_app.jpg)
+
+If the Local API is not enabled, the ev_app will not work.
+See therefore the NRG Kick app, select Extended and press the Local API button.
+This allows to enroll for the lastest firmware and to enable the Local API, but at time of writing, this can take up to 17 days!
+
+The strategy of the ev_app is as follows:
+- charge the electrical vehicle when excess electricity is produced as indicated by the digital meter
+- or when rates are 2 (night)
+- and stay below the peak capacity of the current month
+- but ensures the car fully charged when needed for an upcoming trip
+
+This is different from the NRGKick app or other energy management solutions that charges the vehicle with all generated solar power.
+Maybe half is consumed by the house and therefore only the other half is available to charge the vehicle.
+
+Trips are retrieved from the Google Calendar API, and the car is charged to the required level before the trip.
+Car use in the calendar is indicated by the word @car_x@ in the title of the event with car_x the name of the car in the config.py file.
+
 
 ## Authors
 

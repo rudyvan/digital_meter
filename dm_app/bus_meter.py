@@ -225,7 +225,7 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
                 get_val = lambda x: [x.partition("*")[0], x.partition("*")[2]]
                 table = {self.ts_obj(values[x][1:-1]): [self.ts_obj(values[x+1][1:-1]), *get_val(values[x+2][1:-1])]\
                          for x in range(lines+1, len(values)-1, 3)}
-                return ret_val({"value": {"lines": lines, "ids": ids, "table": table}}, f"{lines=}")
+                return ret_val({"value": {"lines": lines, "ids": ids, "table": table}}, f"see table, month peaks ={lines}")
             case 8:  # timestamp
                 self.cur_time = self.ts_obj(values[0][1:-1])
                 return ret_val({"value": self.cur_time}, f"{self.ts_str(self.cur_time)}")

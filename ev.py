@@ -9,9 +9,9 @@ from rich.traceback import install
 
 install(width=180, extra_lines=10, show_locals=True)
 
-vehicle_info = {
+from config import vehicle_info
 
-}
+
 
 socket_info = {
     "remote_ips":  ["192.168.15.89"], # hosts able to give instructions to the meter
