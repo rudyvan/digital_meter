@@ -33,6 +33,7 @@ case "$(uname)" in
 esac
 cd $HOME_DIR
 sudo /bin/bash -c "source .venv/bin/activate"
+/bin/bash -c "source .venv/bin/activate"
 while true; do
     python -u dm.py
     if [ $? -eq 1 ]; then
