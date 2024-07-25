@@ -123,6 +123,27 @@ Most batteries are not certified for Belgium, so you have to check with the manu
 
 And most suppliers come with their own energy management system, not adapted for the spot pricing and peak capacity in Belgium.
 
+# Interaction and collaboration between the apps
+
+Energy optimisation is a complex task and requires the collaboration between the different applications to meet the operational and financial requirements of the user.
+Resources are constrained and have to be managed between the different applications.
+
+## how they are talking?
+
+Each app has a websocket server and client to stream to receive commands or to forward the data.
+
+## What are they talking to each other?
+
+- The digital meter application informs the other apps from the current/expected rates, current usage and peak gap or overshoot.
+- The ev_app determines charging needs and tactics (how long charging at what rate) and takes a cut from the digital meter available power bandwidth.
+- Should there be a short fall in power, the ev_app can request the battery for help.
+- The bs_app will manage the battery to store energy when it is cheap and use it when it is expensive, and to reduce the peak power use.
+
+Everything is spot based, so the apps have to be able to react quickly to the changing rates, usage and peak power.
+Should the house consumption suddenly increase or clouds hinder solar production, the ev_app has to reduce the charging rate or stop charging, or get more help from the battery.
+Equally, when a car is needed for a sudden trip, the ev_app has to ensure the car is fully charged, when the trip starts, ignoring rate and peak power optimisations. 
+
+
 
 # Installation
 
