@@ -10,7 +10,7 @@ from rich.traceback import install
 install(width=180, extra_lines=10, show_locals=True)
 
 vehicle_info = {
-    []
+
 }
 
 socket_info = {
