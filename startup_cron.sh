@@ -2,41 +2,23 @@
 # run tmux and run our script inside session luce
 case "$(uname)" in
     *"Linux"*)
-      OS=$(hostnamectl | grep "Operating System:")
-      case "$OS" in
-          *"Ubuntu"*)
-            HOME_DIR="/home/rudyv"
-            HOST_NAME=$(cat /etc/hostname)
-            APP_DIR=$HOME_DIR/digital_meter
-            USER_NAME="rudyv"
-            TMUX="/usr/bin/tmux"
-          ;;
-          *"Raspbian"* | *"Debian"*)
-            HOME_DIR="/home/pi"
-            HOST_NAME=$(cat /etc/hostname)
-            APP_DIR=$HOME_DIR/digital_meter
-            USER_NAME="pi"
-            TMUX="/usr/bin/tmux"
-          ;;
-          *)
-            echo -e "$OS not supported"
-            read -p "Press <enter> to continue"
-          ;;
-      esac
+      HOST_NAME=$(cat /etc/hostname)
+      BIN="/usr/bin"
       ;;
     *"Darwin"*)
-      HOME_DIR="/Users/rudyv"
       HOST_NAME=$(hostname | cut -d '.' -f1)
-      APP_DIR=$HOME_DIR/MyApps/digital_meter
-      USER_NAME="rudyv"
-      TMUX="/usr/local/bin/tmux"
+      BIN="/usr/local/bin"
     ;;
     *)
-      echo -e "$OS not supported"
-      read -p "Press <enter> to continue"
+      echo -e "$(uname) not supported"
+      HOST_NAME=$(cat /etc/hostname)
+      BIN="/usr/bin"
     ;;
 esac
-PATH=/usr/bin:$PATH
+PATH=$BIN:$PATH
+TMUX=$BIN/tmux
+HOME_DIR=$(echo ~)
+APP_DIR=$HOME_DIR/digital_meter
 cd $HOME_DIR
 source .bashrc
 source .profile
