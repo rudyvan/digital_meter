@@ -13,8 +13,9 @@ case "$(uname)" in
       echo -e "$OS not supported"
     ;;
 esac
-HOME_DIR=$(echo ~)/digital_meter
-cd $HOME_DIR
+HOME_DIR=$(echo ~)
+APP_DIR=$HOME_DIR/digital_meter
+cd $APP_DIR
 sudo /bin/bash -c "source .venv/bin/activate"
 source .venv/bin/activate
 while true; do
