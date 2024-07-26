@@ -13,7 +13,7 @@ case "$(uname)" in
       echo -e "$OS not supported"
     ;;
 esac
-HOME_DIR=$(echo ~)/digital_meter"
+HOME_DIR=$(echo ~)/digital_meter
 cd $HOME_DIR
 sudo /bin/bash -c "source .venv/bin/activate"
 source .venv/bin/activate
