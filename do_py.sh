@@ -1,36 +1,19 @@
 #!/bin/bash
 
+USER_NAME="rudyv"
 case "$(uname)" in
     *"Linux"*)
       # run tmux and run our script inside session luce
-      OS=$(hostnamectl | grep "Operating System:")
-      case "$OS" in
-          *"Ubuntu"*)
-            HOME_DIR="/home/rudyv/digital_meter"
-            USER_NAME="rudyv"
-            HOST_NAME=$(cat /etc/hostname)
-          ;;
-          *"Raspbian"* | *"Debian"*)
-            HOME_DIR="/home/pi/digital_meter"
-            USER_NAME="pi"
-            HOST_NAME=$(cat /etc/hostname)
-          ;;
-          *)
-            echo -e "$OS not supported"
-            read -p "Press <enter> to continue"
-          ;;
-      esac
+      HOST_NAME=$(cat /etc/hostname)
       ;;
     *"Darwin"*)
-      HOME_DIR="/Users/rudyv/MyApps/digital_meter"
-      USER_NAME="rudyv"
       HOST_NAME=$(hostname | cut -d '.' -f1)
     ;;
     *)
       echo -e "$OS not supported"
-      read -p "Press <enter> to continue"
     ;;
 esac
+HOME_DIR=$(echo ~)/digital_meter"
 cd $HOME_DIR
 sudo /bin/bash -c "source .venv/bin/activate"
 source .venv/bin/activate

@@ -139,10 +139,11 @@ Each app has a websocket server and client to stream to receive commands or to f
 - Should there be a short fall in power, the ev_app can request the battery for help.
 - The bs_app will manage the battery to store energy when it is cheap and use it when it is expensive, and to reduce the peak power use.
 
-Everything is spot based, so the apps have to be able to react quickly to the changing rates, usage and peak power.
+Settings happen on the spot, therefore the apps have to be able to react quickly to the changing rates, usage and peak power.
 Should the house consumption suddenly increase or clouds hinder solar production, the ev_app has to reduce the charging rate or stop charging, or get more help from the battery.
 Equally, when a car is needed for a sudden trip, the ev_app has to ensure the car is fully charged, when the trip starts, ignoring rate and peak power optimisations. 
 
+A cloud application could be more powerful as it could include weather prediction patterns, but the latency is high for the quick reactions needed in energy management.
 
 
 # Installation
