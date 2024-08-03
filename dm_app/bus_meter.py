@@ -218,13 +218,13 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
             case 7:  # profile generic
                 # first no of lines, then the id's of the lines, then the values of those id's
                 lines = int(values[0][1:-1])
-                ids = [r[1:-1] for r in values[1:1+lines]]
+                ids = [r[1:-1] for r in values[1:1+2]]
                 # expect class 4 at this point, check it for all id's
-                if not all(BusMeter.obiscodes.get(x).class_id == 4 for x in ids):
+                if not all(x in BusMeter.obiscodes and BusMeter.obiscodes.get(x).class_id == 4 for x in ids):
                     self.log_add(f"!!Expecting class_id == 4 -> {ids=} in {obis=}")
                 get_val = lambda x: [x.partition("*")[0], x.partition("*")[2]]
                 table = {self.ts_obj(values[x][1:-1]): [self.ts_obj(values[x+1][1:-1]), *get_val(values[x+2][1:-1])]\
-                         for x in range(lines+1, len(values)-1, 3)}
+                         for x in range(ids+1, len(values)-1, 3)}
                 return ret_val({"value": {"lines": lines, "ids": ids, "table": table}}, f"see table, month peaks ={lines}")
             case 8:  # timestamp
                 self.cur_time = self.ts_obj(values[0][1:-1])

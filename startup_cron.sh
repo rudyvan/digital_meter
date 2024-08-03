@@ -46,7 +46,3 @@ $TMUX new-session -ds bs
 $TMUX send-keys -t bs "exec bash" C-m
 # run do_py.sh inside tmux window
 $TMUX send-keys -t bs "./do_py.sh bs.py" C-m
-
-
-
-

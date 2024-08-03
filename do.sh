@@ -31,4 +31,5 @@ case "$WHAT" in
 		echo ""
 		read -p "??use kill/start/run/upd, press <enter> to continue"
 esac
+$(exit 0)
 
