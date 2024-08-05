@@ -16,23 +16,16 @@ class Screen:
         super().__init__()
 
     def make_layout(self) -> Layout:
-        """ make a layout for the console"""
+        """ return layout of the console"""
         layout = Layout(name="root")
-        layout.split(
-            Layout(name="header", size=3),
-            Layout(name="main", ratio=1),
-            Layout(name="footer", size=7)
-        )
-        layout["main"].split_row(
-            Layout(name="side"),
-            Layout(name="telegram_table", minimum_size=60),
-        )
-        layout["side"].split(Layout(name="usage"), Layout(name="month_peak", size=19))
-        layout["footer"].split_row(
-            Layout(name="log"),
-            Layout(name="quarter_peak"),
-        )
-        layout["usage"].split(Layout(name="rate", size=5), Layout(name="usage_table"))
+        layout.split(Layout(name="header", size=3),
+                     Layout(name="main"))
+        layout["main"].split_row(Layout(name="left_side"), Layout(name="right_side"))
+        layout["left_side"].split(Layout(name="rate", size=5),
+                                  Layout(name="usage"),
+                                  Layout(name="month_peak", size=19))
+        layout["right_side"].split(Layout(name="telegram", minimum_size=60),
+                                  Layout(name="quarter_peak", size=7))
         return layout
 
     def make_header(self) -> Panel:
@@ -154,10 +147,10 @@ class Screen:
     def update_layout(self, layout):
         """ update the layout with the data from the meter"""
         layout["header"].update(self.make_header())
-        layout["telegram_table"].update(Panel(self.make_telegram_table(), title="Telegram"))
+        layout["telegram"].update(Panel(self.make_telegram_table(), title="Telegram"))
         layout["month_peak"].update(Panel(self.make_month_peak_table(), title="Months Peak"))
-        layout["log"].update(Panel(self.make_log_table(), title="Log"))
-        layout["usage_table"].update(Panel(self.make_usage_table(),
+        # layout["log"].update(Panel(self.make_log_table(), title="Log"))
+        layout["usage"].update(Panel(self.make_usage_table(),
                                            title=f"Usage since {self.ts_str(self.data['start_time'])}"))
         layout["rate"].update(Panel(self.make_rate_table(),
                                     title="Rate => [magenta]1:day 07:00 22:00, [blue]2:night 22:00 07:00 + weekend + holidays"))
