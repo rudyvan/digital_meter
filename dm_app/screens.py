@@ -11,9 +11,9 @@ import datetime
 
 class Screens:
     """ this is a class to make a screen for the console"""
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         self.console = Console(color_system="truecolor")
-        super().__init__()
+        super().__init__(*args, **kwargs)
 
     def make_layout(self) -> Layout:
         """ return layout of the console"""

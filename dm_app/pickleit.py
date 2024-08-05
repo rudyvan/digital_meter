@@ -12,9 +12,10 @@ class PickleIt:
 
     pickle_file = "data.pickle"
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         self.log = {}
         self.file_n = PickleIt.pickle_file
+        super().__init__(*args, **kwargs)
 
     def var_save(self):
         with open(self.file_n, "wb") as f:

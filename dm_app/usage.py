@@ -5,8 +5,8 @@ from collections import namedtuple
 
 
 class Usage:
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
     # for those counters that are also usage:    do not include labels for hour/minute as these are not reported
     _usage_columns = lambda self: ["Day-3", "Day-2", "Day-1", "Today", "Week", "Month", "Year"]

@@ -13,8 +13,8 @@ app = web.Application()
 
 class SocketApp:
     """aiohttp web application"""
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
     @property
     def ws_ep(self):
