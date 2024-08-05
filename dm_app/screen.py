@@ -20,11 +20,10 @@ class Screen:
         layout = Layout(name="root")
         layout.split(Layout(name="header", size=3),
                      Layout(name="main"))
-        layout["main"].split_row(Layout(name="left_side"), Layout(name="right_side"))
+        layout["main"].split_row(Layout(name="left_side"), Layout(name="telegram", minimum_size=60))
         layout["left_side"].split(Layout(name="rate", size=5),
                                   Layout(name="usage"),
-                                  Layout(name="month_peak", size=19))
-        layout["right_side"].split(Layout(name="telegram", minimum_size=60),
+                                  Layout(name="month_peak", size=19),
                                   Layout(name="quarter_peak", size=7))
         return layout
 
