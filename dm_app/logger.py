@@ -25,8 +25,10 @@ class Logger:
     def log_it_info(self, txt, tpe="info", **kw):
         getattr(logging.getLogger(self.log_name), tpe)(txt, **kw)
 
-    def log_it(self, txt):
-        self.log_it_info(txt)
+    def log_add(self, msg):
+        """ add a log message to the log file"""
+        self.log_it_info(msg)
+
 
     def clear_handlers(self, logger):
         while logger.hasHandlers():

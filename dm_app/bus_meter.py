@@ -129,7 +129,6 @@ class BusMeter(Screens, PickleIt, Usage, Logger, SocketApp):
 
     def serial_bye(self, msg):
         self.log_add(msg)
-        print(msg)
         self.transport.close()
 
     def checkcrc(self, p1telegram):
