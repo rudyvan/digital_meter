@@ -9,7 +9,7 @@ from rich.progress import Progress, SpinnerColumn, BarColumn, TextColumn
 import datetime
 
 
-class Screen:
+class Screens:
     """ this is a class to make a screen for the console"""
     def __init__(self):
         self.console = Console(color_system="truecolor")

@@ -68,6 +68,9 @@ class SocketApp:
         self.log_add(f"processed {data} from {ip} and returned {len(resp_str)} bytes")
         return
 
+    @property
+    def host_name(self):
+        return socket.gethostname().partition(".")[0]
 
     @property
     def my_ip(self):  # return my ip address

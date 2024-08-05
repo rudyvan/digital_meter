@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import asyncio
 import datetime
-import re
+import re, os
 from collections import namedtuple
 
 import crcmod.predefined
@@ -13,8 +13,9 @@ from rich.text import Text
 
 from .usage import Usage
 from .pickleit import PickleIt
-from .screen import Screen
+from .screens import Screens
 from .web import SocketApp
+from .logger import Logger
 
 
 class InputChunkProtocol(asyncio.Protocol):
@@ -41,7 +42,7 @@ class InputChunkProtocol(asyncio.Protocol):
         self.transport.resume_reading()
 
 
-class BusMeter(Screen, PickleIt, Usage, SocketApp):
+class BusMeter(Screens, PickleIt, Usage, Logger, SocketApp):
     """ this is a class to read data from a digital meter connected to the P1 port """
 
     obis_el = namedtuple('OBIS', ['th_n', 'class_id', 'description'])
@@ -116,6 +117,9 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
         self.p1telegram = bytearray()
         self.obis_dict = {}
         self.bus = {}
+        self.dir_history = "./history/"
+        if not os.path.exists(self.dir_history):
+            os.makedirs(self.dir_history)
         super().__init__()
 
     async def serial_start(self):
@@ -261,7 +265,7 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
         await self.server_start()
         # 4. set the last live refresh time
         last_live, refresh_s = None, 3
-        # 5. start the main loop with the live screen
+        # 5. start the main loop with the live screens
         with Live(self.layout, console=self.console) as live:
             while True:
                 self.togather = []
@@ -307,7 +311,8 @@ class BusMeter(Screen, PickleIt, Usage, SocketApp):
                     break
 
     def run(self):
-        # 1. build the screen layout upfront
+        # 1. build the screens layout upfront
+        self.log_start("Starting digital meter script")
         self.layout = self.make_layout()
         # 2. set the default data in case no pickle file is present
         self.set_data()

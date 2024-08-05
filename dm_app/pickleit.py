@@ -33,6 +33,11 @@ class PickleIt:
             self.var_save()
         self.set_pointers()
 
+    @property
+    def prefix_history(self):
+        mm_dd = datetime.date.today().isoformat()[5:]
+        return f"{self.dir_history}{mm_dd}_"
+
     def json_it(self, dct):
         """ dump the data in json format"""
         encode_JSON = lambda x: self.ts_str(x) if isinstance(x, datetime.datetime) else repr(x)

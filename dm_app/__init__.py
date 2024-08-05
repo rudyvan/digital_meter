@@ -2,6 +2,7 @@
 #
 from .bus_meter import BusMeter
 from .pickleit import PickleIt
-from .screen import Screen
+from .screens import Screens
 from .usage import Usage
 from .web import SocketApp
+from .logger import Logger
