@@ -29,7 +29,7 @@ class Usage:
         # the counter flipped over if new < old
         get_diff_meter_flips = lambda old, new: 10**(len(str(abs(old)).partition(".")[0])) + new - old if abs(new) < abs(old) else new - old
         delta_cumul = []
-        for x, r in enumerate(Usage._usage_rows):
+        for x, r in enumerate(self._usage_rows()):
             match r:
                 case "+Day" | "-Day" | "+Night" | "-Night":
                     delta_cumul.append(get_diff_meter_flips(old_cumul[x], new_cumul[x]))
