@@ -12,8 +12,7 @@ import os
 import sys
 import socket
 import logging
-
-from .history import prefix_history
+import datetime
 
 from rich.logging import RichHandler
 from rich.markup import escape
@@ -22,6 +21,9 @@ class Logger:
     def __init__(self, *args, **kwargs):
         self.log_name = "log_info"
         self.log_file = f"{self.log_name}.log"
+        self.dir_history = "./history/"
+        if not os.path.exists(self.dir_history):
+            os.makedirs(self.dir_history)
         super().__init__(*args, **kwargs)
 
     def log_it_info(self, txt, tpe="info", **kw):
@@ -34,6 +36,11 @@ class Logger:
     @property
     def host_name(self):
         return socket.gethostname().partition(".")[0]
+
+    @property
+    def prefix_history(self):
+        mm_dd = datetime.date.today().isoformat()[5:]
+        return f"{self.dir_history}{mm_dd}_"
 
     def clear_handlers(self, logger):
         while logger.hasHandlers():
@@ -90,7 +97,7 @@ class Logger:
     def log_move(self):
         """ move the log files to the history folder, ensure with the date MM-DD one file every year"""
         if os.path.exists(self.log_file):
-            os.rename(self.log_file, f"{prefix_history()}{self.log_file}")
+            os.rename(self.log_file, f"{self.prefix_history}{self.log_file}")
 
     def log_restart(self):
         self.log_close()

@@ -7,7 +7,7 @@ import pickle
 from rich import json
 
 from .logger import log_app
-from .history import prefix_history
+
 
 class PickleIt:
     """ this is a class to pickle data to a file and unpickle it"""
@@ -34,17 +34,5 @@ class PickleIt:
         else:
             log_app.log_add(f"{self.file_n} not found, started from zero")
             self.var_save()
-
-
-    def json_it(self, dct):
-        """ dump the data in json format"""
-        encode_JSON = lambda x: self.ts_str(x) if isinstance(x, datetime.datetime) else repr(x)
-        return json.dumps(dct, indent=4, sort_keys=True, default=encode_JSON)
-
-    def json_file(self, dct, file_n):
-        """ dump the data in json format in history_dir/file_n"""
-        with open(f"{prefix_history()}{file_n}", "w") as f:
-            f.write(self.json_it(dct))
-
 
 pickle_app = PickleIt()

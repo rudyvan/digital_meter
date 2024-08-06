@@ -75,6 +75,16 @@ class Usage:
         self.g_rate = self.rates_dct["Gas"]["+"]
         self.w_rate = self.rates_dct["Water"]["+"]
 
+    def json_it(self, dct):
+        """ dump the data in json format"""
+        encode_JSON = lambda x: self.ts_str(x) if isinstance(x, datetime.datetime) else repr(x)
+        return json.dumps(dct, indent=4, sort_keys=True, default=encode_JSON)
+
+    def json_file(self, dct, file_n):
+        """ dump the data in json format in history_dir/file_n"""
+        with open(f"{self.log_app.prefix_history}{file_n}", "w") as f:
+            f.write(self.json_it(dct))
+
     def update_quarter_peak(self):
         self.clock_todo = 15*60  # seconds in a quarter
         self.clock_done = (self.cur_time.minute % 15) * 60 + self.cur_time.second  # seconds in the current quarter
@@ -131,7 +141,7 @@ class Usage:
             self.delta_cumul = self.get_delta_cumul(self.now_cumul, self.prev_cumul)
             if self.prev_time.day != self.cur_time.day:
                 # a new day has started, push the last data as json file
-                self.pickle_app.json_file(self.data, "data.json")
+                self.json_file(self.data, "data.json")
                 # save and restart the log
                 self.log_app.log_restart()
                 # move the usage and day_peak one day back
