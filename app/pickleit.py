@@ -34,7 +34,6 @@ class PickleIt:
         else:
             log_app.log_add(f"{self.file_n} not found, started from zero")
             self.var_save()
-        self.set_pointers()
 
 
     def json_it(self, dct):

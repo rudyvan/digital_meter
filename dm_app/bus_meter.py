@@ -310,4 +310,5 @@ class BusMeter(Screens, Usage):
         self.set_data()
         # 3. restore the data from pickle file if present
         self.pickle_app.var_restore()
+        self.set_pointers()
         asyncio.run(self.main_loop())
