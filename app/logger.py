@@ -10,7 +10,7 @@ the following logger is deployed and used:
 import inspect
 import os
 import sys
-
+import socket
 import logging
 
 from .history import prefix_history
@@ -31,6 +31,9 @@ class Logger:
         """ add a log message to the log file"""
         self.log_it_info(msg)
 
+    @property
+    def host_name(self):
+        return socket.gethostname().partition(".")[0]
 
     def clear_handlers(self, logger):
         while logger.hasHandlers():

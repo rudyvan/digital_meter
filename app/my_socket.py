@@ -70,10 +70,6 @@ class SocketApp:
         return
 
     @property
-    def host_name(self):
-        return socket.gethostname().partition(".")[0]
-
-    @property
     def my_ip(self):  # return my ip address
         try:
             with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sc:
