@@ -49,7 +49,6 @@ class Usage:
                                 "Gas": {"value": 0, "time": datetime.datetime.now(), "unit": "m3"},
                                 "Water": {"value": 0, "time": datetime.datetime.now(), "unit": "m3"} },
                      "usage": dict((x, self.zero_cumul[:]) for x in self._usage_columns()),
-                     "log": {},
                      "cur_time": datetime.datetime.now(),
                      "start_time": datetime.datetime.now(),
                      "day_peak": dict((x, Usage._day_peak_zero[:]) for x in self._day_peak_columns()),
@@ -63,9 +62,11 @@ class Usage:
         self.usage = self.data["usage"]                  # beware, self.usage is updated automatically
         self.day_peak = self.data["day_peak"]
         self.e_meter = self.data["meters"]["Electricity"]
-        if self.log:  # something already added before restore of self.data?
-            self.data["log"].update(self.log)
-        self.log = self.data["log"]
+
+        if "log" in self.data:
+            self.data.pop("log")
+            self.pickle_app.var_save()
+
         self.peak_forecast = self.data["quarter_peak"]
         # pointers into rates_dct
         self.e_rate = self.rates_dct["Electricity"]
