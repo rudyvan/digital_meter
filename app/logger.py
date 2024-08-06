@@ -93,3 +93,5 @@ class Logger:
         self.log_start("New Day Reopen")
 
     __repr__ = lambda self: "Logger"
+
+log_app = Logger()

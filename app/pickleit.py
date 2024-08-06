@@ -6,6 +6,7 @@ import pickle
 
 from rich import json
 
+from .logger import log_app
 
 class PickleIt:
     """ this is a class to pickle data to a file and unpickle it"""
@@ -28,9 +29,9 @@ class PickleIt:
                 with open(self.file_n, "rb") as f:
                     self.data = pickle.load(f)
             except Exception as e:
-                self.log_add(f"!! err_pickle_load {self.file_n} {e}")
+                log_app.log_add(f"!! err_pickle_load {self.file_n} {e}")
         else:
-            self.log_add(f"{self.file_n} not found, started from zero")
+            log_app.log_add(f"{self.file_n} not found, started from zero")
             self.var_save()
         self.set_pointers()
 
@@ -55,3 +56,4 @@ class PickleIt:
             self._rates_dct = json.loads(open("rates.json").read())
         return self._rates_dct
 
+pickle_app = PickleIt()
