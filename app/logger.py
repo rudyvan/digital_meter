@@ -13,7 +13,7 @@ import sys
 
 import logging
 
-from .pickleit import pickle_app
+from .history import prefix_history
 
 from rich.logging import RichHandler
 from rich.markup import escape
@@ -87,7 +87,7 @@ class Logger:
     def log_move(self):
         """ move the log files to the history folder, ensure with the date MM-DD one file every year"""
         if os.path.exists(self.log_file):
-            os.rename(self.log_file, f"{pickle_app.prefix_history}{self.log_file}")
+            os.rename(self.log_file, f"{prefix_history()}{self.log_file}")
 
     def log_restart(self):
         self.log_close()

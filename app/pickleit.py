@@ -7,6 +7,7 @@ import pickle
 from rich import json
 
 from .logger import log_app
+from .history import prefix_history
 
 class PickleIt:
     """ this is a class to pickle data to a file and unpickle it"""
@@ -16,9 +17,6 @@ class PickleIt:
     def __init__(self, *args, **kwargs):
         self.log = {}
         self.file_n = PickleIt.pickle_file
-        self.dir_history = "./history/"
-        if not os.path.exists(self.dir_history):
-            os.makedirs(self.dir_history)
         super().__init__(*args, **kwargs)
 
     def var_save(self):
@@ -38,10 +36,6 @@ class PickleIt:
             self.var_save()
         self.set_pointers()
 
-    @property
-    def prefix_history(self):
-        mm_dd = datetime.date.today().isoformat()[5:]
-        return f"{self.dir_history}{mm_dd}_"
 
     def json_it(self, dct):
         """ dump the data in json format"""
@@ -49,8 +43,8 @@ class PickleIt:
         return json.dumps(dct, indent=4, sort_keys=True, default=encode_JSON)
 
     def json_file(self, dct, file_n):
-        """ dump the data in json format in file_n"""
-        with open(f"{file_n}", "w") as f:
+        """ dump the data in json format in history_dir/file_n"""
+        with open(f"{prefix_history()}{file_n}", "w") as f:
             f.write(self.json_it(dct))
 
     @property

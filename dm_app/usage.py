@@ -128,7 +128,7 @@ class Usage:
             self.delta_cumul = self.get_delta_cumul(self.now_cumul, self.prev_cumul)
             if self.prev_time.day != self.cur_time.day:
                 # a new day has started, push the last data as json file
-                self.json_file(self.data, f"{self.prefix_history}data.json")
+                self.pickle_app.json_file(self.data, "data.json")
                 # save and restart the log
                 self.log_app.log_restart()
                 # move the usage and day_peak one day back
