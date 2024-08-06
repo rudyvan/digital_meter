@@ -7,7 +7,7 @@ from collections import namedtuple
 import crcmod.predefined
 import serial_asyncio
 
-from rich import print
+from rich.console import Console
 from rich.live import Live
 from rich.text import Text
 
@@ -112,6 +112,7 @@ class BusMeter(Screens, Usage):
         self.p1telegram = bytearray()
         self.obis_dict = {}
         self.bus = {}
+        self.console = Console(color_system="truecolor")
         super().__init__()
 
     async def serial_start(self):

@@ -16,4 +16,5 @@ install(width=180, extra_lines=10, show_locals=True)
 if __name__ == '__main__':
     bm = BusMeter(serial_port)
     bm.log_app, bm.pickle_app, bm.socket_app = log_app, pickle_app, SocketApp(socket_info)
+    bm.log_app.console = bm.console
     bm.run()

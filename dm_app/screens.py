@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 
-from rich.console import Console
 from rich.layout import Layout
 from rich.panel import Panel
 from rich.table import Table
@@ -12,7 +11,6 @@ import datetime
 class Screens:
     """ this is a class to make a screen for the console"""
     def __init__(self, *args, **kwargs):
-        self.console = Console(color_system="truecolor")
         super().__init__(*args, **kwargs)
 
     def make_layout(self) -> Layout:
