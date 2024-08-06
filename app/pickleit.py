@@ -16,6 +16,9 @@ class PickleIt:
     def __init__(self, *args, **kwargs):
         self.log = {}
         self.file_n = PickleIt.pickle_file
+        self.dir_history = "./history/"
+        if not os.path.exists(self.dir_history):
+            os.makedirs(self.dir_history)
         super().__init__(*args, **kwargs)
 
     def var_save(self):

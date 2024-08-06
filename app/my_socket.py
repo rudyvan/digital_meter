@@ -13,7 +13,8 @@ app = web.Application()
 
 class SocketApp:
     """aiohttp web application"""
-    def __init__(self, *args, **kwargs):
+    def __init__(self, socket_info, *args, **kwargs):
+        self.socket_info = socket_info
         super().__init__(*args, **kwargs)
 
     @property
@@ -114,5 +115,4 @@ class SocketApp:
             log_app.log_add(f"error web socket {request.remote} {e=}")
         return ws
 
-socket_app = SocketApp()
 

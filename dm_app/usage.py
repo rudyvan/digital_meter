@@ -1,8 +1,6 @@
 #!/usr/bin/python3
 
 import datetime
-from collections import namedtuple
-from ..app import pickle_app, log_app
 
 class Usage:
     def __init__(self, *args, **kwargs):
@@ -93,7 +91,7 @@ class Usage:
             if self.peak_forecast > self.day_peak["Today"][0]:
                 # add nty new peak for the day
                 self.day_peak["Today"] = [self.peak_forecast, self.cur_time-datetime.timedelta(seconds=self.clock_done)]
-                pickle_app.var_save()
+                self.pickle_app.var_save()
         # beware, when producing energy, the quarter_peak is ZERO
         self.peak_gap = self.month_peak['value']-self.peak_forecast
         self.peak_gap_style = "green" if self.peak_gap > 0 else "red"
@@ -132,7 +130,7 @@ class Usage:
                 # a new day has started, push the last data as json file
                 self.json_file(self.data, f"{self.prefix_history}data.json")
                 # save and restart the log
-                log_app.log_restart()
+                self.log_app.log_restart()
                 # move the usage and day_peak one day back
                 for old, prev in [("Day-3", "Day-2"), ("Day-2", "Day-1"), ("Day-1", "Today")]:
                     if prev in self.usage:
@@ -161,6 +159,6 @@ class Usage:
         self.data["cur_time"] = self.cur_time
         self.data["cumul"] = self.now_cumul
         self.data["prev_quarter_peak"], self.data["quarter_peak"] = self.data["quarter_peak"], self.quarter_peak
-        pickle_app.var_save()
+        self.pickle_app.var_save()
         return self.update_quarter_peak()
 

@@ -14,8 +14,6 @@ from rich.text import Text
 from .usage import Usage
 from .screens import Screens
 
-from ..app import log_app, pickle_app, socket_app
-
 class InputChunkProtocol(asyncio.Protocol):
 
     p1line = bytearray()
@@ -109,15 +107,11 @@ class BusMeter(Screens, Usage):
         "0-4:24.4.0":  obis_el("gas_breaker_4", 70, "Gas Valve Bus 4, 0=OFF, 1=ON, 2=Ready Reconnect")
     }
 
-    def __init__(self, serial_port, socket_info):
+    def __init__(self, serial_port):
         self.serial_port = serial_port
-        self.socket_info = socket_info
         self.p1telegram = bytearray()
         self.obis_dict = {}
         self.bus = {}
-        self.dir_history = "./history/"
-        if not os.path.exists(self.dir_history):
-            os.makedirs(self.dir_history)
         super().__init__()
 
     async def serial_start(self):
@@ -126,7 +120,7 @@ class BusMeter(Screens, Usage):
 
 
     def serial_bye(self, msg):
-        log_app.log_add(msg)
+        self.log_app.log_add(msg)
         self.transport.close()
 
     def checkcrc(self, p1telegram):
@@ -141,7 +135,7 @@ class BusMeter(Screens, Usage):
         calccrc = hex(crcmod.predefined.mkPredefinedCrcFun('crc16')(p1contents))
         # check if given and calculated match
         if givencrc != calccrc:
-            log_app.log_add(f"Error telegram checksum mismatch: {givencrc=}, {calccrc=}")
+            self.log_app.log_add(f"Error telegram checksum mismatch: {givencrc=}, {calccrc=}")
             return False
         return True
 
@@ -150,13 +144,13 @@ class BusMeter(Screens, Usage):
         # format:YYMMDDhhmmssX, where X is the daylight saving time flag S or W
         # convert to format:YYYY-MM-DD hh:mm:ss or YYYY-MM-DD if time is zero
         if len(ts) != 13:
-            log_app.log_add(f"Error expecting 13 characters: {ts=}")
+            self.log_app.log_add(f"Error expecting 13 characters: {ts=}")
         if ts[12] not in ["S", "W"]:
-            log_app.log_add(f"Error expecting S or W at the end of {ts=}")
+            self.log_app.log_add(f"Error expecting S or W at the end of {ts=}")
         try:
             dt = datetime.datetime.strptime(ts[:-1], '%y%m%d%H%M%S')
         except Exception as e:
-            log_app.log_add(f"Error parsing timestamp: {ts=} {e=}")
+            self.log_app.log_add(f"Error parsing timestamp: {ts=} {e=}")
             dt=datetime.datetime.now()
         return dt
 
@@ -194,7 +188,7 @@ class BusMeter(Screens, Usage):
                     value = bytearray.fromhex(value).decode()
                 if obis == "1-0:94.32.1":  # vgrid
                     if value not in ["230", "400"]:
-                        log_app.log_add(f"{obis}: Grid expecting 230 or 400: {value=}")
+                        self.log_app.log_add(f"{obis}: Grid expecting 230 or 400: {value=}")
                 return ret_val({"value": value}, value)
             case 3 | 5 | 21 | 71:  # register, demand register, register monitor, limiter
                 value_str, _, unit = values[0][1:-1].partition("*")
@@ -207,7 +201,7 @@ class BusMeter(Screens, Usage):
                     any(x == obis for x in ["1-0:32.7.0", "1-0:52.7.0", "1-0:72.7.0"])):
                     if int(value) < 200:
                         msg = f"!! PHASE DEACTIVE {result_str}"
-                        log_app.log_add(msg)
+                        self.log_app.log_add(msg)
                         return ret_val(result_dct, Text(msg, "bold red"))
                 return ret_val(result_dct, result_str)
             case 4:  # extended register
@@ -222,7 +216,7 @@ class BusMeter(Screens, Usage):
                 ids = [r[1:-1] for r in values[1:1+2]]
                 # expect class 4 at this point, check it for all id's
                 if not all(x in BusMeter.obiscodes and BusMeter.obiscodes.get(x).class_id == 4 for x in ids):
-                    log_app.log_add(f"!!Expecting class_id == 4 -> {ids=} in {obis=}")
+                    self.log_app.log_add(f"!!Expecting class_id == 4 -> {ids=} in {obis=}")
                 get_val = lambda x: [x.partition("*")[0], x.partition("*")[2]]
                 table = {self.ts_obj(values[x][1:-1]): [self.ts_obj(values[x+1][1:-1]), *get_val(values[x+2][1:-1])]\
                          for x in range(len(ids)+1, len(values)-1, 3)}
@@ -259,7 +253,7 @@ class BusMeter(Screens, Usage):
         # 2. start the socket server and set the buffer
         await self.serial_start()
         # 3. start the socket server
-        await socket_app.server_start()
+        await self.socket_app.server_start()
         # 4. set the last live refresh time
         last_live, refresh_s = None, 3
         # 5. start the main loop with the live screens
@@ -309,10 +303,10 @@ class BusMeter(Screens, Usage):
 
     def run(self):
         # 1. build the screens layout upfront
-        log_app.log_start("Starting digital meter script")
+        self.log_app.log_start("Starting digital meter script")
         self.layout = self.make_layout()
         # 2. set the default data in case no pickle file is present
         self.set_data()
         # 3. restore the data from pickle file if present
-        pickle_app.var_restore()
+        self.pickle_app.var_restore()
         asyncio.run(self.main_loop())

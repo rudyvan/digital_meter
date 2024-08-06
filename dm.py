@@ -7,9 +7,13 @@ from config import serial_port, socket_info
 
 from dm_app import BusMeter
 
+from app import log_app, pickle_app, SocketApp
+
 from rich.traceback import install
 
 install(width=180, extra_lines=10, show_locals=True)
 
 if __name__ == '__main__':
-    BusMeter(serial_port, socket_info).run()
+    bm = BusMeter(serial_port)
+    bm.log_app, bm.pickle_app, bm.socket_app = log_app, pickle_app, SocketApp(socket_info)
+    bm.run()
