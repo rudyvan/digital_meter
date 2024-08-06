@@ -46,10 +46,5 @@ class PickleIt:
         with open(f"{prefix_history()}{file_n}", "w") as f:
             f.write(self.json_it(dct))
 
-    @property
-    def rates_dct(self):
-        if not hasattr(self, "_rates_dct"):
-            self._rates_dct = json.loads(open("rates.json").read())
-        return self._rates_dct
 
 pickle_app = PickleIt()

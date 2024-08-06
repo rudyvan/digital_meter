@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import datetime
+import json
 
 class Usage:
     def __init__(self, *args, **kwargs):
@@ -55,6 +56,12 @@ class Usage:
                                            #  peak value, time of peak
                      "quarter_peak": 0}
 
+    @property
+    def rates_dct(self):
+        if not hasattr(self, "_rates_dct"):
+            self._rates_dct = json.loads(open("rates.json").read())
+        return self._rates_dct
+
     def set_pointers(self):
         # these pointer must be set before self.data is used (after restore or creation)
         self.water_meter = self.data["meters"]["Water"]  # beware, self.water_meter is updated automatically
@@ -62,11 +69,6 @@ class Usage:
         self.usage = self.data["usage"]                  # beware, self.usage is updated automatically
         self.day_peak = self.data["day_peak"]
         self.e_meter = self.data["meters"]["Electricity"]
-
-        if "log" in self.data:
-            self.data.pop("log")
-            self.pickle_app.var_save()
-
         self.peak_forecast = self.data["quarter_peak"]
         # pointers into rates_dct
         self.e_rate = self.rates_dct["Electricity"]
