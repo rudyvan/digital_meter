@@ -23,6 +23,28 @@ class Usage:
             self._zero_cumul = [0 for _ in range(len(self._usage_rows()))]
         return self._zero_cumul
 
+    def get_delta_cumul(self, new_cumul, old_cumul):
+        """ calculate the difference between 2 cumuls, but consider that the meter values can flip over,
+            f.e. when the meter goes from 9999 to 0, the difference is 1, not -9999"""
+        # the counter flipped over if new < old
+        get_diff_meter_flips = lambda old, new: 10**(len(str(abs(old)).partition(".")[0])) + new - old if abs(new) < abs(old) else new - old
+        delta_cumul = []
+        for x, r in enumerate(Usage._usage_rows):
+            match r:
+                case "+Day" | "-Day" | "+Night" | "-Night":
+                    delta_cumul.append(get_diff_meter_flips(old_cumul[x], new_cumul[x]))
+                case "+€ Day":
+                    delta_cumul.append(get_diff_meter_flips(old_cumul[0], new_cumul[0])*self.e_rate["+"]["Day"])
+                case "-€ Day":
+                    delta_cumul.append(get_diff_meter_flips(old_cumul[1], new_cumul[1])*self.e_rate["-"]["Day"])
+                case "+€ Night":
+                    delta_cumul.append(get_diff_meter_flips(old_cumul[2], new_cumul[2])*self.e_rate["+"]["Night"])
+                case "-€ Night":
+                    delta_cumul.append(get_diff_meter_flips(old_cumul[3], new_cumul[3])*self.e_rate["-"]["Night"])
+                case _:
+                    delta_cumul.append(new_cumul[x] - old_cumul[x])
+        return delta_cumul
+
     def set_data(self):
         # make a default data structure, read actual from pickle if any, else start from this
         self.data = {"meters": {"Electricity": {"+Day": 0, "-Day": 0, "+Night": 0, "-Night": 0, "unit": "kWh"},
@@ -105,7 +127,7 @@ class Usage:
             self.prev_cumul = self.data["cumul"]
             self.prev_time = self.data["cur_time"]
             # day processing is possible as we have a previous measurement
-            self.delta_cumul = [self.now_cumul[x] - self.prev_cumul[x] for x in range(len(self.now_cumul))]
+            self.delta_cumul = self.get_delta_cumul(self.now_cumul, self.prev_cumul)
             if self.prev_time.day != self.cur_time.day:
                 # a new day has started, push the last data as json file
                 self.json_file(self.data, f"{self.prefix_history}data.json")
