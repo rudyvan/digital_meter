@@ -7,7 +7,7 @@ from config import serial_port, socket_info
 
 from dm_app import BusMeter
 
-from .app import log_app, pickle_app, SocketApp
+from app import log_app, pickle_app, SocketApp
 
 from rich.traceback import install
 
