@@ -39,7 +39,8 @@ class Logger:
 
     @property
     def prefix_history(self):
-        mm_dd = datetime.date.today().isoformat()[5:]
+        # take yesterday date and format it to MM-DD
+        mm_dd = (datetime.date.today()-datetime.timedelta(days=1)).isoformat()[5:]
         return f"{self.dir_history}{mm_dd}_"
 
     def clear_handlers(self, logger):
