@@ -10,9 +10,8 @@ else
   APP_DIR=$HOME_DIR/digital_meter
   BIN="/usr/bin"
   PATH=$BIN:$PATH
-  # source .bashrc
-  # source .profile
-  . ${PYENV_ROOT}/versions/3.12.2/bin/activate
+  source .bashrc
+  source .profile
 fi
 cd $APP_DIR
 tmux set-option -g default-shell /bin/bash
