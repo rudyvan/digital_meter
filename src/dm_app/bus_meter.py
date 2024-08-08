@@ -236,6 +236,7 @@ class BusMeter(Screens, Usage):
                 except Exception as e:
                     pi.console.print_exception(extra_lines=10, show_locals=True, width=200, word_wrap=True)
                     self.serial_bye(f"Something went wrong...{e}")
+                    pi.tmux.close_sessions()
                     break
 
     def run(self):

@@ -3,6 +3,7 @@
 from .logger import Logger
 from .pickleit import PickleIt
 from .my_socket import SocketApp
+from .tmux import TMux
 
 from rich.console import Console
 
@@ -15,5 +16,6 @@ class SysEnv:
         self.log_app = Logger(self.console)
         self.pickle_app = PickleIt(self.log_app)
         self.socket_app = SocketApp(socket_info, self.log_app)
+        self.tmux = TMux()
 
 pi = SysEnv()
