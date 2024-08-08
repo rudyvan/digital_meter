@@ -23,7 +23,7 @@ class PickleIt:
             try:
                 with open(pickle_file, "rb") as f:
                     self.data = pickle.load(f)
-                self.log_app.
+                self.log_app.add(f"{pickle_file} loaded")
             except Exception as e:
                 self.log_app.add(f"!! err_pickle_load {pickle_file} {e}")
         else:
