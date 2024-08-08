@@ -77,7 +77,7 @@ class Logger:
         # 3. create the handlers
         logger = logging.getLogger(self.log_name)
         add_handler(logger, logging.FileHandler(self.log_file))
-        add_handler(logger, RichHandler(level=logging.INFO, console=self.console, rich_tracebacks=True))
+        add_handler(logger, RichHandler(level=logging.INFO, console=pi.console, rich_tracebacks=True))
         # make the files not empty and show welcome message through the handlers
         logger.error(why)
 
@@ -95,7 +95,7 @@ class Logger:
         txt_plus = f"{txt}\nstack={','.join(f'{frame.filename}@{frame.lineno}' for frame in inspect.stack())}" if is_crash else txt
         pi.console.print(escape(f"!!{'' if is_crash else 'No '}Exception --> {txt}"))
         if is_crash:
-            self.console.print_exception(extra_lines=10, show_locals=True, width=200, word_wrap=True)
+            pi.console.print_exception(extra_lines=10, show_locals=True, width=200, word_wrap=True)
         self.log_it_info(txt_plus, tpe="error" if is_crash else "info", exc_info=is_crash)
 
     def log_move(self):

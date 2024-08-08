@@ -7,11 +7,10 @@ from collections import namedtuple
 import crcmod.predefined
 import serial_asyncio
 
-from rich.console import Console
 from rich.live import Live
 from rich.text import Text
 
-from digital_meter import pi
+from ..app import pi
 
 from .usage import Usage
 from .screens import Screens
