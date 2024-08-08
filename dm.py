@@ -5,7 +5,7 @@
 
 from config import serial_port, socket_info
 
-from dm_app import BusMeter
+from digital_meter import BusMeter
 
 from app import pi
 
