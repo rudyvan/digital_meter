@@ -17,18 +17,17 @@ import datetime
 from rich.logging import RichHandler
 from rich.markup import escape
 
+from ..config import dir_history, log_name, log_file
+
 class Logger:
     def __init__(self, console, *args, **kwargs):
-        self.log_name = "log_info"
-        self.log_file = f"{self.log_name}.log"
-        self.dir_history = "./history/"
         self.console = console
-        if not os.path.exists(self.dir_history):
-            os.makedirs(self.dir_history)
+        if not os.path.exists(dir_history):
+            os.makedirs(dir_history)
         super().__init__(*args, **kwargs)
 
     def log_it_info(self, txt, tpe="info", **kw):
-        getattr(logging.getLogger(self.log_name), tpe)(txt, **kw)
+        getattr(logging.getLogger(log_name), tpe)(txt, **kw)
 
     def log_add(self, msg):
         """ add a log message to the log file"""
@@ -42,7 +41,7 @@ class Logger:
     def prefix_history(self):
         # take yesterday date and format it to MM-DD
         mm_dd = (datetime.date.today()-datetime.timedelta(days=1)).isoformat()[5:]
-        return f"{self.dir_history}{mm_dd}_"
+        return f"{dir_history}{mm_dd}_"
 
     def clear_handlers(self, logger):
         while logger.hasHandlers():
@@ -53,7 +52,7 @@ class Logger:
 
     def rich_handler_errors_only(self):
         # set the screen handler in tmux session luce to errors only
-        for handler in logging.getLogger(self.log_name).handlers:
+        for handler in logging.getLogger(log_name).handlers:
             if isinstance(handler, RichHandler):
                 handler.setLevel(logging.ERROR)
 
@@ -66,7 +65,7 @@ class Logger:
 
         # 1. set the log level to ERROR level only except for asyncio where is set to WARNING
         for key in logging.Logger.manager.loggerDict:
-            if key == self.log_name:
+            if key == log_name:
                 self.clear_handlers(logging.getLogger(key))
             else:
                 logging.getLogger(key).setLevel(logging.WARNING if "asyncio" in key else logging.ERROR)
@@ -74,8 +73,8 @@ class Logger:
         format = f"%(asctime)s {self.host_name} %(message)s"
         logging.basicConfig(level=logging.INFO, format=format, datefmt="%Y-%m-%d %X")
         # 3. create the handlers
-        logger = logging.getLogger(self.log_name)
-        add_handler(logger, logging.FileHandler(self.log_file))
+        logger = logging.getLogger(log_name)
+        add_handler(logger, logging.FileHandler(log_file))
         add_handler(logger, RichHandler(level=logging.INFO, console=self.console, rich_tracebacks=True))
         # make the files not empty and show welcome message through the handlers
         logger.error(why)
@@ -84,7 +83,7 @@ class Logger:
         logging.shutdown()
 
     def log_close(self):
-        self.clear_handlers(logging.getLogger(self.log_name))
+        self.clear_handlers(logging.getLogger(log_name))
 
     def log_crash(self, txt):
         """log and print a crash and use sys.exec_info or make up a crash message
@@ -99,8 +98,8 @@ class Logger:
 
     def log_move(self):
         """ move the log files to the history folder, ensure with the date MM-DD one file every year"""
-        if os.path.exists(self.log_file):
-            os.rename(self.log_file, f"{self.prefix_history}{self.log_file}")
+        if os.path.exists(log_file):
+            os.rename(log_file, f"{self.prefix_history}{log_file}")
 
     def log_restart(self):
         self.log_close()
