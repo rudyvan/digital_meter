@@ -4,14 +4,16 @@ import datetime
 import os
 import pickle
 
+from ..config import pickle_file
+
 class PickleIt:
     """ this is a class to pickle data to a file and unpickle it"""
 
-    pickle_file = "data.pickle"
+    # pickle_file = "data.pickle"
 
     def __init__(self, log_app, *args, **kwargs):
         self.log_app = log_app
-        self.file_n = PickleIt.pickle_file
+        self.file_n = pickle_file
         super().__init__(*args, **kwargs)
 
     def var_save(self):
