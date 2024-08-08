@@ -26,11 +26,12 @@ class SocketApp:
             self._ws_ep = self.socket_info["ws_url"].format_map(self.socket_info)
         return self._ws_ep
 
-    async def send_ws(self, data) -> (bool, "success"):
+    async def send_ws(self, data, dest_ip) -> (bool, "success"):
         """send data to a socket for a host with ip, port, and path"""
+        self.socket_info["dest_ip"] = dest_ip
         if not self.ws_ep:
             return False
-        to_snd = data if isinstance(data, str) else self.json_it({"type": "dm", "cmd": "data", "data": data})
+        to_snd = data if isinstance(data, str) else self.json_it(data)
         self.log_app.add(f"send_ws {self.ws_ep} {len(to_snd)=} bytes")
         tries = 0
         while True:
@@ -66,7 +67,8 @@ class SocketApp:
         data_dct["cmd"] = "reply"
         data_dct["val"] = 0.0
         await ws.send_json(data_dct)
-        self.log_app.add(f"received {data} from {ip} --> {data_dct}")
+        asyncio.create_task(self.send_ws(data_dct))
+        self.log_app.add(f"{ip=} -> {data} <-- {data_dct}")
         return
 
 
