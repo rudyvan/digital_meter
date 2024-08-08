@@ -13,7 +13,7 @@ class SysEnv:
     def install(self, socket_info):
         self.console = Console(color_system="truecolor")
         self.log_app = Logger()
-        self.pickle_app = PickleIt()
+        self.pickle_app = PickleIt(self.log_app)
         self.socket_app = SocketApp(socket_info)
 
 pi = SysEnv()
