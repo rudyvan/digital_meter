@@ -65,10 +65,11 @@ class Logger:
 
         # 1. set the log level to ERROR level only except for asyncio where is set to WARNING
         for key in logging.Logger.manager.loggerDict:
-            logging.getLogger(key).setLevel(logging.WARNING if "asyncio" in key else logging.ERROR)
-            logging.getLogger(key).propagate = True
-        # 2. stop all handlers from the default logger
-        self.clear_handlers(logging.getLogger())
+            if key == self.log_name:
+                self.clear_handlers(logging.getLogger(key))
+            else:
+                logging.getLogger(key).setLevel(logging.WARNING if "asyncio" in key else logging.ERROR)
+                logging.getLogger(key).propagate = True
         format = f"%(asctime)s {self.host_name} %(message)s"
         logging.basicConfig(level=logging.INFO, format=format, datefmt="%Y-%m-%d %X")
         # 3. create the handlers
