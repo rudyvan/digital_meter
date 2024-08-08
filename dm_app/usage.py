@@ -2,6 +2,7 @@
 
 import datetime
 import json
+from digital_meter import pi
 
 class Usage:
     def __init__(self, *args, **kwargs):
@@ -82,7 +83,7 @@ class Usage:
 
     def json_file(self, dct, file_n):
         """ dump the data in json format in history_dir/file_n"""
-        with open(f"{self.log_app.prefix_history}{file_n}", "w") as f:
+        with open(f"{pi.log_app.prefix_history}{file_n}", "w") as f:
             f.write(self.json_it(dct))
 
     def update_quarter_peak(self):
@@ -104,7 +105,7 @@ class Usage:
             if self.peak_forecast > self.day_peak["Today"][0]:
                 # add nty new peak for the day
                 self.day_peak["Today"] = [self.peak_forecast, self.cur_time-datetime.timedelta(seconds=self.clock_done)]
-                self.pickle_app.var_save()
+                pi.pickle_app.var_save()
         # beware, when producing energy, the quarter_peak is ZERO
         self.peak_gap = self.month_peak['value']-self.peak_forecast
         self.peak_gap_style = "green" if self.peak_gap > 0 else "red"
@@ -143,7 +144,7 @@ class Usage:
                 # a new day has started, push the last data as json file
                 self.json_file(self.data, "data.json")
                 # save and restart the log
-                self.log_app.log_restart()
+                pi.log_app.log_restart()
                 # move the usage and day_peak one day back
                 for old, prev in [("Day-3", "Day-2"), ("Day-2", "Day-1"), ("Day-1", "Today")]:
                     if prev in self.usage:
@@ -172,6 +173,6 @@ class Usage:
         self.data["cur_time"] = self.cur_time
         self.data["cumul"] = self.now_cumul
         self.data["prev_quarter_peak"], self.data["quarter_peak"] = self.data["quarter_peak"], self.quarter_peak
-        self.pickle_app.var_save()
+        pi.pickle_app.var_save()
         return self.update_quarter_peak()
 

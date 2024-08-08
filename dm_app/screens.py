@@ -7,7 +7,6 @@ from rich.progress import Progress, SpinnerColumn, BarColumn, TextColumn
 
 import datetime
 
-
 class Screens:
     """ this is a class to make a screen for the console"""
     def __init__(self, *args, **kwargs):
@@ -100,16 +99,6 @@ class Screens:
                     table.add_row("¼ @ hh:mm",   *dp, style="blue", end_section=True)
         return table
 
-    def make_log_table(self) -> Table:
-        table = Table.grid()
-        table.add_column(justify="left", style="cyan")
-        table.add_column(justify="left", style="magenta")
-        table.add_column(justify="left", style="magenta")
-        for row in sorted(self.log, reverse=True):
-            table.add_row(row, " ", self.log[row])
-        return table
-
-
     def make_month_peak_table(self) -> Table:
         table = Table(show_lines=False, expand=True)
         table.add_column("Month", justify="left", style="cyan", no_wrap=True)
@@ -146,7 +135,6 @@ class Screens:
         layout["header"].update(self.make_header())
         layout["telegram"].update(Panel(self.make_telegram_table(), title="Telegram"))
         layout["month_peak"].update(Panel(self.make_month_peak_table(), title="Months Peak"))
-        # layout["log"].update(Panel(self.make_log_table(), title="Log"))
         layout["usage"].update(Panel(self.make_usage_table(),
                                            title=f"Usage since {self.ts_str(self.data['start_time'])}"))
         layout["rate"].update(Panel(self.make_rate_table(),
