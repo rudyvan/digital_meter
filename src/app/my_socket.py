@@ -65,7 +65,7 @@ class SocketApp:
 
         reply = data.replace("set", "reply").replace("ask", "reply").replace("null", "0.0")
         self.log_app.add(f"received {data} from {ip} --> {reply}")
-        return await ws.send_str(reply)
+        return await ws.send(reply)
 
         match data:
             case "?":
