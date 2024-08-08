@@ -63,10 +63,10 @@ class SocketApp:
         """
 
 
+        reply = data.replace("set", "reply").replace("ask", "reply").replace("None", 0.0)
+        self.log_app.add(f"received {data} from {ip} --> {reply}")
+        return await ws.send_str(reply)
 
-        if "purchased_water" in data:
-            self.log_app.add(f"received {data} from {ip}")
-            return await ws.send_str(data.replace("set", "reply"))
         match data:
             case "?":
                 resp_str = self.json_it({"type": "dm", "cmd": "data", "data": self.data})
