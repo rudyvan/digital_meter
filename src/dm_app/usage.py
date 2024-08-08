@@ -7,6 +7,8 @@ from ..config import usage_columns, usage_rows, day_peak_columns
 
 class Usage:
     def __init__(self, *args, **kwargs):
+        self.producing = False
+        self.prev_kW_min = 0.0
         super().__init__(*args, **kwargs)
 
     # unfortunately namedtuples cannot be used in pickle, so for day_peak we have to use a list
@@ -100,6 +102,7 @@ class Usage:
             if self.peak_forecast > self.day_peak["Today"][0]:
                 # add nty new peak for the day
                 self.day_peak["Today"] = [self.peak_forecast, self.cur_time-datetime.timedelta(seconds=self.clock_done)]
+                pi.log_app.add(f"New Day Peak - {self.day_peak['Today']=}")
                 pi.pickle_app.var_save()
         # beware, when producing energy, the quarter_peak is ZERO
         self.peak_gap = self.month_peak['value']-self.peak_forecast
@@ -175,5 +178,14 @@ class Usage:
         self.data["cumul"] = self.now_cumul
         self.data["prev_quarter_peak"], self.data["quarter_peak"] = self.data["quarter_peak"], self.quarter_peak
         pi.pickle_app.var_save()
+        if self.producing and self.kW_min < 0.0:
+            self.producing = False
+            pi.log_app.add("Producing stopped")
+        elif not self.producing and self.kW_min > 0.01:
+            self.producing = True
+            pi.log_app.add(f"Producing Energy Started {self.kW_min=}")
+        if self.producing and abs(self.kW_min - self.prev_kW_min) > 1:
+            pi.log_app.add(f"Producing Energy going {'up' if self.kW_min > self.prev_kW_min else 'down'} {self.kW_min=}")
+            self.prev_kW_min = self.kW_min
         return self.update_quarter_peak()
 
