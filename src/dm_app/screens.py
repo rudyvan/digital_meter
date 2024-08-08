@@ -100,8 +100,8 @@ class Screens:
                     table.add_row("Peak kW", *p, style="blue"),
                     table.add_row("¼ @ hh:mm",   *dp, style="blue", end_section=True)
                 case "Σ € Water":  # add sum all utilities to the list
-                    sum_c = lambda r: sum(self.usage[x][r] for x in ["Σ € kWh", "Σ € Gas", "Σ € Water"])
-                    su = [f"{sum_c(r):.2f}" for r, p in enumerate(usage_columns)]
+                    sum_c = lambda c: sum(self.usage[c][usage_rows.index(r)] for r in ["Σ € kWh", "Σ € Gas", "Σ € Water"])
+                    su = [f"{sum_c(r):.2f}" for c in usage_columns]
                     table.add_row("Σ € Utilities",   *su, style="bold white", end_section=True)
         return table
 
