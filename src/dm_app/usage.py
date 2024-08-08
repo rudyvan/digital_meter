@@ -174,6 +174,9 @@ class Usage:
                 continue  # these are not updated
             for pos, val in enumerate(self.delta_cumul):
                 self.usage[period][pos] += val
+        # 6. update Σ € Utilities
+        sum_c = lambda c: sum(self.usage[c][usage_rows.index(r)] for r in ["Σ € kWh", "Σ € Gas", "Σ € Water"])
+        self.usage["Σ € Utilities"] = [f"{sum_c(c):.2f}" for c in usage_columns]
         self.data["cur_time"] = self.cur_time
         self.data["cumul"] = self.now_cumul
         self.data["prev_quarter_peak"], self.data["quarter_peak"] = self.data["quarter_peak"], self.quarter_peak

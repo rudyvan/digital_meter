@@ -99,10 +99,9 @@ class Screens:
                         dp.append(_when)
                     table.add_row("Peak kW", *p, style="blue"),
                     table.add_row("¼ @ hh:mm",   *dp, style="blue", end_section=True)
-                case "Σ € Water":  # add sum all utilities to the list
-                    sum_c = lambda c: sum(self.usage[c][usage_rows.index(r)] for r in ["Σ € kWh", "Σ € Gas", "Σ € Water"])
-                    su = [f"{sum_c(c):.2f}" for c in usage_columns]
-                    table.add_row("Σ € Utilities",   *su, style="bold white", end_section=True)
+        # add sum of all utilities to the table
+        if "Σ € Utilities" in self.usage:
+            table.add_row("Σ € Utilities", *self.usage["Σ € Utilities"], style="bold white", end_section=True)
         return table
 
     def make_month_peak_table(self) -> Table:

@@ -73,6 +73,8 @@ obiscodes = {
 }
 
 usage_columns = ["Day-3", "Day-2", "Day-1", "Today", "Week", "Month", "Year"]
+
+# please note that "Σ € Utilities" is a calculated row (with strings) and is added to the table by the usage script
 usage_rows = ["+Day", "-Day", "+Night", "-Night", "Σ kWh", "+€ Day", "-€ Day", "+€ Night", "-€ Night",
                             "Σ € kWh", "m3 Gas", "Σ € Gas", "m3 Water", "Σ € Water"]
 rate_columns = ["Rate", "€/kWh Day", "€/kWh Night", "€/m3 Gas", "€/m3 Water"]
