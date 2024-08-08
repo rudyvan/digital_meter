@@ -9,8 +9,8 @@ else
   APP_DIR=$(echo ~)/digital_meter
 fi
 cd $APP_DIR
-sudo /bin/bash -c "source .venv/bin/activate"
-source .venv/bin/activate
+# sudo /bin/bash -c "source .venv/bin/activate"
+# source .venv/bin/activate
 while true; do
     python -u $1
     if [ $? -eq 1 ]; then

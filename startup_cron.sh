@@ -10,11 +10,11 @@ else
   APP_DIR=$HOME_DIR/digital_meter
   BIN="/usr/bin"
   PATH=$BIN:$PATH
-  # source .bashrc
-  # source .profile
+  source .bashrc
+  source .profile
 fi
 cd $APP_DIR
 tmux set-option -g default-shell /bin/bash
-tmux send-keys -t luce "exec bash" C-m
+tmux send-keys -t dm "exec bash" C-m
 # run do_py.sh inside tmux window
-tmux send-keys -t luce "./do_py.sh dm.py" C-m
+tmux send-keys -t dm "./do_py.sh dm.py" C-m
