@@ -29,7 +29,7 @@ class Logger:
     def log_it_info(self, txt, tpe="info", **kw):
         getattr(logging.getLogger(log_name), tpe)(txt, **kw)
 
-    def log_add(self, msg):
+    def add(self, msg):
         """ add a log message to the log file"""
         self.log_it_info(msg)
 

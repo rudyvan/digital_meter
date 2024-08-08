@@ -115,6 +115,20 @@ class Usage:
         """ calculate delta between 2 readings for electricity day/night produced/consumed, water and or gas
             use the meter timestamp for the day/week/month/year transition and reset
         return True if usage has been calculated, else False"""
+        def end_of(period):
+            pi.log_app.add(f"{period} Ended - {self.usage[period]=}")
+            self.usage[period] = self.zero_cumul[:]
+        def end_of_day():
+            self.json_file(self.data, "data.json")
+            # move the usage and day_peak one day back
+            for old, prev in [("Day-3", "Day-2"), ("Day-2", "Day-1"), ("Day-1", "Today")]:
+                if prev in self.usage:
+                    self.usage[old] = self.usage[prev].copy()
+                if prev in self.day_peak:
+                    self.day_peak[old] = self.day_peak[prev].copy()
+            end_of("Today")
+            pi.log_app.add(f"Day Peak - {self.day_peak['Today']=}")
+            self.day_peak["Today"] = Usage._day_peak_zero[:]
         # 1. if no current time then return
         if not hasattr(self, "cur_time"):
             return False
@@ -142,24 +156,16 @@ class Usage:
             self.delta_cumul = self.get_delta_cumul(self.now_cumul, self.prev_cumul)
             if self.prev_time.day != self.cur_time.day:
                 # a new day has started, push the last data as json file
-                self.json_file(self.data, "data.json")
-                # save and restart the log
-                pi.log_app.log_restart()
-                # move the usage and day_peak one day back
-                for old, prev in [("Day-3", "Day-2"), ("Day-2", "Day-1"), ("Day-1", "Today")]:
-                    if prev in self.usage:
-                        self.usage[old] = self.usage[prev].copy()
-                    if prev in self.day_peak:
-                        self.day_peak[old] = self.day_peak[prev].copy()
-                self.usage["Today"] = self.zero_cumul[:]
-                self.day_peak["Today"] = Usage._day_peak_zero[:]
+                end_of_day()
                 # check if a new week, month or year has started
                 if self.prev_time.weekday() == 6:
-                    self.usage["Week"] = self.zero_cumul[:]
+                    end_of("Week")
                 if self.prev_time.month != self.cur_time.month:
-                    self.usage["Month"] = self.zero_cumul[:]
+                    end_of("Month")
                 if self.prev_time.year != self.cur_time.year:
-                    self.usage["Year"] = self.zero_cumul[:]
+                    end_of("Year")
+                # save and restart the log
+                pi.log_app.log_restart()
         else:  # first time, no previous measurement
             self.delta_cumul = self.zero_cumul[:]
             self.prev_time = self.cur_time
