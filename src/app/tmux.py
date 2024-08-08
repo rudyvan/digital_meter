@@ -12,8 +12,6 @@ from rich.live import Live
 from rich.console import Console
 from rich.text import Text
 
-from .pi_utils import pi
-
 class TMux:
     """ manage tmux screens for the dm application"""
     def __init__(self):
@@ -82,9 +80,9 @@ class TMux:
         def _session_wrap(coro):
             @functools.wraps(coro)
             async def _a_session_wrap(selfie, *args, **kwargs):
-                pi.nty_assert(all(hasattr(selfie, x) for x in ["make_layout", "update_layout"]),
-                              f"!! screens.session wrap {selfie!r} must have make_layout and update_layout methods")
-                selfie.console = screens.create_session(name, switch=switch)
+                if not all(hasattr(selfie, x) for x in ["make_layout", "update_layout"]):
+                    self.log_console.print(f"!! screens.session wrap {selfie!r} must have make_layout and update_layout methods")
+                selfie.console = self.create_session(name, switch=switch)
                 selfie.layout = selfie.make_layout()
                 while True:
                     with Live(selfie.layout, console=selfie.console) as live:
@@ -93,6 +91,4 @@ class TMux:
             return _a_session_wrap
         return _session_wrap
 
-
-screens = Screens()
 

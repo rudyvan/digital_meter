@@ -3,15 +3,11 @@
 kill_tasks() {
 		for pid in $(ps -ef | awk '/do_py/ {print $2}'); do kill -9 $pid 1> /dev/null 2>&1; done
 		for pid in $(ps -ef | awk '/dm.py/ {print $2}'); do kill -9 $pid 1> /dev/null 2>&1; done
-		for pid in $(ps -ef | awk '/tmux/ {print $2}'); do kill -9 $pid 1> /dev/null 2>&1; done
-		for pid in $(ps -ef | awk '/do_panes/ {print $2}'); do kill -9 $pid 1> /dev/null 2>&1; done
 }
 
 WHAT=$1
 case "$WHAT" in
 	*kill*)
-		#ps -o pid,sess,cmd afx   														# show all processes
-		# kill "$(ps ax | awk '! /awk/ && /apps/ { print $1}')" 1> /dev/null 2>&1		# single process
 		kill_tasks
 	;;
 	*start*)

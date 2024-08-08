@@ -8,6 +8,7 @@ if [[ $(uname) == *"Darwin"* ]]; then
 else
   APP_DIR=$(echo ~)/digital_meter
 fi
+# $(echo ~)/.pyenv/bin/pyenv local lucy
 cd $APP_DIR
 # sudo /bin/bash -c "source .venv/bin/activate"
 # source .venv/bin/activate
