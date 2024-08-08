@@ -55,7 +55,15 @@ class SocketApp:
 
 
     async def reply_ws(self, data, ip, ws):
-        """reply to a websocket server request"""
+        """reply to a websocket server request
+        2024-08-08 18:12:23 PI-Energy !Reply? <PI-DM> for <electricity^fluvius_day> -> {'type': 'th', 'cmd': 'ask', 'th': 'electricity^fluvius_day', 'val': None}
+        2024-08-08 18:12:23 PI-Energy !Reply? <PI-DM> for <electricity^fluvius_night> -> {'type': 'th', 'cmd': 'ask', 'th': 'electricity^fluvius_night', 'val': None}
+        2024-08-08 18:12:23 PI-Energy !Reply? <PI-DM> for <gas^purchased_gas> -> {'type': 'th', 'cmd': 'ask', 'th': 'gas^purchased_gas', 'val': None}
+        2024-08-08 18:12:23 PI-Energy !Reply? <PI-DM> for <domestic_water^pidpa> -> {'type': 'th', 'cmd': 'ask', 'th': 'domestic_water^pidpa', 'val': None}
+        """
+
+
+
         if "purchased_water" in data:
             self.log_app.add(f"received {data} from {ip}")
             return await ws.send_str(data.replace("set", "reply"))
