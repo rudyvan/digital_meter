@@ -72,3 +72,8 @@ obiscodes = {
     "0-4:24.4.0": obis_el("gas_breaker_4", 70, "Gas Valve Bus 4, 0=OFF, 1=ON, 2=Ready Reconnect")
 }
 
+usage_columns = ["Day-3", "Day-2", "Day-1", "Today", "Week", "Month", "Year"]
+usage_rows = ["+Day", "-Day", "+Night", "-Night", "Σ kWh", "+€ Day", "-€ Day", "+€ Night", "-€ Night",
+                            "Σ € kWh", "m3 Gas", "Σ € Gas", "m3 Water", "Σ € Water"]
+rate_columns = ["Rate", "€/kWh Day", "€/kWh Night", "€/m3 Gas", "€/m3 Water"]
+day_peak_columns = ["Day-3", "Day-2", "Day-1", "Today"]

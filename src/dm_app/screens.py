@@ -7,6 +7,8 @@ from rich.progress import Progress, SpinnerColumn, BarColumn, TextColumn
 
 import datetime
 
+from ..config import rate_columns, usage_columns, usage_rows
+
 class Screens:
     """ this is a class to make a screen for the console"""
     def __init__(self, *args, **kwargs):
@@ -44,7 +46,7 @@ class Screens:
 
     def make_rate_table(self) -> Table:
         table = Table(show_lines=False, expand=True, box=None)
-        for rate_c in self._rate_columns():
+        for rate_c in rate_columns:
             # make the column for the rate table cyan if it is the current rate else magenta
             hit = True if "kWh" not in rate_c else \
                 ((self.cur_rate == 1) and ("Day" in rate_c)) or ((self.cur_rate == 2) and ("Night" in rate_c))
@@ -67,16 +69,16 @@ class Screens:
         table = Table(show_lines=False, expand=True)
         table.add_column("Usage/Cost", justify="left", style="magenta")
 
-        for x in self._usage_columns():
+        for x in usage_columns:
             # change the header text to the day of the week if it is a past day
             txt = x if "Day-" not in x else (self.data["cur_time"]-datetime.timedelta(days=int(x.split("-")[1]))).strftime("%A")
             table.add_column(txt, justify="right", style="magenta" if x == "Today" else "green")
 
-        for pos, line in enumerate(self._usage_rows()):
+        for pos, line in enumerate(usage_rows):
             # highlight day or night usage depending on the current rate
             hit = (self.cur_rate == 1 and "Day" in line or self.cur_rate == 2 and "Night" in line)
             line_1st = "   (R1)" if "day" in line.lower() else " (R2)" if "night" in line.lower() else ""
-            table.add_row(f"{line}{line_1st}", *[f"{self.usage[x][pos]:.2f}" for x in self._usage_columns()],
+            table.add_row(f"{line}{line_1st}", *[f"{self.usage[x][pos]:.2f}" for x in usage_columns],
                           style="green" if hit else "blue", end_section=True if "Σ" in line else False)
             # insert some lines at the right point
             match line:
@@ -84,10 +86,10 @@ class Screens:
                     if "cnv" in self.rates_dct["Gas"]:
                         cnv_str, cnv = self.rates_dct["Gas"]["cnv"]
                         table.add_row(line.replace("m3", cnv_str),
-                                      *[f"{self.usage[x][pos]*cnv:.2f}" for x in self._usage_columns()], style="blue")
+                                      *[f"{self.usage[x][pos]*cnv:.2f}" for x in usage_columns], style="blue")
                 case "Σ € kWh":  # add the 2 quarter peak lines when a day in the column to mark a day peak
                     p, dp = [], []
-                    for x in self._usage_columns():
+                    for x in usage_columns:
                         # make the columns for the day_peak "-" if it is not a day peak or when not time set
                         if "day" in x.lower() and (_when := self.day_peak[x][1]):
                             _peak, _when = f"{self.day_peak[x][0]:.2f}", f"{_when.strftime('%H:%M')}"

@@ -3,24 +3,19 @@
 import datetime
 import json
 from ..app import pi
+from ..config import usage_columns, usage_rows, day_peak_columns
 
 class Usage:
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    # for those counters that are also usage:    do not include labels for hour/minute as these are not reported
-    _usage_columns = lambda self: ["Day-3", "Day-2", "Day-1", "Today", "Week", "Month", "Year"]
-    _usage_rows = lambda self: ["+Day", "-Day", "+Night", "-Night", "Σ kWh", "+€ Day", "-€ Day", "+€ Night", "-€ Night",
-                                "Σ € kWh", "m3 Gas", "Σ € Gas", "m3 Water", "Σ € Water"]
-    _rate_columns = lambda self: ["Rate", "€/kWh Day", "€/kWh Night", "€/m3 Gas", "€/m3 Water"]
-    _day_peak_columns = lambda self: ["Day-3", "Day-2", "Day-1", "Today"]
     # unfortunately namedtuples cannot be used in pickle, so for day_peak we have to use a list
     _day_peak_zero = [0, None]
 
     @property
     def zero_cumul(self):
         if not hasattr(self, "_zero_cumul"):
-            self._zero_cumul = [0 for _ in range(len(self._usage_rows()))]
+            self._zero_cumul = [0 for _ in range(len(usage_rows))]
         return self._zero_cumul
 
     def get_delta_cumul(self, new_cumul, old_cumul):
@@ -29,7 +24,7 @@ class Usage:
         # the counter flipped over if new < old
         get_diff_meter_flips = lambda old, new: 10**(len(str(abs(old)).partition(".")[0])) + new - old if abs(new) < abs(old) else new - old
         delta_cumul = []
-        for x, r in enumerate(self._usage_rows()):
+        for x, r in enumerate(usage_rows):
             match r:
                 case "+Day" | "-Day" | "+Night" | "-Night":
                     delta_cumul.append(get_diff_meter_flips(old_cumul[x], new_cumul[x]))
@@ -50,10 +45,10 @@ class Usage:
         self.data = {"meters": {"Electricity": {"+Day": 0, "-Day": 0, "+Night": 0, "-Night": 0, "unit": "kWh"},
                                 "Gas": {"value": 0, "time": datetime.datetime.now(), "unit": "m3"},
                                 "Water": {"value": 0, "time": datetime.datetime.now(), "unit": "m3"} },
-                     "usage": dict((x, self.zero_cumul[:]) for x in self._usage_columns()),
+                     "usage": dict((x, self.zero_cumul[:]) for x in usage_columns),
                      "cur_time": datetime.datetime.now(),
                      "start_time": datetime.datetime.now(),
-                     "day_peak": dict((x, Usage._day_peak_zero[:]) for x in self._day_peak_columns()),
+                     "day_peak": dict((x, Usage._day_peak_zero[:]) for x in day_peak_columns),
                                            #  peak value, time of peak
                      "quarter_peak": 0}
 
@@ -171,7 +166,7 @@ class Usage:
             self.prev_time = self.cur_time
             self.data["quarter_peak"] = 0
         # 5. add the difference between both measurements to the usage
-        for period in self._usage_columns():
+        for period in usage_columns:
             if "Day-" in period:
                 continue  # these are not updated
             for pos, val in enumerate(self.delta_cumul):
