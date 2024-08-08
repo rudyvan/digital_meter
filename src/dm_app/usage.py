@@ -103,7 +103,7 @@ class Usage:
                 # add nty new peak for the day
                 self.day_peak["Today"] = [self.peak_forecast, self.cur_time-datetime.timedelta(seconds=self.clock_done)]
                 pi.log_app.add(f"New Day Peak - {self.day_peak['Today']=}")
-                pi.pickle_app.var_save()
+                pi.pickle_app.var_save(self)
         # beware, when producing energy, the quarter_peak is ZERO
         self.peak_gap = self.month_peak['value']-self.peak_forecast
         self.peak_gap_style = "green" if self.peak_gap > 0 else "red"
@@ -180,7 +180,7 @@ class Usage:
         self.data["cur_time"] = self.cur_time
         self.data["cumul"] = self.now_cumul
         self.data["prev_quarter_peak"], self.data["quarter_peak"] = self.data["quarter_peak"], self.quarter_peak
-        pi.pickle_app.var_save()
+        pi.pickle_app.var_save(self)
         if self.producing and self.kW_min < 0.01:
             self.producing = False
             pi.log_app.add("Producing stopped")

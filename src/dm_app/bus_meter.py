@@ -246,6 +246,6 @@ class BusMeter(Screens, Usage):
         # 2. set the default data in case no pickle file is present
         self.set_data()
         # 3. restore the data from pickle file if present
-        pi.pickle_app.var_restore()
+        pi.pickle_app.var_restore(self)
         self.set_pointers()
         asyncio.run(self.main_loop())
