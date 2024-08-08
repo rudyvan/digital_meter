@@ -7,9 +7,7 @@ import rich
 
 from config import serial_port, socket_info
 
-from dm_app import BusMeter
-
-from app import pi
+from src import BusMeter, pi
 
 rich.traceback.install(width=180, extra_lines=10, show_locals=True)
 
