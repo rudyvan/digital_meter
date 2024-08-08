@@ -62,23 +62,13 @@ class SocketApp:
         2024-08-08 18:12:23 PI-Energy !Reply? <PI-DM> for <gas^purchased_gas> -> {'type': 'th', 'cmd': 'ask', 'th': 'gas^purchased_gas', 'val': None}
         2024-08-08 18:12:23 PI-Energy !Reply? <PI-DM> for <domestic_water^pidpa> -> {'type': 'th', 'cmd': 'ask', 'th': 'domestic_water^pidpa', 'val': None}
         """
-
         data_dct = json.loads(data)
         data_dct["cmd"] = "reply"
         data_dct["val"] = 0.0
+        await ws.send_json(data_dct)
         self.log_app.add(f"received {data} from {ip} --> {data_dct}")
-        return await ws.send_json(data_dct)
-
-        match data:
-            case "?":
-                resp_str = self.json_it({"type": "dm", "cmd": "data", "data": self.data})
-            case "!":
-                resp_str = self.json_it({"type": "dm", "cmd": "rates", "rates": self.rates_dct})
-            case _:
-                resp_str = f"reply to {data}"
-        await ws.send_str(resp_str)
-        self.log_app.add(f"processed {data} from {ip} and returned {len(resp_str)} bytes")
         return
+
 
     @property
     def my_ip(self):  # return my ip address
