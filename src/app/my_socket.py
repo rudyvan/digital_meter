@@ -45,7 +45,7 @@ class SocketApp:
         while True:
             try:
                 async with websockets.connect(self.ws_ep) as self.websocket:
-                    await self.websocket.send(to_snd)
+                    await self.websocket.send_json(data)
                     return True
             except asyncio.CancelledError:
                 return False
