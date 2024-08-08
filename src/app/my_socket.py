@@ -5,6 +5,7 @@ from aiohttp import web
 import websockets
 import socket
 import json
+import datetime
 
 app = web.Application()
 
@@ -23,12 +24,19 @@ class SocketApp:
             if not all(self.socket_info.get(k, False) for k in ["dest_ip", "dest_port", "ws_url"]):
                 self.log_app.add(f"send_ws failed as no end point")
                 return ""
-            self._ws_ep = self.socket_info["ws_url"].format_map(self.socket_info)
+        self._ws_ep = self.socket_info["ws_url"].format_map(self.socket_info)
         return self._ws_ep
+
+    def json_it(self, dct):
+        """ dump the data in json format"""
+        encode_JSON = lambda x: self.ts_str(x) if isinstance(x, datetime.datetime) else repr(x)
+        return json.dumps(dct, indent=4, sort_keys=True, default=encode_JSON)
 
     async def send_ws(self, data, dest_ip) -> (bool, "success"):
         """send data to a socket for a host with ip, port, and path"""
+        self.log_app.add(f"send_ws bytes")
         self.socket_info["dest_ip"] = dest_ip
+
         if not self.ws_ep:
             return False
         to_snd = data if isinstance(data, str) else self.json_it(data)
