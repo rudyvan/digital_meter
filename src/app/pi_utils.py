@@ -14,6 +14,6 @@ class SysEnv:
         self.console = Console(color_system="truecolor")
         self.log_app = Logger()
         self.pickle_app = PickleIt(self.log_app)
-        self.socket_app = SocketApp(socket_info)
+        self.socket_app = SocketApp(socket_info, self.log_app)
 
 pi = SysEnv()

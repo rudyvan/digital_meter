@@ -5,16 +5,14 @@ from aiohttp import web
 import websockets
 import socket
 
-from .logger import log_app
-
-
 app = web.Application()
 
 
 class SocketApp:
     """aiohttp web application"""
-    def __init__(self, socket_info, *args, **kwargs):
+    def __init__(self, socket_info, log_app, *args, **kwargs):
         self.socket_info = socket_info
+        self.log_app = log_app
         super().__init__(*args, **kwargs)
 
     @property
@@ -22,7 +20,7 @@ class SocketApp:
         """return websocket end point"""
         if not hasattr(self, "_ws_ep"):
             if not all(self.socket_info.get(k, False) for k in ["dest_ip", "dest_port", "ws_url"]):
-                log_app.log_add(f"send_ws failed as no end point")
+                self.log_app.log_add(f"send_ws failed as no end point")
                 return ""
             self._ws_ep = self.socket_info["ws_url"].format_map(self.socket_info)
         return self._ws_ep
@@ -32,7 +30,7 @@ class SocketApp:
         if not self.ws_ep:
             return False
         to_snd = data if isinstance(data, str) else self.json_it({"type": "dm", "cmd": "data", "data": data})
-        log_app.log_add(f"send_ws {self.ws_ep} {len(to_snd)=} bytes")
+        self.log_app.log_add(f"send_ws {self.ws_ep} {len(to_snd)=} bytes")
         tries = 0
         while True:
             try:
@@ -45,7 +43,7 @@ class SocketApp:
                     websockets.exceptions.InvalidMessage) as e:
                 tries += 1
                 if tries > 3:
-                    log_app.log_add(f"send_ws {self.ws_ep} failed: {e}")
+                    self.log_app.log_add(f"send_ws {self.ws_ep} failed: {e}")
                     return False  # remote server is not ready after tries
                 await asyncio.sleep(0.5)
             except Exception as e:
@@ -66,7 +64,7 @@ class SocketApp:
             case _:
                 resp_str = f"reply to {data}"
         await ws.send_str(resp_str)
-        log_app.log_add(f"processed {data} from {ip} and returned {len(resp_str)} bytes")
+        self.log_app.log_add(f"processed {data} from {ip} and returned {len(resp_str)} bytes")
         return
 
     @property
@@ -82,7 +80,7 @@ class SocketApp:
     async def server_start(self):
         """start the aiohttp websocket server"""
         if not self.socket_info or not all(self.socket_info.get(k, False) for k in ["server_port", "remote_ips"]):
-            return log_app.log_add("Web socket server not started, ?server port, ?remote ips in socket_info")
+            return self.log_app.log_add("Web socket server not started, ?server port, ?remote ips in socket_info")
         app.add_routes([web.get('/ws', self.websocket_handler)])
         runner = web.AppRunner(app)
         await runner.setup()
@@ -92,7 +90,7 @@ class SocketApp:
     async def websocket_handler(self, request):
         """aiohttp websocket request handler"""
         if request.remote not in self.socket_info.get("remote_ips", []):
-            log_app.log_add(f"rejected {request.remote=}")
+            self.log_app.log_add(f"rejected {request.remote=}")
             return web.Response(text=f"<p>NOK - rejected</p>", status=400)
         ws = web.WebSocketResponse()
         try:
@@ -102,13 +100,13 @@ class SocketApp:
                     case aiohttp.WSMsgType.TEXT:
                         await self.reply_ws(msg.data, request.remote, ws)
                     case aiohttp.WSMsgType.ERROR:
-                        log_app.log_add(f"error web socket {request.remote} {ws.exception()} {msg.type=}")
+                        self.log_app.log_add(f"error web socket {request.remote} {ws.exception()} {msg.type=}")
                     case _:
-                        log_app.log_add(f"error web socket {request.remote} {msg.type=}")
+                        self.log_app.log_add(f"error web socket {request.remote} {msg.type=}")
         except ConnectionResetError as e:  # f.i. e=="Cannot write to closing transport":
             pass
         except Exception as e:
-            log_app.log_add(f"error web socket {request.remote} {e=}")
+            self.log_app.log_add(f"error web socket {request.remote} {e=}")
         return ws
 
 
