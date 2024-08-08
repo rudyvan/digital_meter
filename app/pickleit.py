@@ -6,7 +6,7 @@ import pickle
 
 from rich import json
 
-from .logger import log_app
+from .pi_utils import pi
 
 
 class PickleIt:
@@ -30,9 +30,9 @@ class PickleIt:
                 with open(self.file_n, "rb") as f:
                     self.data = pickle.load(f)
             except Exception as e:
-                log_app.log_add(f"!! err_pickle_load {self.file_n} {e}")
+                pi.log_app.log_add(f"!! err_pickle_load {self.file_n} {e}")
         else:
-            log_app.log_add(f"{self.file_n} not found, started from zero")
+            pi.log_app.log_add(f"{self.file_n} not found, started from zero")
             self.var_save()
 
-pickle_app = PickleIt()
+

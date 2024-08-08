@@ -115,7 +115,6 @@ class BusMeter(Screens, Usage):
         self.p1telegram = bytearray()
         self.obis_dict = {}
         self.bus = {}
-        self.console = Console(color_system="truecolor")
         super().__init__()
 
     async def serial_start(self):
@@ -261,7 +260,7 @@ class BusMeter(Screens, Usage):
         # 4. set the last live refresh time
         last_live, refresh_s = None, 3
         # 5. start the main loop with the live screens
-        with Live(self.layout, console=self.console) as live:
+        with Live(self.layout, console=pi.console) as live:
             while True:
                 self.togather = []
                 try:
@@ -301,7 +300,7 @@ class BusMeter(Screens, Usage):
                     self.serial_bye(f"{error}")
                     break
                 except Exception as e:
-                    self.console.print_exception(extra_lines=10, show_locals=True, width=200, word_wrap=True)
+                    pi.console.print_exception(extra_lines=10, show_locals=True, width=200, word_wrap=True)
                     self.serial_bye(f"Something went wrong...{e}")
                     break
 

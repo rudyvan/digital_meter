@@ -17,6 +17,8 @@ import datetime
 from rich.logging import RichHandler
 from rich.markup import escape
 
+from .pi_utils import pi
+
 class Logger:
     def __init__(self, *args, **kwargs):
         self.log_name = "log_info"
@@ -91,7 +93,7 @@ class Logger:
         crash = sys.exc_info()
         is_crash = any(it is not None for it in crash)
         txt_plus = f"{txt}\nstack={','.join(f'{frame.filename}@{frame.lineno}' for frame in inspect.stack())}" if is_crash else txt
-        self.console.print(escape(f"!!{'' if is_crash else 'No '}Exception --> {txt}"))
+        pi.console.print(escape(f"!!{'' if is_crash else 'No '}Exception --> {txt}"))
         if is_crash:
             self.console.print_exception(extra_lines=10, show_locals=True, width=200, word_wrap=True)
         self.log_it_info(txt_plus, tpe="error" if is_crash else "info", exc_info=is_crash)
@@ -108,4 +110,3 @@ class Logger:
 
     __repr__ = lambda self: "Logger"
 
-log_app = Logger()

@@ -13,13 +13,7 @@ from rich.traceback import install
 
 install(width=180, extra_lines=10, show_locals=True)
 
-class DigitalMeter(BusMeter):
-    def __init__(self):
-        pi.install(socket_info)
-        super().__init__(serial_port)
-        self.log_app.console = self.console
-    def run(self):
-        super().run()
+pi.install(socket_info)
 
 if __name__ == '__main__':
-    DigitalMeter().run()
+    BusMeter(serial_port).run()
