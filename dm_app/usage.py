@@ -2,7 +2,7 @@
 
 import datetime
 import json
-from digital_meter import pi
+from ..app import pi
 
 class Usage:
     def __init__(self, *args, **kwargs):

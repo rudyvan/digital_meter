@@ -14,7 +14,7 @@ from rich.text import Text
 from .usage import Usage
 from .screens import Screens
 
-from digital_meter import pi
+from ..app import pi
 
 class InputChunkProtocol(asyncio.Protocol):
 
