@@ -17,13 +17,12 @@ import datetime
 from rich.logging import RichHandler
 from rich.markup import escape
 
-from .pi_utils import pi
-
 class Logger:
-    def __init__(self, *args, **kwargs):
+    def __init__(self, console, *args, **kwargs):
         self.log_name = "log_info"
         self.log_file = f"{self.log_name}.log"
         self.dir_history = "./history/"
+        self.console = console
         if not os.path.exists(self.dir_history):
             os.makedirs(self.dir_history)
         super().__init__(*args, **kwargs)
@@ -77,7 +76,7 @@ class Logger:
         # 3. create the handlers
         logger = logging.getLogger(self.log_name)
         add_handler(logger, logging.FileHandler(self.log_file))
-        add_handler(logger, RichHandler(level=logging.INFO, console=pi.console, rich_tracebacks=True))
+        add_handler(logger, RichHandler(level=logging.INFO, console=self.console, rich_tracebacks=True))
         # make the files not empty and show welcome message through the handlers
         logger.error(why)
 
@@ -93,9 +92,9 @@ class Logger:
         crash = sys.exc_info()
         is_crash = any(it is not None for it in crash)
         txt_plus = f"{txt}\nstack={','.join(f'{frame.filename}@{frame.lineno}' for frame in inspect.stack())}" if is_crash else txt
-        pi.console.print(escape(f"!!{'' if is_crash else 'No '}Exception --> {txt}"))
+        self.console.print(escape(f"!!{'' if is_crash else 'No '}Exception --> {txt}"))
         if is_crash:
-            pi.console.print_exception(extra_lines=10, show_locals=True, width=200, word_wrap=True)
+            self.console.print_exception(extra_lines=10, show_locals=True, width=200, word_wrap=True)
         self.log_it_info(txt_plus, tpe="error" if is_crash else "info", exc_info=is_crash)
 
     def log_move(self):
