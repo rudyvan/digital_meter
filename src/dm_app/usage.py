@@ -111,9 +111,11 @@ class Usage:
 
     @property
     def sum_utilities(self):
+        """ calculate the sum of all utilities at the spot to ensure it is always a correct sum when used"""
         if not hasattr(self, "usage"):
             return [f"{x:.2f}" for x in self.zero_cumul]
-        self.usage["Σ € Utilities"] = [f"{sum(self.usage[c][usage_rows.index(r)] for r in ["Σ € kWh", "Σ € Gas", "Σ € Water"]):.2f}" for c in usage_columns]
+        # make the sum of water, gas and electricity for each column in usage
+        self.usage["Σ € Utilities"] = [f"{sum(self.usage[c][usage_rows.index(r)] for r in ['Σ € kWh', 'Σ € Gas', 'Σ € Water']):.2f}" for c in usage_columns]
         return self.usage["Σ € Utilities"]
 
 
@@ -189,6 +191,7 @@ class Usage:
         self.data["prev_quarter_peak"], self.data["quarter_peak"] = self.data["quarter_peak"], self.quarter_peak
         self.sum_utilities
         pi.pickle_app.var_save(self)
+        # 7. make special notification when producing energy
         if self.producing and self.kW_min < 0.01:
             self.producing = False
             pi.log_app.add("Producing stopped")
