@@ -20,8 +20,8 @@ from rich.markup import escape
 from ..config import dir_history, log_name, log_file
 
 class Logger:
-    def __init__(self, console, *args, **kwargs):
-        self.console = console
+    def __init__(self, console, log_console, *args, **kwargs):
+        self.console, self.log_console = console, log_console
         if not os.path.exists(dir_history):
             os.makedirs(dir_history)
         super().__init__(*args, **kwargs)
@@ -62,7 +62,6 @@ class Logger:
             _handler.setFormatter(logging.Formatter(format, datefmt="%Y-%m-%d %X"))
             _logger.addHandler(_handler)
             _logger.propagate = False
-
         # 1. set the log level to ERROR level only except for asyncio where is set to WARNING
         for key in logging.Logger.manager.loggerDict:
             if key == log_name:
@@ -75,7 +74,7 @@ class Logger:
         # 3. create the handlers
         logger = logging.getLogger(log_name)
         add_handler(logger, logging.FileHandler(log_file))
-        add_handler(logger, RichHandler(level=logging.INFO, console=self.console, rich_tracebacks=True))
+        add_handler(logger, RichHandler(level=logging.INFO, console=self.log_console, rich_tracebacks=True))
         # make the files not empty and show welcome message through the handlers
         logger.error(why)
 

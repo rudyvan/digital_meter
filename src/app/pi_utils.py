@@ -13,9 +13,9 @@ class SysEnv:
 
     def install(self, socket_info):
         self.console = Console(color_system="truecolor")
-        self.log_app = Logger(self.console)
+        self.tmux = TMux()
+        self.log_app = Logger(self.console, self.tmux.log_console)
         self.pickle_app = PickleIt(self.log_app)
         self.socket_app = SocketApp(socket_info, self.log_app)
-        self.tmux = TMux()
 
 pi = SysEnv()

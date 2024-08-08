@@ -178,7 +178,6 @@ class Usage:
         self.data["cumul"] = self.now_cumul
         self.data["prev_quarter_peak"], self.data["quarter_peak"] = self.data["quarter_peak"], self.quarter_peak
         pi.pickle_app.var_save()
-        pi.log_app.add(f"Producing={self.producing} {self.kW_min=}")
         if self.producing and self.kW_min < 0.01:
             self.producing = False
             pi.log_app.add("Producing stopped")
