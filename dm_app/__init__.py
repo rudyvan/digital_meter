@@ -1,4 +1,4 @@
 #!/usr/bin/python3
 #
-from ..app import pi
+from digital_meter import pi
 from .bus_meter import BusMeter
