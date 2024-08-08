@@ -109,12 +109,21 @@ class Usage:
         self.peak_gap_style = "green" if self.peak_gap > 0 else "red"
         return True
 
+    @property
+    def sum_utilities(self):
+        if not hasattr(self, "usage"):
+            return [f"{x:.2f}" for x in self.zero_cumul]
+        self.usage["Σ € Utilities"] = [f"{sum(self.usage[c][usage_rows.index(r)] for r in ["Σ € kWh", "Σ € Gas", "Σ € Water"]):.2f}" for c in usage_columns]
+        return self.usage["Σ € Utilities"]
+
+
     def update_usage(self):
         """ calculate delta between 2 readings for electricity day/night produced/consumed, water and or gas
             use the meter timestamp for the day/week/month/year transition and reset
         return True if usage has been calculated, else False"""
         def end_of(period):
-            pi.log_app.add(f"{period} Ended - {self.usage[period]=}")
+            str_period = f"{', '.join(f'{u}={self.usage[period][x]:.2f}' for x, u in enumerate(usage_rows))}"
+            pi.log_app.add(f"{period} Ended --> {self.sum_utilities[usage_columns.index(period)]:.2f} Σ € Utilities\n{str_period}")
             self.usage[period] = self.zero_cumul[:]
         def end_of_day():
             self.json_file(self.data, "data.json")
@@ -175,11 +184,10 @@ class Usage:
             for pos, val in enumerate(self.delta_cumul):
                 self.usage[period][pos] += val
         # 6. update Σ € Utilities
-        sum_c = lambda c: sum(self.usage[c][usage_rows.index(r)] for r in ["Σ € kWh", "Σ € Gas", "Σ € Water"])
-        self.usage["Σ € Utilities"] = [f"{sum_c(c):.2f}" for c in usage_columns]
         self.data["cur_time"] = self.cur_time
         self.data["cumul"] = self.now_cumul
         self.data["prev_quarter_peak"], self.data["quarter_peak"] = self.data["quarter_peak"], self.quarter_peak
+        self.sum_utilities
         pi.pickle_app.var_save(self)
         if self.producing and self.kW_min < 0.01:
             self.producing = False
