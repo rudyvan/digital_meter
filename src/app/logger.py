@@ -76,7 +76,7 @@ class Logger:
         add_handler(logger, logging.FileHandler(log_file))
         add_handler(logger, RichHandler(level=logging.INFO, console=self.log_console, rich_tracebacks=True))
         # make the files not empty and show welcome message through the handlers
-        logger.error(why)
+        self.add(why)
 
     def log_down(self):
         logging.shutdown()

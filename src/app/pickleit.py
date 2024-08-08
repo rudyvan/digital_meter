@@ -23,10 +23,11 @@ class PickleIt:
             try:
                 with open(pickle_file, "rb") as f:
                     self.data = pickle.load(f)
+                self.log_app.
             except Exception as e:
-                self.log_app.log_add(f"!! err_pickle_load {pickle_file} {e}")
+                self.log_app.add(f"!! err_pickle_load {pickle_file} {e}")
         else:
-            self.log_app.log_add(f"{pickle_file} not found, started from zero")
+            self.log_app.add(f"{pickle_file} not found, started from zero")
             self.var_save()
 
 
