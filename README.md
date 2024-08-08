@@ -150,9 +150,40 @@ A cloud application could be more powerful as it could include weather predictio
 
 The application is written in Python and to ensure that the application runs in a controlled environment, it is recommended to use a virtual environment. The following steps describe how to install the application on a Raspberry Pi.
 
+visit the github page of pyenv and follow the instructions to install pyenv-virtualenv on your raspberry pi and install the shell extension.
+
+https://github.com/pyenv/pyenv-virtualenv
+
+as example, the following commands should be executed:
+
 ```bash
-python -m venv .venv
-source .venv/bin/activate
+curl https://pyenv.run | bash
+export PATH="/home/pi/.pyenv/bin:$PATH"
+echo -e "\nexport PATH=\"~/.pyenv/bin:$PATH\""
+echo -e "eval \"$(pyenv init -)\"\neval \"$(pyenv virtualenv-init -)\"\n" >>./.bashrc
+exec "$SHELL"
+pyenv install 3.12.2
+pyenv virtualenv 3.12.2 digital_meter
+mkdir digital_meter
+cd digital_meter
+pyenv local digital_meter
+```
+
+
+after succesfull installation the follow lines should add to your .bashrc file in the home directory of the user pi:
+
+```bash
+export PYENV_ROOT="/home/pi/.pyenv" 
+export PATH="$PYENV_ROOT/bin:$PATH" 
+eval "$(pyenv init -)" 
+eval "$(pyenv virtualenv-init -)"
+```
+
+Reboot and ensure you enter the virtual environment when you visit the digital_meter directory.
+
+Now install the required python imports:
+
+```bash
 pip install -r requirements.txt
 ```
 
@@ -189,10 +220,18 @@ Then edit your .profile file in the home directory of the user pi:
 sudo nano /home/pi/.profile
 ```
 
-and add the following line at the end of the file:
+and add the following lines at the end of the file:
 
 ```bash
-sleep 5s
+# added script
+cd $HOME/digital_meter
+# Check if the session exists, discarding output
+# We can check $? for the exit status (zero for success, non-zero for failure)
+tmux has-session -t dm 2>/dev/null
+if [ $? != 0 ]; then
+    tmux new-session -ds dm
+fi
+# Attach to created session
 tmux a -t dm
 ```
 
@@ -239,8 +278,7 @@ The application will stop when you close the current pane.
 To run the application manually, activate the virtual environment and run the application.
 
 ```bash 
-source .venv/bin/activate
-python dm.py
+./do_py.sh dm.py
 ```
 
 ## Remotely Accessing the application
