@@ -42,7 +42,8 @@ class TMux:
         # now open the files for writing with buffering=1
         for st in ["stdout", "stdin"]:
             sf[st] = open(sn[st], "r" if st == "stdin" else "w", buffering=1)
-        console = Console(file=sf["stdout"], force_terminal=True, stderr=self.sess_log_file)
+        stderr_file = sf["stdout"] if session_name == "log" else self.tmux_sessions["dm"]["files"]["stdout"]
+        console = Console(file=sf["stdout"], force_terminal=True, stderr=stderr_file)
         # console.size = ConsoleDimensions(width=240, height=54)
         self.tmux_sessions[session_name]["console"] = console
         console.print(Text(f"Tmux session {session_name} started", style="red"))
