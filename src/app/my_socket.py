@@ -56,6 +56,9 @@ class SocketApp:
 
     async def reply_ws(self, data, ip, ws):
         """reply to a websocket server request"""
+        if "purchased_water" in data:
+            self.log_app.add(f"received {data} from {ip}")
+            return await ws.send_str(data.replace("set", "reply"))
         match data:
             case "?":
                 resp_str = self.json_it({"type": "dm", "cmd": "data", "data": self.data})
