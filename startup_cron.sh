@@ -12,9 +12,10 @@ else
   PATH=$BIN:$PATH
   # source .bashrc
   # source .profile
+  . ${PYENV_ROOT}/versions/3.12.2/bin/activate
 fi
 cd $APP_DIR
 tmux set-option -g default-shell /bin/bash
-# tmux send-keys -t dm "exec bash" C-m
+tmux send-keys -t dm "exec bash" C-m
 # run do_py.sh inside tmux window
 tmux send-keys -t dm "./do_py.sh dm.py" C-m
