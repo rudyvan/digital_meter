@@ -67,7 +67,7 @@ class SocketApp:
         data_dct["cmd"] = "reply"
         data_dct["val"] = 0.0
         await ws.send_json(data_dct)
-        asyncio.create_task(self.send_ws(data_dct))
+        asyncio.create_task(self.send_ws(data_dct, ip))
         self.log_app.add(f"{ip=} -> {data} <-- {data_dct}")
         return
 
