@@ -33,11 +33,12 @@ class SocketApp:
             self._send_queues[ip] = asyncio.Queue(maxsize=15)
             self._send_tasks[ip] = asyncio.create_task(self.task_send_ws(ip))
         # 2. add data to the queue
-        self.log_app.add(f"Websocket Queue {ip}: {len(data)} bytes, {data=}")
+        data_str = data if isinstance(data, str) else self.json_it(data)
+        self.log_app.add(f"Websocket Queue {ip}: {len(data_str)} bytes, {data=}")
         if self._send_queues[ip].full():
             return self.log_app.log_it_info(f"Websocket Queue {ip} full", tpe="error")
         # could add test for not sending repeat data
-        await self._send_queues[ip].put(data if isinstance(data, str) else self.json_it(data))
+        await self._send_queues[ip].put(data_str)
 
     async def task_send_ws(self, ip):
         """ perpetual task trying to send data from a queue to a host socket server,
