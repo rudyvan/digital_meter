@@ -200,7 +200,8 @@ class BusMeter(Screens, Usage):
         # 2. start the socket server and set the buffer
         await self.serial_start()
         # 3. start the socket server
-        await pi.socket_app.server_start(self)
+        if pi.socket_app:
+            await pi.socket_app.server_start(self)
         # 4. set the last live refresh time
         last_live, refresh_s = None, 3
         # 5. start the main loop with the live screens
@@ -232,7 +233,8 @@ class BusMeter(Screens, Usage):
                             self.p1_table = [self.parsetelegramline(line.decode('ascii'))
                                              for line in self.p1telegram.split(b'\r\n') if line]
                             if self.update_usage():
-                                await pi.socket_app.send_ths()
+                                if pi.socket_app:
+                                    await pi.socket_app.send_ths()
                                 self.update_layout(self.layout)
                             if not last_live or (datetime.datetime.now() - last_live).total_seconds() > refresh_s:
                                 self.togather.append(self.loop.run_in_executor(None, live.refresh))

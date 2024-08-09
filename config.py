@@ -6,11 +6,13 @@
 serial_port = '/dev/ttyUSB0'
 
 socket_info = {
+    # make this empty if you don't have a remote socket server to connect to
     "remote_ips":  ["192.168.15.89", "192.168.15.38"],  # hosts able to give instructions to the meter
     "server_port": 8081,               # port for the digital meter server
-    "ws_ip": "192.168.15.38",        # destination ip for meter data
+    "ws_ip": "192.168.15.38",          # destination ip for meter data
     "dest_port": 8081,                 # destination port for meter data and notifications
-    "ws_url": "ws://{ip}:{port}/ws"}  # websocket url
+    "update_feq": 30,                  # update frequency in seconds
+    "ws_url": "ws://{ip}:{port}/ws"}   # websocket url
 
 vehicle_info = {
     "car1": {

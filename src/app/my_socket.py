@@ -69,7 +69,8 @@ class SocketApp:
 
     async def reply_ws(self, data, ip, ws):
         """ reply to a websocket server request
-            below code is propriety and should be adapted to your specific needs in communicating obdis values to external websocket servers
+            below code is propriety and should be adapted to your specific needs in communicating obdis values to
+            external websocket servers
         """
         ths_map = self.DM_selfie.ths_map
         self.log_app.add(f"Websocket Server: rcv from {ip}: {data}")
@@ -86,8 +87,13 @@ class SocketApp:
         return await self.send_ws(data_dct, ip)
 
     async def send_ths(self):
+        """ every config.socket_info[update_freq] seconds send the digital meter things to the remote server
+            by filling the queue.
+            below code is propriety and should be adapted to your specific needs in communicating obdis values to
+            external websocket servers
+        """
         now = datetime.datetime.now()
-        if not hasattr(self, "_last_send") or (now - self._last_send).total_seconds() > 15:
+        if not hasattr(self, "_last_send") or (now - self._last_send).total_seconds() > self.socket_info["update_freq"]:
             ths_map = self.DM_selfie.ths_map
             data_dct = [{"type": "th", "cmd": "set", "th": th, "val": self.get_val(getattr(self.DM_selfie, th_attr, 0.0))}
                         for th, th_attr in ths_map.items()]

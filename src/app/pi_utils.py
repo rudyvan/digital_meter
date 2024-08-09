@@ -16,6 +16,6 @@ class SysEnv:
         self.tmux = TMux()
         self.log_app = Logger(self.console, self.tmux.log_console)
         self.pickle_app = PickleIt(self.log_app)
-        self.socket_app = SocketApp(socket_info, self.log_app)
+        self.socket_app = SocketApp(socket_info, self.log_app) if socket_info else None
 
 pi = SysEnv()
