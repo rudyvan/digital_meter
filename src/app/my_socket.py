@@ -74,7 +74,7 @@ class SocketApp:
         data_dct = json.loads(data)
         if not self.my_assert(all(x in data_dct for x in all_keys),
                               f"Websocket {ip} ? data missing keys {all_keys} not in {data_dct}") or \
-           not self.my_assert(th := data_dct["th"] in ths_map,
+           not self.my_assert((th := data_dct["th"]) in ths_map,
                               f"Websocket {ip} ?? {th=} not in {ths_map}"):
             return
         data_dct["cmd"] = "reply"
