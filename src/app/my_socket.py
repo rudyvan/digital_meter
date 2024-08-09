@@ -9,6 +9,8 @@ import datetime
 
 app = web.Application()
 
+from digital_meter.config import ths_map
+
 
 class SocketApp:
     """aiohttp web application"""
@@ -58,31 +60,27 @@ class SocketApp:
             except websockets.ConnectionClosed:
                 continue
 
+    def my_assert(self, c, m):
+        """ return assert c and log error m if fails """
+        if not (ret_val := bool(c)):
+            self.log_app.log_it_info(m, tpe="error")
+        return ret_val
+
 
     async def reply_ws(self, data, ip, ws):
         """ reply to a websocket server request
-        below code is propriety and should be adapted to your specific needs in communicating obdis values to external websocket servers
-        2024-08-08 18:12:23 PI-Energy !Reply? <PI-DM> for <electricity^fluvius_day> -> {'type': 'th', 'cmd': 'ask', 'th': 'electricity^fluvius_day', 'val': None}
-        2024-08-08 18:12:23 PI-Energy !Reply? <PI-DM> for <electricity^fluvius_night> -> {'type': 'th', 'cmd': 'ask', 'th': 'electricity^fluvius_night', 'val': None}
-        2024-08-08 18:12:23 PI-Energy !Reply? <PI-DM> for <gas^purchased_gas> -> {'type': 'th', 'cmd': 'ask', 'th': 'gas^purchased_gas', 'val': None}
-        2024-08-08 18:12:23 PI-Energy !Reply? <PI-DM> for <domestic_water^pidpa> -> {'type': 'th', 'cmd': 'ask', 'th': 'domestic_water^pidpa', 'val': None}
+            below code is propriety and should be adapted to your specific needs in communicating obdis values to external websocket servers
         """
         self.log_app.add(f"Websocket Server: rcv from {ip}: {data}")
         all_keys = ["type", "cmd", "th", "val"]
         data_dct = json.loads(data)
-        if not all(x in data_dct for x in all_keys):
-            self.log_app.log_it_info(f"Websocket {ip} ? data missing keys {all_keys} not in {data_dct}", tpe="error")
+        if not self.my_assert(all(x in data_dct for x in all_keys),
+                              f"Websocket {ip} ? data missing keys {all_keys} not in {data_dct}") or \
+           not self.my_assert(th := data_dct["th"] in ths_map, f"Websocket {ip} ?? {th=} not in {ths_map}"):
             return
         data_dct["cmd"] = "reply"
-        match th := data_dct["th"]:
-            case str(x) if "electricity^fluvius_day" in x:
-                data_dct["val"] = 0.0
-            case str(x) if "electricity^fluvius_night" in x:
-                data_dct["val"] = 0.0
-            case "gas^purchased_gas":
-                data_dct["val"] = 0.0
-            case "domestic_water^pidpa":
-                data_dct["val"] = 0.0
+        obdis_th = ths_map[th]
+        data_dct["val"] = getattr(self.DM_selfie, obdis_th, 0.0)
         return await self.send_ws(data_dct, ip)
 
 
@@ -96,8 +94,9 @@ class SocketApp:
             return ""
 
 
-    async def server_start(self):
+    async def server_start(self, DM_selfie):
         """start the aiohttp websocket server"""
+        self.DM_selfie = DM_selfie
         if not self.socket_info or not all(self.socket_info.get(k, False) for k in ["server_port", "remote_ips"]):
             return self.log_app.add("Web socket server not started, ?server port, ?remote ips in socket_info")
         app.add_routes([web.get('/ws', self.websocket_handler)])

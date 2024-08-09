@@ -190,7 +190,7 @@ class BusMeter(Screens, Usage):
         # 2. start the socket server and set the buffer
         await self.serial_start()
         # 3. start the socket server
-        await pi.socket_app.server_start()
+        await pi.socket_app.server_start(self)
         # 4. set the last live refresh time
         last_live, refresh_s = None, 3
         # 5. start the main loop with the live screens
