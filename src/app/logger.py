@@ -60,15 +60,14 @@ class Logger:
                 self.clear_handlers(logging.getLogger(key))
             else:
                 logging.getLogger(key).setLevel(logging.WARNING if "asyncio" in key else logging.ERROR)
-                logging.getLogger(key).propagate = True
+                logging.getLogger(key).propagate = False
         # 2. the default logger
         format, date_fmt = f"{self.host_name}: %(asctime)s - %(name)s - %(levelname)s - %(message)s", "%Y-%m-%d %X"
-        logging.basicConfig(level=logging.DEBUG, format=format, datefmt="%Y-%m-%d %X", filename=log_file, filemode='w')
+        logging.basicConfig(level=logging.DEBUG, format=format, datefmt="%Y-%m-%d %X", filename=log_file, filemode='a')
         logging.propagate = False
         # 3. create the handlers
         # 3.1 the screen handler with level info
         logger = logging.getLogger(log_name)
-        logger.propagate = False
         _handler = RichHandler(level=logging.INFO, console=self.log_console, rich_tracebacks=True)
         _handler.setLevel(logging.INFO)
         logger.addHandler(_handler)
