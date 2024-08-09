@@ -65,8 +65,8 @@ class Logger:
             else:
                 logging.getLogger(key).setLevel(logging.WARNING if "asyncio" in key else logging.ERROR)
                 logging.getLogger(key).propagate = True
-        # format = f"%(asctime)s {self.host_name} %(message)s"
-        logging.basicConfig(level=logging.DEBUG)  # format=format, datefmt="%Y-%m-%d %X")
+        format = f"%(asctime)s {self.host_name} %(message)s"
+        logging.basicConfig(level=logging.DEBUG, format=format)   # , datefmt="%Y-%m-%d %X")
         # 3. create the handlers
         logger = logging.getLogger(log_name)
         logger.addHandler(RichHandler(level=logging.INFO, console=self.log_console, rich_tracebacks=True))

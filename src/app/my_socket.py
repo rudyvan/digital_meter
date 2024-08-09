@@ -73,7 +73,7 @@ class SocketApp:
             external websocket servers
         """
         ths_map = self.DM_selfie.ths_map
-        self.log_app.add(f"Websocket Server: rcv from {ip}: {data}")
+        self.log_app.add(f"Websocket Server: rcv from {ip}: {data}", tpe="debug")
         all_keys = ["type", "cmd", "th", "val"]
         data_dct = json.loads(data)
         if not self.my_assert(all(x in data_dct for x in all_keys),
