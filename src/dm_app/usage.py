@@ -125,7 +125,7 @@ class Usage:
         return True if usage has been calculated, else False"""
         def end_of(period):
             str_period = f"{', '.join(f'{u}={self.usage[period][x]:.2f}' for x, u in enumerate(usage_rows))}"
-            pi.log_app.add(f"{period} Ended --> {self.sum_utilities[usage_columns.index(period)]:.2f} Σ € Utilities\n{str_period}")
+            pi.log_app.add(f"{period} Ended --> {self.sum_utilities[usage_columns.index(period)]} Σ € Utilities\n{str_period}")
             self.usage[period] = self.zero_cumul[:]
         def end_of_day():
             self.json_file(self.data, "data.json")
