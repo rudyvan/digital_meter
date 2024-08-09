@@ -53,7 +53,8 @@ class SocketApp:
         async for websocket in websockets.connect(end_p):
             try:
                 data = await self._send_queues[ip].get()
-                self.log_app.add(f"Websocket Send to {end_p} --> {repr(data).replace('\n', '')}", tpe="debug")
+                data_str = str(data).replace('\n', '')
+                self.log_app.add(f"Websocket Send to {end_p} --> {data_str}", tpe="debug")
                 await websocket.send(data)
             except websockets.ConnectionClosed:
                 continue
