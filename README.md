@@ -352,7 +352,9 @@ python -m websockets  ws://PI-DM:8080/ws
 
 Anything you type will be sent to the server and the server will respond with the data.
 
-## history and pickle files
+## log, history and pickle files
+
+The application writes a log file (log_info.log) in the log directory with debug, info and error traces.
 
 At the end of each day, the application writes a json file with usage, cost and the logfile to the history directory, overwriting the files with the same date_prefix one year earlier.
 
@@ -361,7 +363,6 @@ No cleaning is needed as only 365 * 2 files are kept.
 Object and data for cost calculation are stored in a pickle file in the root of the project.
 
 If you need to start fresh or changed objects, delete the pickle file, it will also happen if the pickle file is corrupted.
-
 
 ## Authors
 
