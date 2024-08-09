@@ -83,7 +83,8 @@ class SocketApp:
         return await self.send_ws(data_dct, ip)
 
     async def send_ths(self):
-        if not hasattr(self, "_last_send") or ((now:=datetime.datetime.now()) - self._last_send).total_seconds() > 30:
+        now = datetime.datetime.now()
+        if not hasattr(self, "_last_send") or (now - self._last_send).total_seconds() > 30:
             ths_map = self.DM_selfie.ths_map
             # convert gas and water to liter and only take the value
             get_val = lambda val: val["value"] * 1000 if isinstance(val, dict) else val
