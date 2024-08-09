@@ -202,5 +202,6 @@ class Usage:
         if self.producing and abs(self.kW_min - self.prev_kW_min) > 1:
             pi.log_app.add(f"Producing Energy going {'up' if self.kW_min > self.prev_kW_min else 'down'} {self.kW_min=}")
             self.prev_kW_min = self.kW_min
+        # 7. update the quarter_peak
         return self.update_quarter_peak()
 

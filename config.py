@@ -8,7 +8,7 @@ serial_port = '/dev/ttyUSB0'
 socket_info = {
     "remote_ips":  ["192.168.15.89", "192.168.15.38"],  # hosts able to give instructions to the meter
     "server_port": 8081,               # port for the digital meter server
-    "dest_ip": "192.168.15.89",        # destination ip for meter data and notifications
+    "ws_ip": "192.168.15.38",        # destination ip for meter data
     "dest_port": 8081,                 # destination port for meter data and notifications
     "ws_url": "ws://{ip}:{port}/ws"}  # websocket url
 

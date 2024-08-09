@@ -82,6 +82,13 @@ class SocketApp:
         data_dct["val"] = getattr(self.DM_selfie, obdis_th, 0.0)
         return await self.send_ws(data_dct, ip)
 
+    async def send_ths(self):
+        if not hasattr(self, "_last_send") or ((now:=datetime.datetime.now()) - self._last_send).total_seconds() > 30:
+            ths_map = self.DM_selfie.ths_map
+            data_dct = [{"type": "th", "cmd": "set", "th": th, "val": getattr(self.DM_selfie, th_attr, 0.0)}
+                        for th, th_attr in ths_map.items()]
+            await self.send_ws(data_dct, self.socket_info["ws_ip"])
+            self._last_send = now
 
     @property
     def my_ip(self):  # return my ip address
