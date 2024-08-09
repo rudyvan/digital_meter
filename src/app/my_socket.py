@@ -34,7 +34,7 @@ class SocketApp:
             self._send_tasks[ip] = asyncio.create_task(self.task_send_ws(ip))
         # 2. add data to the queue
         data_str = data if isinstance(data, str) else self.json_it(data)
-        self.log_app.add(f"Websocket Queue {ip}: {len(data_str)} bytes", tpe="debug")
+        self.log_app.add(f"Websocket Queue {ip}: {len(data_str)} bytes added", tpe="debug")
         if self._send_queues[ip].full():
             return self.log_app.add(f"Websocket Queue {ip} full", tpe="error")
         # could add test for not sending repeat data
@@ -53,7 +53,7 @@ class SocketApp:
         async for websocket in websockets.connect(end_p):
             try:
                 data = await self._send_queues[ip].get()
-                self.log_app.add(f"Websocket {end_p} --> {data}", tpe="debug")
+                self.log_app.add(f"Websocket Send to {end_p} --> {repr(data)}", tpe="debug")
                 await websocket.send(data)
             except websockets.ConnectionClosed:
                 continue
