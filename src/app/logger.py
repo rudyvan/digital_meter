@@ -68,8 +68,12 @@ class Logger:
         format = f"{self.host_name}: %(asctime)s - %(name)s - %(levelname)s - %(message)s"
         logging.basicConfig(level=logging.DEBUG, format=format, datefmt="%Y-%m-%d %X")
         # 3. create the handlers
+        # 3.1 the screen handler with level info
         logger = logging.getLogger(log_name)
-        logger.addHandler(RichHandler(level=logging.INFO, console=self.log_console, rich_tracebacks=True))
+        _handler = RichHandler(level=logging.INFO, console=self.log_console, rich_tracebacks=True)
+        _handler.setLevel(logging.INFO)
+        logger.addHandler(_handler)
+        # 3.2 the file handler, with level debug
         _handler = logging.FileHandler(log_file)
         _handler.setLevel(logging.DEBUG)
         _handler.setFormatter(logging.Formatter(format, datefmt="%Y-%m-%d %X"))
