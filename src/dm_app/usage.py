@@ -46,7 +46,7 @@ class Usage:
         # make a default data structure, read actual from pickle if any, else start from this
         self.data = {"meters": {"Electricity": {"+Day": 0, "-Day": 0, "+Night": 0, "-Night": 0, "unit": "kWh"},
                                 "Gas": {"value": 0, "time": datetime.datetime.now(), "unit": "m3"},
-                                "Water": {"value": 0, "time": datetime.datetime.now(), "unit": "m3"} },
+                                "Water": {"value": 0, "time": datetime.datetime.now(), "unit": "m3"}},
                      "usage": dict((x, self.zero_cumul[:]) for x in usage_columns),
                      "cur_time": datetime.datetime.now(),
                      "start_time": datetime.datetime.now(),

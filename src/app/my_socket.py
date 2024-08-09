@@ -77,6 +77,17 @@ class SocketApp:
         self.log_app.add(f"Websocket Server: rcv from {ip}: {data}", tpe="debug")
         all_keys = ["type", "cmd", "th", "val"]
         data_dct = json.loads(data)
+        # intercept special case of domestic_water^purchased_water, as the digital_meter does not registrate water from
+        # pidpa, i have my own water meter registering consumption, therefore i can update
+        if "domestic_water^purchased_water" in data:
+            water = data_dct.get("val", 0) / 1000.0  # convert from liters to m3
+            self.DM_selfie.water_meter = {"value": water, "unit": "m3", "time": datetime.datetime.now()}
+            if data_dct["cmd"] == "reply":  # bye if reply to our initial ask
+                return
+            # assume cmd==set -> return with cmd=reply
+            data_dct["cmd"] = "reply"
+            return await self.send_ws(data_dct, ip)
+        # continue with the rest of the things
         if not self.my_assert(all(x in data_dct for x in all_keys),
                               f"Websocket {ip} ? data missing keys {all_keys} not in {data_dct}") or \
            not self.my_assert((th := data_dct["th"]) in ths_map,
@@ -104,6 +115,13 @@ class SocketApp:
             await self.send_ws(data_dct, self.socket_info["ws_ip"])
             self._last_send = now
 
+    async def request_th(self, th):
+        """ ask for the things value
+            below code is propriety and should be adapted to your specific needs in communicating obdis values to
+            external websocket servers
+        """
+        await self.send_ws({"type": "th", "cmd": "ask", "th": th, "val": 0.0}, self.socket_info["ws_ip"])
+
     @property
     def my_ip(self):  # return my ip address
         try:
@@ -124,6 +142,7 @@ class SocketApp:
         await runner.setup()
         site = web.TCPSite(runner, host=self.my_ip, port=self.socket_info["server_port"])
         await site.start()
+        await self.request_th("domestic_water^purchased_water")
 
     async def websocket_handler(self, request):
         """aiohttp websocket request handler"""
