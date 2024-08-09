@@ -32,7 +32,41 @@ class SocketApp:
         encode_JSON = lambda x: self.ts_str(x) if isinstance(x, datetime.datetime) else repr(x)
         return json.dumps(dct, indent=4, sort_keys=True, default=encode_JSON)
 
-    async def send_ws(self, data, dest_ip) -> (bool, "success"):
+    async def send_ws(self, data, ip):
+        """ run a task pushing data from queue to the destination websocket server """
+        if not hasattr(self, "_send_tasks"):
+            self._send_tasks = {}
+            self._send_queues = {}
+        # 1. check send task
+        if ip not in self._send_tasks or self._send_tasks[ip].done():
+            self._send_queues[ip] = asyncio.Queue(maxsize=15)
+            self._send_tasks[ip] = asyncio.create_task(self.task_send_ws(ip))
+        # 2. add data to the queue
+        self.log_app.add(f"Websocket Queue {ip}: {len(data)} bytes")
+        if self.send_queues[ip].full():
+            return self.log_app.log_it_info(f"Websocket Queue {ip} full", tpe="error")
+        # could add test for not sending repeat data
+        await self.send_queues[ip].put(data if isinstance(data, str) else self.json_it(data))
+
+    async def task_send_ws(self, ip):
+        """ perpetual task trying to send data from a queue to a host socket server,
+            The connection is closed automatically after each iteration of the loop.
+            If an error occurs while establishing the connection, connect() retries with exponential backoff.
+            The backoff delay starts at three seconds and increases up to one minute.
+            If an error occurs in the body of the loop, you can handle the exception and connect() will reconnect with
+            the next iteration; or you can let the exception bubble up and break out of the loop.
+            This lets you decide which errors trigger a reconnection and which errors are fatal.
+            """
+        end_p = self.socket_info["ws_url"].format(ip=ip, port=self.socket_info["dest_port"])
+        async for websocket in websockets.connect(end_p):
+            try:
+                data = await self._send_queues[ip].get()
+                self.log_app.add(f"Websocket {end_p} --> {data}")
+                await websocket.send(data)
+            except websockets.ConnectionClosed:
+                continue
+
+    async def send_ws2(self, data, dest_ip) -> (bool, "success"):
         """send data to a socket for a host with ip, port, and path"""
         self.log_app.add(f"send_ws bytes")
         self.socket_info["dest_ip"] = dest_ip
@@ -71,13 +105,11 @@ class SocketApp:
         2024-08-08 18:12:23 PI-Energy !Reply? <PI-DM> for <gas^purchased_gas> -> {'type': 'th', 'cmd': 'ask', 'th': 'gas^purchased_gas', 'val': None}
         2024-08-08 18:12:23 PI-Energy !Reply? <PI-DM> for <domestic_water^pidpa> -> {'type': 'th', 'cmd': 'ask', 'th': 'domestic_water^pidpa', 'val': None}
         """
+        self.log_app.add(f"Websocket Server: rcv from {ip}: {data}")
         data_dct = json.loads(data)
         data_dct["cmd"] = "reply"
         data_dct["val"] = 0.0
-        await ws.send_json(data_dct)
-        asyncio.create_task(self.send_ws(data_dct, ip))
-        self.log_app.add(f"{ip=} -> {data} <-- {data_dct}")
-        return
+        return await self.send_ws(data_dct, ip)
 
 
     @property

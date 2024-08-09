@@ -10,7 +10,7 @@ socket_info = {
     "server_port": 8081,               # port for the digital meter server
     "dest_ip": "192.168.15.89",        # destination ip for meter data and notifications
     "dest_port": 8081,                 # destination port for meter data and notifications
-    "ws_url": "ws://{dest_ip}:{dest_port}/ws"}  # websocket url
+    "ws_url": "ws://{ip}:{port}/ws"}  # websocket url
 
 vehicle_info = {
     "car1": {
