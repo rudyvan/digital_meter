@@ -61,21 +61,21 @@ class Logger:
             else:
                 logging.getLogger(key).setLevel(logging.WARNING if "asyncio" in key else logging.ERROR)
                 logging.getLogger(key).propagate = False
-        # 2. the default logger
+        # 2. the default logger, log to log_file
         format, date_fmt = f"{self.host_name}: %(asctime)s - %(name)s - %(levelname)s - %(message)s", "%Y-%m-%d %X"
         logging.basicConfig(level=logging.DEBUG, format=format, datefmt="%Y-%m-%d %X", filename=log_file, filemode='a')
         logging.propagate = False
         # 3. create the handlers
-        # 3.1 the screen handler with level info
+        # 3. create the screen handler with level info
         logger = logging.getLogger(log_name)
         _handler = RichHandler(level=logging.INFO, console=self.log_console, rich_tracebacks=True)
         _handler.setLevel(logging.INFO)
         logger.addHandler(_handler)
-        # 3.2 the file handler, with level debug
-        _handler = logging.FileHandler(log_file)
-        _handler.setLevel(logging.DEBUG)
-        _handler.setFormatter(logging.Formatter(format, datefmt="%Y-%m-%d %X"))
-        logger.addHandler(_handler)
+        # # 3.2 the file handler, with level debug
+        # _handler = logging.FileHandler(log_file)
+        # _handler.setLevel(logging.DEBUG)
+        # _handler.setFormatter(logging.Formatter(format, datefmt="%Y-%m-%d %X"))
+        # logger.addHandler(_handler)
         # make the files not empty and show welcome message through the handlers
         self.add(why)
 
