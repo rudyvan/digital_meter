@@ -9,9 +9,6 @@ import datetime
 
 app = web.Application()
 
-from digital_meter.config import ths_map
-
-
 class SocketApp:
     """aiohttp web application"""
     def __init__(self, socket_info, log_app, *args, **kwargs):
@@ -71,15 +68,17 @@ class SocketApp:
         """ reply to a websocket server request
             below code is propriety and should be adapted to your specific needs in communicating obdis values to external websocket servers
         """
+        ths_map = self.DM_selfie.ths_map
         self.log_app.add(f"Websocket Server: rcv from {ip}: {data}")
         all_keys = ["type", "cmd", "th", "val"]
         data_dct = json.loads(data)
         if not self.my_assert(all(x in data_dct for x in all_keys),
                               f"Websocket {ip} ? data missing keys {all_keys} not in {data_dct}") or \
-           not self.my_assert(th := data_dct["th"] in ths_map, f"Websocket {ip} ?? {th=} not in {ths_map}"):
+           not self.my_assert(th := data_dct["th"] in ths_map,
+                              f"Websocket {ip} ?? {th=} not in {ths_map}"):
             return
         data_dct["cmd"] = "reply"
-        obdis_th = self.DM_selfie.ths_map[th]
+        obdis_th = ths_map[th]
         data_dct["val"] = getattr(self.DM_selfie, obdis_th, 0.0)
         return await self.send_ws(data_dct, ip)
 
