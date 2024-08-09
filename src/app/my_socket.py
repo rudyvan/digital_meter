@@ -34,9 +34,9 @@ class SocketApp:
             self._send_tasks[ip] = asyncio.create_task(self.task_send_ws(ip))
         # 2. add data to the queue
         data_str = data if isinstance(data, str) else self.json_it(data)
-        self.log_app.add(f"Websocket Queue {ip}: {len(data_str)} bytes")
+        self.log_app.add(f"Websocket Queue {ip}: {len(data_str)} bytes", tpe="debug")
         if self._send_queues[ip].full():
-            return self.log_app.log_it_info(f"Websocket Queue {ip} full", tpe="error")
+            return self.log_app.add(f"Websocket Queue {ip} full", tpe="error")
         # could add test for not sending repeat data
         await self._send_queues[ip].put(data_str)
 
@@ -53,7 +53,7 @@ class SocketApp:
         async for websocket in websockets.connect(end_p):
             try:
                 data = await self._send_queues[ip].get()
-                self.log_app.add(f"Websocket {end_p} --> {data}")
+                self.log_app.add(f"Websocket {end_p} --> {data}", tpe="debug")
                 await websocket.send(data)
             except websockets.ConnectionClosed:
                 continue
@@ -61,7 +61,7 @@ class SocketApp:
     def my_assert(self, c, m):
         """ return assert c and log error m if fails """
         if not (ret_val := bool(c)):
-            self.log_app.log_it_info(m, tpe="error")
+            self.log_app.add(m, tpe="error")
         return ret_val
 
     # convert gas and water to liter and only take the value
@@ -81,7 +81,7 @@ class SocketApp:
            not self.my_assert((th := data_dct["th"]) in ths_map,
                               f"Websocket {ip} ?? {th=} not in {ths_map}"):
             return
-        # exit if reply command
+        # ignore if not ask command
         if data_dct["cmd"] != "ask":
             return
         data_dct["cmd"] = "reply"
@@ -117,7 +117,7 @@ class SocketApp:
         """start the aiohttp websocket server"""
         self.DM_selfie = DM_selfie
         if not self.socket_info or not all(self.socket_info.get(k, False) for k in ["server_port", "remote_ips"]):
-            return self.log_app.add("Web socket server not started, ?server port, ?remote ips in socket_info")
+            return self.log_app.add("Web socket server not started, ?server port, ?remote ips in socket_info", tpe="error")
         app.add_routes([web.get('/ws', self.websocket_handler)])
         runner = web.AppRunner(app)
         await runner.setup()
@@ -127,7 +127,7 @@ class SocketApp:
     async def websocket_handler(self, request):
         """aiohttp websocket request handler"""
         if request.remote not in self.socket_info.get("remote_ips", []):
-            self.log_app.add(f"rejected {request.remote=}")
+            self.log_app.add(f"rejected {request.remote=}", tpe="error")
             return web.Response(text=f"<p>NOK - rejected</p>", status=400)
         ws = web.WebSocketResponse()
         try:
@@ -137,13 +137,13 @@ class SocketApp:
                     case aiohttp.WSMsgType.TEXT:
                         await self.reply_ws(msg.data, request.remote, ws)
                     case aiohttp.WSMsgType.ERROR:
-                        self.log_app.add(f"error web socket {request.remote} {ws.exception()} {msg.type=}")
+                        self.log_app.add(f"error web socket {request.remote} {ws.exception()} {msg.type=}", tpe="error")
                     case _:
-                        self.log_app.add(f"error web socket {request.remote} {msg.type=}")
+                        self.log_app.add(f"error web socket {request.remote} {msg.type=}", tpe="error")
         except ConnectionResetError as e:  # f.i. e=="Cannot write to closing transport":
             pass
         except Exception as e:
-            self.log_app.add(f"error web socket {request.remote} {e=}")
+            self.log_app.add(f"error web socket {request.remote} {e=}", tpe="error")
         return ws
 
 

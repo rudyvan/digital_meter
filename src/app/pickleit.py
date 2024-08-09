@@ -25,9 +25,9 @@ class PickleIt:
                     selfie.data = pickle.load(f)
                 self.log_app.add(f"{pickle_file} loaded")
             except Exception as e:
-                self.log_app.add(f"!! err_pickle_load {pickle_file} {e}")
+                self.log_app.add(f"!! err_pickle_load {pickle_file} {e}", tpe="error")
         else:
-            self.log_app.add(f"{pickle_file} not found, started from zero")
+            self.log_app.add(f"{pickle_file} not found, started from zero", tpe="error")
             self.var_save(selfie)
 
 

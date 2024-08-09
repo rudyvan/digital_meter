@@ -26,12 +26,8 @@ class Logger:
             os.makedirs(dir_history)
         super().__init__(*args, **kwargs)
 
-    def log_it_info(self, txt, tpe="info", **kw):
+    def add(self, txt, tpe="info", **kw):
         getattr(logging.getLogger(log_name), tpe)(txt, **kw)
-
-    def add(self, msg):
-        """ add a log message to the log file"""
-        self.log_it_info(msg)
 
     @property
     def host_name(self):
@@ -58,10 +54,10 @@ class Logger:
 
     def log_start(self, why):
         """start the logger with a file and a console handler"""
-        def add_handler(_logger, _handler):
-            _handler.setFormatter(logging.Formatter(format, datefmt="%Y-%m-%d %X"))
-            _logger.addHandler(_handler)
-            _logger.propagate = False
+        # def add_handler(_logger, _handler):
+        #     _handler.setFormatter(logging.Formatter(format, datefmt="%Y-%m-%d %X"))
+        #     _logger.addHandler(_handler)
+        #     _logger.propagate = False
         # 1. set the log level to ERROR level only except for asyncio where is set to WARNING
         for key in logging.Logger.manager.loggerDict:
             if key == log_name:
@@ -69,12 +65,15 @@ class Logger:
             else:
                 logging.getLogger(key).setLevel(logging.WARNING if "asyncio" in key else logging.ERROR)
                 logging.getLogger(key).propagate = True
-        format = f"%(asctime)s {self.host_name} %(message)s"
-        logging.basicConfig(level=logging.INFO, format=format, datefmt="%Y-%m-%d %X")
+        # format = f"%(asctime)s {self.host_name} %(message)s"
+        logging.basicConfig(level=logging.DEBUG)  # format=format, datefmt="%Y-%m-%d %X")
         # 3. create the handlers
         logger = logging.getLogger(log_name)
-        add_handler(logger, logging.FileHandler(log_file))
-        add_handler(logger, RichHandler(level=logging.INFO, console=self.log_console, rich_tracebacks=True))
+        logger.addHandler(RichHandler(level=logging.INFO, console=self.log_console, rich_tracebacks=True))
+        # _handler = logging.FileHandler(log_file)
+        # _handler.setLevel(logging.DEBUG)
+        logger.addHandler(logging.FileHandler(log_file))
+        logger.propagate = False
         # make the files not empty and show welcome message through the handlers
         self.add(why)
 
@@ -93,7 +92,7 @@ class Logger:
         self.console.print(escape(f"!!{'' if is_crash else 'No '}Exception --> {txt}"))
         if is_crash:
             self.console.print_exception(extra_lines=10, show_locals=True, width=200, word_wrap=True)
-        self.log_it_info(txt_plus, tpe="error" if is_crash else "info", exc_info=is_crash)
+        self.add(txt_plus, tpe="error" if is_crash else "info", exc_info=is_crash)
 
     def log_move(self):
         """ move the log files to the history folder, ensure with the date MM-DD one file every year"""

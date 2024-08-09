@@ -57,7 +57,7 @@ class BusMeter(Screens, Usage):
 
 
     def serial_bye(self, msg):
-        pi.log_app.add(msg)
+        pi.log_app.add(msg, tpe="debug")
         self.transport.close()
 
     def checkcrc(self, p1telegram):
@@ -72,7 +72,7 @@ class BusMeter(Screens, Usage):
         calccrc = hex(crcmod.predefined.mkPredefinedCrcFun('crc16')(p1contents))
         # check if given and calculated match
         if givencrc != calccrc:
-            pi.log_app.add(f"Error telegram checksum mismatch: {givencrc=}, {calccrc=}")
+            pi.log_app.add(f"Error telegram checksum mismatch: {givencrc=}, {calccrc=}", tpe="error")
             return False
         return True
 
@@ -81,13 +81,13 @@ class BusMeter(Screens, Usage):
         # format:YYMMDDhhmmssX, where X is the daylight saving time flag S or W
         # convert to format:YYYY-MM-DD hh:mm:ss or YYYY-MM-DD if time is zero
         if len(ts) != 13:
-            pi.log_app.add(f"Error expecting 13 characters: {ts=}")
+            pi.log_app.add(f"Error expecting 13 characters: {ts=}", tpe="error")
         if ts[12] not in ["S", "W"]:
-            pi.log_app.add(f"Error expecting S or W at the end of {ts=}")
+            pi.log_app.add(f"Error expecting S or W at the end of {ts=}", tpe="error")
         try:
             dt = datetime.datetime.strptime(ts[:-1], '%y%m%d%H%M%S')
         except Exception as e:
-            pi.log_app.add(f"Error parsing timestamp: {ts=} {e=}")
+            pi.log_app.add(f"Error parsing timestamp: {ts=} {e=}", tpe="error")
             dt=datetime.datetime.now()
         return dt
 
@@ -135,7 +135,7 @@ class BusMeter(Screens, Usage):
                     value = bytearray.fromhex(value).decode()
                 if obis == "1-0:94.32.1":  # vgrid
                     if value not in ["230", "400"]:
-                        pi.log_app.add(f"{obis}: Grid expecting 230 or 400: {value=}")
+                        pi.log_app.add(f"{obis}: Grid expecting 230 or 400: {value=}", tpe="error")
                 return ret_val({"value": value}, value)
             case 3 | 5 | 21 | 71:  # register, demand register, register monitor, limiter
                 value_str, _, unit = values[0][1:-1].partition("*")
@@ -148,7 +148,7 @@ class BusMeter(Screens, Usage):
                     any(x == obis for x in ["1-0:32.7.0", "1-0:52.7.0", "1-0:72.7.0"])):
                     if int(value) < 200:
                         msg = f"!! PHASE DEACTIVE {result_str}"
-                        pi.log_app.add(msg)
+                        pi.log_app.add(msg, tpe="error")
                         return ret_val(result_dct, Text(msg, "bold red"))
                 return ret_val(result_dct, result_str)
             case 4:  # extended register
@@ -163,7 +163,7 @@ class BusMeter(Screens, Usage):
                 ids = [r[1:-1] for r in values[1:1+2]]
                 # expect class 4 at this point, check it for all id's
                 if not all(x in obiscodes and obiscodes.get(x).class_id == 4 for x in ids):
-                    pi.log_app.add(f"!!Expecting class_id == 4 -> {ids=} in {obis=}")
+                    pi.log_app.add(f"!!Expecting class_id == 4 -> {ids=} in {obis=}", tpe="error")
                 get_val = lambda x: [x.partition("*")[0], x.partition("*")[2]]
                 table = {self.ts_obj(values[x][1:-1]): [self.ts_obj(values[x+1][1:-1]), *get_val(values[x+2][1:-1])]\
                          for x in range(len(ids)+1, len(values)-1, 3)}
