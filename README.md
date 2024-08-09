@@ -324,10 +324,11 @@ The rates used in the application are example the rates for a Belgian utility pr
 To change the rates, edit the file `rates.json` in the root of the project. 
 The file contains the rates for the different periods of the day for electricity, gas and water.
 
+
 ```json
 {
-  "Gas": {"+": 0.5, "cnv":  ["kWh", 11.510]},
-  "Water": {"+": 0.5},
+  "Gas": {"+": 1.576, "cnv": ["kWh", 11.510]},
+  "Water": {"+": 6.1},
   "Electricity": {"+": {"Day": 0.4, "Night": 0.3},
                   "-": {"Day": 0.1, "Night": 0.1}}
 }
