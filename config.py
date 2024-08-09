@@ -62,9 +62,11 @@ battery_info = {
 
 # client specific mapping for web_socket communications purposes
 ths_map = {
+    "electricity^fluvius_night": "kW_night",
     "electricity^fluvius_night^sensor": "kW_plus",
     "electricity^fluvius_night^minus_meter": "kwH_night_min",
     "electricity^fluvius_night^plus_meter": "kwH_night_plus",
+    "electricity^fluvius_day": "kW_day",
     "electricity^fluvius_day^sensor": "kW_plus",
     "electricity^fluvius_day^minus_meter": "kwH_day_min",
     "electricity^fluvius_day^plus_meter": "kwH_day_plus",

@@ -18,7 +18,7 @@ class SocketApp:
 
     def json_it(self, dct):
         """ dump the data in json format"""
-        encode_JSON = lambda x: self.ts_str(x) if isinstance(x, datetime.datetime) else repr(x)
+        encode_JSON = lambda x: self.DM_selfie.ts_str(x) if isinstance(x, datetime.datetime) else repr(x)
         return json.dumps(dct, indent=4, sort_keys=True, default=encode_JSON)
 
     async def send_ws(self, data, ip):
