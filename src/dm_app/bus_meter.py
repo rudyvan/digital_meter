@@ -239,7 +239,8 @@ class BusMeter(Screens, Usage):
                     pi.tmux.close_sessions()
                     break
 
-    def run(self):
+    def run(self, ths_map):
+        self.ths_map = ths_map
         # 1. build the screens layout upfront
         pi.log_app.log_start("Starting digital meter script")
         self.layout = self.make_layout()
