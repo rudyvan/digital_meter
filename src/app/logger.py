@@ -54,10 +54,6 @@ class Logger:
 
     def log_start(self, why):
         """start the logger with a file and a console handler"""
-        # def add_handler(_logger, _handler):
-        #     _handler.setFormatter(logging.Formatter(format, datefmt="%Y-%m-%d %X"))
-        #     _logger.addHandler(_handler)
-        #     _logger.propagate = False
         # 1. set the log level to ERROR level only except for asyncio where is set to WARNING
         for key in logging.Logger.manager.loggerDict:
             if key == log_name:
@@ -65,6 +61,7 @@ class Logger:
             else:
                 logging.getLogger(key).setLevel(logging.WARNING if "asyncio" in key else logging.ERROR)
                 logging.getLogger(key).propagate = True
+        # 2. the default logger
         format, date_fmt = f"{self.host_name}: %(asctime)s - %(name)s - %(levelname)s - %(message)s", "%Y-%m-%d %X"
         logging.basicConfig(level=logging.DEBUG, format=format, datefmt="%Y-%m-%d %X")
         logging.propagate = False
