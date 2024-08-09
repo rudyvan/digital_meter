@@ -68,7 +68,7 @@ The gap is the amount of power that can be used before the peak power is reached
 This is crucial input for managing energy storage and consumption.
 The quarter progress is highlighted in a red bar.   
 
-another tmux session is created with the logging output of the application:
+Another tmux session is created with the logging output of the application:
 
 ![log tmux session](./docs/screen_log.jpg)
 
@@ -140,7 +140,7 @@ And most suppliers come with their own energy management system, not adapted for
 Energy optimisation is a complex task and requires the collaboration between the different applications to meet the operational and financial requirements of the user.
 Resources are constrained and have to be managed between the different applications.
 
-## how they are talking?
+## How they are talking?
 
 Each app has a websocket server and client to stream to receive commands or to forward the data.
 
@@ -160,9 +160,18 @@ A cloud application could be more powerful as it could include weather predictio
 
 # Installation
 
+Warning: the installation is not for the fainted of hart, as it requires some knowledge of the raspberry pi and linux.
+
+Personally, an ansible script to install the application on a raspberry pi (or on Apple Mac or Ubuntu) can simplify and make the installation repeatable.
+Alternatively a docker setup.
+
+The terminal manager TMUX need to be setup, as the application is started in a tmux environment, which allows to run the application in the background and have terminal views and windows created by the application viewable on another terminal.
+
+Anyway, the following steps describe how to install the application on a Raspberry Pi.
+
 The application is written in Python and to ensure that the application runs in a controlled environment, it is recommended to use a virtual environment. The following steps describe how to install the application on a Raspberry Pi.
 
-visit the github page of pyenv and follow the instructions to install pyenv-virtualenv on your raspberry pi and install the shell extension.
+Visit the github page of pyenv and follow the instructions to install pyenv-virtualenv on your raspberry pi and install the shell extension.
 
 https://github.com/pyenv/pyenv-virtualenv
 
@@ -182,7 +191,7 @@ pyenv local digital_meter
 ```
 
 
-after succesfull installation the follow lines should add to your .bashrc file in the home directory of the user pi:
+After successful installation the follow lines should add to your .bashrc file in the home directory of the user pi:
 
 ```bash
 export PYENV_ROOT="/home/pi/.pyenv" 
