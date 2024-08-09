@@ -23,7 +23,9 @@ class SocketApp:
         return json.dumps(dct, indent=4, sort_keys=True, default=encode_JSON)
 
     async def send_ws(self, data, ip):
-        """ run a task pushing data from queue to the destination websocket server """
+        """ run a task pushing data from queue to the destination websocket server
+            A queue is used as not to slow down the caller
+            the data is dropped if the queue is full """
         if not hasattr(self, "_send_tasks"):
             self._send_tasks = {}
             self._send_queues = {}
@@ -56,59 +58,31 @@ class SocketApp:
             except websockets.ConnectionClosed:
                 continue
 
-    # @property
-    # def ws_ep(self):
-    #     """return websocket end point"""
-    #     if not hasattr(self, "_ws_ep"):
-    #         if not all(self.socket_info.get(k, False) for k in ["dest_ip", "dest_port", "ws_url"]):
-    #             self.log_app.add(f"send_ws failed as no end point")
-    #             return ""
-    #     self._ws_ep = self.socket_info["ws_url"].format_map(self.socket_info)
-    #     return self._ws_ep
-    #
-    # async def send_ws2(self, data, dest_ip) -> (bool, "success"):
-    #     """send data to a socket for a host with ip, port, and path"""
-    #     self.log_app.add(f"send_ws bytes")
-    #     self.socket_info["dest_ip"] = dest_ip
-    #
-    #     if not self.ws_ep:
-    #         return False
-    #     to_snd = data if isinstance(data, str) else self.json_it(data)
-    #     self.log_app.add(f"send_ws {self.ws_ep} {len(to_snd)=} bytes")
-    #     tries = 0
-    #     while True:
-    #         try:
-    #             async with websockets.connect(self.ws_ep) as self.websocket:
-    #                 await self.websocket.send(to_snd)
-    #                 return True
-    #         except asyncio.CancelledError:
-    #             return False
-    #         except (asyncio.TimeoutError, ConnectionRefusedError, ConnectionError, socket.error,
-    #                 websockets.exceptions.InvalidMessage) as e:
-    #             tries += 1
-    #             if tries > 3:
-    #                 self.log_app.add(f"send_ws {self.ws_ep} failed: {e}")
-    #                 return False  # remote server is not ready after tries
-    #             await asyncio.sleep(0.5)
-    #         except Exception as e:
-    #             await asyncio.sleep(1)
-    #         finally:
-    #             # cannot do wrong with this, as it is a finally
-    #             if hasattr(self, "websocket"):
-    #                 asyncio.create_task(self.websocket.close())
-
 
     async def reply_ws(self, data, ip, ws):
-        """reply to a websocket server request
+        """ reply to a websocket server request
+        below code is propriety and should be adapted to your specific needs in communicating obdis values to external websocket servers
         2024-08-08 18:12:23 PI-Energy !Reply? <PI-DM> for <electricity^fluvius_day> -> {'type': 'th', 'cmd': 'ask', 'th': 'electricity^fluvius_day', 'val': None}
         2024-08-08 18:12:23 PI-Energy !Reply? <PI-DM> for <electricity^fluvius_night> -> {'type': 'th', 'cmd': 'ask', 'th': 'electricity^fluvius_night', 'val': None}
         2024-08-08 18:12:23 PI-Energy !Reply? <PI-DM> for <gas^purchased_gas> -> {'type': 'th', 'cmd': 'ask', 'th': 'gas^purchased_gas', 'val': None}
         2024-08-08 18:12:23 PI-Energy !Reply? <PI-DM> for <domestic_water^pidpa> -> {'type': 'th', 'cmd': 'ask', 'th': 'domestic_water^pidpa', 'val': None}
         """
         self.log_app.add(f"Websocket Server: rcv from {ip}: {data}")
+        all_keys = ["type", "cmd", "th", "val"]
         data_dct = json.loads(data)
+        if not all(x in data_dct for x in all_keys):
+            self.log_app.log_it_info(f"Websocket {ip} ? data missing keys {all_keys} not in {data_dct}", tpe="error")
+            return
         data_dct["cmd"] = "reply"
-        data_dct["val"] = 0.0
+        match th := data_dct["th"]:
+            case str(x) if "electricity^fluvius_day" in x:
+                data_dct["val"] = 0.0
+            case str(x) if "electricity^fluvius_night" in x:
+                data_dct["val"] = 0.0
+            case "gas^purchased_gas":
+                data_dct["val"] = 0.0
+            case "domestic_water^pidpa":
+                data_dct["val"] = 0.0
         return await self.send_ws(data_dct, ip)
 
 
