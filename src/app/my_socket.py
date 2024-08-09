@@ -81,6 +81,9 @@ class SocketApp:
            not self.my_assert((th := data_dct["th"]) in ths_map,
                               f"Websocket {ip} ?? {th=} not in {ths_map}"):
             return
+        # exit if reply command
+        if data_dct["cmd"] != "ask":
+            return
         data_dct["cmd"] = "reply"
         obdis_th = ths_map[th]
         data_dct["val"] = self.get_val(getattr(self.DM_selfie, obdis_th, 0.0))
