@@ -76,7 +76,7 @@ class Logger:
         # 3.2 the file handler, with level debug
         _handler = logging.FileHandler(log_file)
         _handler.setLevel(logging.DEBUG)
-        _handler.setFormatter(logging.Formatter(format=format, datefmt="%Y-%m-%d %X"))
+        _handler.setFormatter(logging.Formatter(format, datefmt="%Y-%m-%d %X"))
         logger.addHandler(_handler)
         logger.propagate = False
         # make the files not empty and show welcome message through the handlers
