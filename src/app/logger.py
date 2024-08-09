@@ -63,7 +63,7 @@ class Logger:
                 logging.getLogger(key).propagate = True
         # 2. the default logger
         format, date_fmt = f"{self.host_name}: %(asctime)s - %(name)s - %(levelname)s - %(message)s", "%Y-%m-%d %X"
-        logging.basicConfig(level=logging.DEBUG, format=format, datefmt="%Y-%m-%d %X")
+        logging.basicConfig(level=logging.DEBUG, format=format, datefmt="%Y-%m-%d %X", filename=log_file, filemode='w')
         logging.propagate = False
         # 3. create the handlers
         # 3.1 the screen handler with level info
