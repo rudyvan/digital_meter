@@ -222,7 +222,7 @@ class BusMeter(Screens, Usage):
                             self.p1_table = [self.parsetelegramline(line.decode('ascii'))
                                              for line in self.p1telegram.split(b'\r\n') if line]
                             if self.update_usage():
-                                await self.socket_app.send_ths()
+                                await pi.socket_app.send_ths()
                                 self.update_layout(self.layout)
                             if not last_live or (datetime.datetime.now() - last_live).total_seconds() > refresh_s:
                                 self.togather.append(self.loop.run_in_executor(None, live.refresh))
