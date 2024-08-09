@@ -1,6 +1,7 @@
 # Digital_meter with Energy Management Apps
 
 Digital Meter Application for Belgian e-Meters.
+
 Is a standalone application that reads the digital meter and calculates the cost of electricity, gas and water based on the rates in the file `rates.json`.
 
 2 satellite applications are included:
@@ -18,11 +19,13 @@ NRGKick is a mobile charging station that can be controlled through a mobile app
 ## check if your P1 port is working
 
 You need to request fluvius to activate the P1 port on your meter via myfluvius.be.
-check the screen output of the meter to see if the P1 port is active:
 
-![P1 port.png](./docs/P1 port.png)
+Check the screen output of the meter to see if the P1 port is active:
 
-An arrow has to appear above P1 (indicated by 8), then the port is active and openend.
+![P1 port.png](./docs/P1_port.png)
+
+An arrow has to appear above P1 (indicated by 8), then the port is active and opened.
+
 It streams the data every second on high serial speed on the port P1 (below the yellow cover). 
 
 ## Connection to the meter
@@ -42,28 +45,32 @@ Should the cable be connected to another port, you can find the port by running 
 ls /dev/ttyUSB*
 ```
 
-Should you need to change it, edit the file `dm.py` in the root of the project.
+Should you need to change it, edit the file `config.py` in the root of the project.
 
-Is the cable too short, you can use a shielded USB extension cable as speed is a fast 100k baud.
+Is the cable too short, you must use a shielded USB extension cable as speed is a fast 100k baud.
 
 # Screen Output
 
-![screenshot](./docs/screen_shot.jpg)
+![dm tmux session](./docs/screen_shot.jpg)
 
 The screen output are panels created by rich and updated every second. 
 
 The panels are as follows:
 1. The top panel shows the current date and time as received from the meter.
-2. That panel shows the active rates for electricity, gas and water in magenta, the inactive rates in cyan.
-3. Shows the current consumption and cost for electricity, gas and water, highlighted green for the active rate.
-4. The panel shows the month peak power for electricity as reported by the meter, current and past.
-5. The log panel shows the 10 most recent logging messages
-6. The side panel shows the last processed meter telegram contents.
-7. The right bottom panel shows the current quarter peak power for electricity as reported by the meter, and the forecasted peak power for the quarter against the month peak power.  
+2. The Rate panel left shows the active rates for electricity, gas and water in magenta, the inactive rates in cyan.
+3. Below the Usage panel the consumption and cost for electricity, gas and water, highlighted green for the active rate for a few days in the past and for day, week, month and year period.
+4. The Monthly Peak panel shows the month peak power for electricity as reported by the meter, current and past.
+5. The left bottom panel Quarters Peak shows the current quarter peak power for electricity as reported by the meter, and the forecasted peak power for the quarter against the month peak power, highlighted in red if a new monthly peak is in the make.  
+6. Finally, The right side panel Telegram shows the last processed meter telegram contents.
 
+The Quarters Peak panel is important for energy management.
 The gap is the amount of power that can be used before the peak power is reached OR the amount the current quarter risks to overshoot the current month peak.
-Then the whole quarter is highlighted in red.   
-This is crucial input for an energy storage management system.
+This is crucial input for managing energy storage and consumption.
+The quarter progress is highlighted in a red bar.   
+
+another tmux session is created with the logging output of the application:
+
+![log tmux session](./docs/screen_log.jpg)
 
 
 
@@ -73,6 +80,8 @@ As example is created for the management of an electrical vehicle with a NRGKick
 The NRGKick charging station is connected to the electrical vehicle and to the electrical installation by standard connectors making this a very flexible setup.
 
 The vehicle charging strategy of the ev_app is as follows:
+- charge the vehicle quickly when the charge is less than 20% to ensure the vehicle is ready for an emergency trip
+- retrieve the upcoming trip and required charge from the calendar and determine charge tactics
 - charge the electrical vehicle when excess electricity is produced as indicated by the digital meter
 - or when rates are lowest (rate = 2 night)
 - and stay below the peak capacity of the current month
@@ -80,6 +89,7 @@ The vehicle charging strategy of the ev_app is as follows:
 - with multiple cars, manage the resources to ensure all cars are charged when needed
 
 This is different from the NRGKick app or other energy management solutions that charges the vehicle with all generated solar power.
+
 Maybe half is consumed by the house and therefore only the other half is available to charge the vehicle.
 
 Trips are retrieved from the Google Calendar API, and the car is charged to the required level before the trip.
@@ -109,6 +119,7 @@ This occurs in the following 3 situations in Belgium:
 - Peak power use can be reduced by using stored energy.
 
 In case spot prices are used, the application can be extended to use the lowest spot prices to charge the batteries and the highest spot prices to discharge the batteries.
+
 This "brokering" can be done by a smart energy contract. 
 
 Specific for Belgium, installing a battery has consequences:
@@ -116,6 +127,7 @@ Specific for Belgium, installing a battery has consequences:
 - you can only use a certified battery
 - you have to limit the power output of the battery to 10kW for 3 phases and 5kW for 1 phase
 - and you have to announce the installation on myfluvius.be 
+- and your energy supplier has put your meter in "meetregime 3" (frequent metering) and you might have to pay a fee for this, then get dynamic pricing enabled.
 
 ![fluvius.png](./docs/fluvius.png)
 
@@ -253,7 +265,13 @@ tmux a -t ev
 or to attach to the battery storage management application:
 
 tmux a -t bs 
+
+or to attach to the logging output of the application:
+
+tmux a -t log
 ```
+
+or alternatively use Ctrl+b followed by '(' or ')' to switch between the different tmux panes, where the log pane becomes also visible.
 
 To detach from the tmux environment, press `Ctrl+b` followed by `d`.
 Some other keys to use in tmux:
@@ -315,15 +333,26 @@ One can install a socket client on another machine to receive / test the respons
 
 Configure a remote machine to receive the data by installing the websockets package, and making sure the ip address and port are correcty specified in socket_info.
 
-Then run the following command to start the websocket client:  
-(PI-DM is the hostname of the raspberry pi)
+In the current application, the socket_info is specified in the config.py file in the root of the project and the programming is bespoke in my_socket.py.
+
+Make the socket_info empty in config.py to disable the socket server and client.
 
 ```bash
 python -m websockets  ws://PI-DM:8080/ws
 ```
 
 Anything you type will be sent to the server and the server will respond with the data.
-With "?" you can request the current data, with "!" you can request the current rates.
+
+## history and pickle files
+
+At the end of each day, the application writes a json file with usage, cost and the logfile to the history directory, overwriting the files with the same date_prefix one year earlier.
+
+No cleaning is needed as only 365 * 2 files are kept.
+
+Object and data for cost calculation are stored in a pickle file in the root of the project.
+
+If you need to start fresh or changed objects, delete the pickle file, it will also happen if the pickle file is corrupted.
+
 
 ## Authors
 
