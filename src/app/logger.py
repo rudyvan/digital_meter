@@ -65,14 +65,15 @@ class Logger:
             else:
                 logging.getLogger(key).setLevel(logging.WARNING if "asyncio" in key else logging.ERROR)
                 logging.getLogger(key).propagate = True
-        format = f"%(asctime)s {self.host_name} %(message)s"
-        logging.basicConfig(level=logging.DEBUG, format=format)   # , datefmt="%Y-%m-%d %X")
+        format = f"{self.host_name}: %(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        logging.basicConfig(level=logging.DEBUG, format=format, datefmt="%Y-%m-%d %X")
         # 3. create the handlers
         logger = logging.getLogger(log_name)
         logger.addHandler(RichHandler(level=logging.INFO, console=self.log_console, rich_tracebacks=True))
-        # _handler = logging.FileHandler(log_file)
-        # _handler.setLevel(logging.DEBUG)
-        logger.addHandler(logging.FileHandler(log_file))
+        _handler = logging.FileHandler(log_file)
+        _handler.setLevel(logging.DEBUG)
+        _handler.setFormatter(logging.Formatter(format, datefmt="%Y-%m-%d %X"))
+        logger.addHandler(_handler)
         logger.propagate = False
         # make the files not empty and show welcome message through the handlers
         self.add(why)
