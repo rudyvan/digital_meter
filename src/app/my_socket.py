@@ -17,16 +17,6 @@ class SocketApp:
         self.log_app = log_app
         super().__init__(*args, **kwargs)
 
-    @property
-    def ws_ep(self):
-        """return websocket end point"""
-        if not hasattr(self, "_ws_ep"):
-            if not all(self.socket_info.get(k, False) for k in ["dest_ip", "dest_port", "ws_url"]):
-                self.log_app.add(f"send_ws failed as no end point")
-                return ""
-        self._ws_ep = self.socket_info["ws_url"].format_map(self.socket_info)
-        return self._ws_ep
-
     def json_it(self, dct):
         """ dump the data in json format"""
         encode_JSON = lambda x: self.ts_str(x) if isinstance(x, datetime.datetime) else repr(x)
@@ -66,36 +56,46 @@ class SocketApp:
             except websockets.ConnectionClosed:
                 continue
 
-    async def send_ws2(self, data, dest_ip) -> (bool, "success"):
-        """send data to a socket for a host with ip, port, and path"""
-        self.log_app.add(f"send_ws bytes")
-        self.socket_info["dest_ip"] = dest_ip
-
-        if not self.ws_ep:
-            return False
-        to_snd = data if isinstance(data, str) else self.json_it(data)
-        self.log_app.add(f"send_ws {self.ws_ep} {len(to_snd)=} bytes")
-        tries = 0
-        while True:
-            try:
-                async with websockets.connect(self.ws_ep) as self.websocket:
-                    await self.websocket.send(to_snd)
-                    return True
-            except asyncio.CancelledError:
-                return False
-            except (asyncio.TimeoutError, ConnectionRefusedError, ConnectionError, socket.error,
-                    websockets.exceptions.InvalidMessage) as e:
-                tries += 1
-                if tries > 3:
-                    self.log_app.add(f"send_ws {self.ws_ep} failed: {e}")
-                    return False  # remote server is not ready after tries
-                await asyncio.sleep(0.5)
-            except Exception as e:
-                await asyncio.sleep(1)
-            finally:
-                # cannot do wrong with this, as it is a finally
-                if hasattr(self, "websocket"):
-                    asyncio.create_task(self.websocket.close())
+    # @property
+    # def ws_ep(self):
+    #     """return websocket end point"""
+    #     if not hasattr(self, "_ws_ep"):
+    #         if not all(self.socket_info.get(k, False) for k in ["dest_ip", "dest_port", "ws_url"]):
+    #             self.log_app.add(f"send_ws failed as no end point")
+    #             return ""
+    #     self._ws_ep = self.socket_info["ws_url"].format_map(self.socket_info)
+    #     return self._ws_ep
+    #
+    # async def send_ws2(self, data, dest_ip) -> (bool, "success"):
+    #     """send data to a socket for a host with ip, port, and path"""
+    #     self.log_app.add(f"send_ws bytes")
+    #     self.socket_info["dest_ip"] = dest_ip
+    #
+    #     if not self.ws_ep:
+    #         return False
+    #     to_snd = data if isinstance(data, str) else self.json_it(data)
+    #     self.log_app.add(f"send_ws {self.ws_ep} {len(to_snd)=} bytes")
+    #     tries = 0
+    #     while True:
+    #         try:
+    #             async with websockets.connect(self.ws_ep) as self.websocket:
+    #                 await self.websocket.send(to_snd)
+    #                 return True
+    #         except asyncio.CancelledError:
+    #             return False
+    #         except (asyncio.TimeoutError, ConnectionRefusedError, ConnectionError, socket.error,
+    #                 websockets.exceptions.InvalidMessage) as e:
+    #             tries += 1
+    #             if tries > 3:
+    #                 self.log_app.add(f"send_ws {self.ws_ep} failed: {e}")
+    #                 return False  # remote server is not ready after tries
+    #             await asyncio.sleep(0.5)
+    #         except Exception as e:
+    #             await asyncio.sleep(1)
+    #         finally:
+    #             # cannot do wrong with this, as it is a finally
+    #             if hasattr(self, "websocket"):
+    #                 asyncio.create_task(self.websocket.close())
 
 
     async def reply_ws(self, data, ip, ws):
