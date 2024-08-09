@@ -34,7 +34,7 @@ class SocketApp:
             self._send_tasks[ip] = asyncio.create_task(self.task_send_ws(ip))
         # 2. add data to the queue
         data_str = data if isinstance(data, str) else self.json_it(data)
-        self.log_app.add(f"Websocket Queue {ip}: {len(data_str)} bytes, {data=}")
+        self.log_app.add(f"Websocket Queue {ip}: {len(data_str)} bytes")
         if self._send_queues[ip].full():
             return self.log_app.log_it_info(f"Websocket Queue {ip} full", tpe="error")
         # could add test for not sending repeat data
@@ -64,6 +64,8 @@ class SocketApp:
             self.log_app.log_it_info(m, tpe="error")
         return ret_val
 
+    # convert gas and water to liter and only take the value
+    get_val = lambda self, val: val.get("value", 0) * 1000 if isinstance(val, dict) else val
 
     async def reply_ws(self, data, ip, ws):
         """ reply to a websocket server request
@@ -80,16 +82,14 @@ class SocketApp:
             return
         data_dct["cmd"] = "reply"
         obdis_th = ths_map[th]
-        data_dct["val"] = getattr(self.DM_selfie, obdis_th, 0.0)
+        data_dct["val"] = self.get_val(getattr(self.DM_selfie, obdis_th, 0.0))
         return await self.send_ws(data_dct, ip)
 
     async def send_ths(self):
         now = datetime.datetime.now()
         if not hasattr(self, "_last_send") or (now - self._last_send).total_seconds() > 15:
             ths_map = self.DM_selfie.ths_map
-            # convert gas and water to liter and only take the value
-            get_val = lambda val: val.get("value", 0) * 1000 if isinstance(val, dict) else val
-            data_dct = [{"type": "th", "cmd": "set", "th": th, "val": get_val(getattr(self.DM_selfie, th_attr, 0.0))}
+            data_dct = [{"type": "th", "cmd": "set", "th": th, "val": self.get_val(getattr(self.DM_selfie, th_attr, 0.0))}
                         for th, th_attr in ths_map.items()]
             await self.send_ws(data_dct, self.socket_info["ws_ip"])
             self._last_send = now
