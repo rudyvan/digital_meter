@@ -40,7 +40,7 @@ class Logger:
         return f"{dir_history}{mm_dd}_"
 
     def clear_handlers(self, logger):
-        while logger.hasHandlers():
+        while logger.handlers:
             to_remove = logger.handlers[0]
             if isinstance(to_remove, logging.FileHandler):
                 to_remove.close()
@@ -79,6 +79,7 @@ class Logger:
 
     def log_close(self):
         self.clear_handlers(logging.getLogger(log_name))
+        self.clear_handlers(logging.getLogger())
 
     def log_crash(self, txt):
         """log and print a crash and use sys.exec_info or make up a crash message
