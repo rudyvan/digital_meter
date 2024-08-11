@@ -78,8 +78,8 @@ class Usage:
         self.water_meter = self.data["meters"]["Water"]  # beware, self.water_meter is updated automatically
         self.gas_meter = self.data["meters"]["Gas"]      # beware, self.gas_meter is updated automatically
 
-        pi.log_app.log(f"{self.water_meter=}")
-        pi.log_app.log(f"{self.gas_meter=}")
+        pi.log_app.add(f"{self.water_meter=}")
+        pi.log_app.add(f"{self.gas_meter=}")
 
 
 
