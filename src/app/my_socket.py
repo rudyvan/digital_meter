@@ -82,6 +82,9 @@ class SocketApp:
         if "domestic_water^purchased_water" in data:
             water = data_dct.get("val", 0) / 1000.0  # convert from liters to m3
             now = datetime.datetime.now()
+
+            self.log_app.add(f"{getattr(self.DM_selfie, 'w_meter', '????')=}")
+
             self.DM_selfie.water_meter = {"value": water, "unit": "m3", "time": now}
             self.DM_selfie.w_meter = {"value": water, "unit": "m3", "time": now}
 
