@@ -156,12 +156,11 @@ class BusMeter(Screens, Usage):
                 value, _, unit = values[1][1:-1].partition("*")
                 value = float(value) if "." in value else int(value)
                 res_dct = {"value": value, "unit": unit, "time": value_time}
-                # update the self.data dict
                 match th_n:
                     case "gas_meter":
-                        self.g_meter = res_dct
+                        self.g_meter = res_dct  # update self.data dict version
                     case "water_meter":
-                        self.w_meter = res_dct
+                        self.w_meter = res_dct  # update self.data dict version
                 return ret_val({"value": res_dct},
                                f"{self.ts_str(value_time)} {value} {unit}")
             case 7:  # profile generic
