@@ -155,7 +155,14 @@ class BusMeter(Screens, Usage):
                 value_time = self.ts_obj(values[0][1:-1])
                 value, _, unit = values[1][1:-1].partition("*")
                 value = float(value) if "." in value else int(value)
-                return ret_val({"value": {"value": value, "unit": unit, "time": value_time}},
+                res_dct = {"value": value, "unit": unit, "time": value_time}
+                # update the self.data dict
+                match th_n:
+                    case "gas_meter":
+                        self.g_meter = res_dct
+                    case "water_meter":
+                        self.w_meter = res_dct
+                return ret_val({"value": res_dct},
                                f"{self.ts_str(value_time)} {value} {unit}")
             case 7:  # profile generic
                 # first no of lines, then the id's of the lines, then the values of those id's

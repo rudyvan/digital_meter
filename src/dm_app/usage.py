@@ -62,11 +62,11 @@ class Usage:
 
     def set_pointers(self):
         # these pointer must be set before self.data is used (after restore or creation)
-        self.water_meter = self.data["meters"]["Water"]  # beware, self.water_meter is updated automatically
-        self.gas_meter = self.data["meters"]["Gas"]      # beware, self.gas_meter is updated automatically
-        self.usage = self.data["usage"]                  # beware, self.usage is updated automatically
-        self.day_peak = self.data["day_peak"]
         self.e_meter = self.data["meters"]["Electricity"]
+        self.w_meter = self.data["meters"]["Water"]    # beware, self.water_meter is updated automatically
+        self.g_meter = self.data["meters"]["Gas"]      # beware, self.gas_meter is updated automatically
+        self.usage = self.data["usage"]                # beware, self.usage is updated automatically
+        self.day_peak = self.data["day_peak"]
         self.peak_forecast = self.data["quarter_peak"]
         # pointers into rates_dct
         self.e_rate = self.rates_dct["Electricity"]
