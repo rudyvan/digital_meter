@@ -81,13 +81,9 @@ class SocketApp:
         # pidpa, i have my own water meter registering consumption, therefore i can update
         if "domestic_water^purchased_water" in data:
             water = data_dct.get("val", 0) / 1000.0  # convert from liters to m3
-            now = datetime.datetime.now()
-            self.DM_selfie.water_meter = {"value": water, "unit": "m3", "time": now}
-            self.DM_selfie.meters["Water"] = {"value": water, "unit": "m3", "time": now}
-
-            self.log_app.add(f"{self.DM_selfie.data['meters']=}")
-
-            if data_dct["cmd"] == "reply":  # bye if reply to our initial ask
+            self.DM_selfie.water_meter = {"value": water, "unit": "m3", "time": datetime.datetime.now()}
+            self.DM_selfie.meters["Water"] = self.DM_selfie.water_meter.copy()
+            if data_dct["cmd"] in ["reply", "cum"]:  # bye if reply to our initial ask
                 return
             # assume cmd==set -> return with cmd=reply
             data_dct["cmd"] = "reply"
