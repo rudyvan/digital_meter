@@ -62,8 +62,27 @@ class Usage:
 
     def set_pointers(self):
         # these pointer must be set before self.data is used (after restore or creation)
+
+        if "meters" not in self.data:
+            self.data["meters"] = {"Electricity": {"+Day": 0, "-Day": 0, "+Night": 0, "-Night": 0, "unit": "kWh"},
+                                    "Gas": {"value": 0, "time": datetime.datetime.now(), "unit": "m3"},
+                                    "Water": {"value": 0, "time": datetime.datetime.now(), "unit": "m3"}}
+        if "Gas" not in self.data["meters"]:
+            self.data["meters"]["Gas"] = {"value": 0, "time": datetime.datetime.now(), "unit": "m3"}
+        if "Water" not in self.data["meters"]:
+            self.data["meters"]["Water"] = {"value": 0, "time": datetime.datetime.now(), "unit": "m3"}
+        if "Electricity" not in self.data["meters"]:
+            self.data["meters"]["Electricity"] = {"+Day": 0, "-Day": 0, "+Night": 0, "-Night": 0, "unit": "kWh"}
+
+
         self.water_meter = self.data["meters"]["Water"]  # beware, self.water_meter is updated automatically
         self.gas_meter = self.data["meters"]["Gas"]      # beware, self.gas_meter is updated automatically
+
+        pi.log_app.log(f"{self.water_meter=}")
+        pi.log_app.log(f"{self.gas_meter=}")
+
+
+
         self.usage = self.data["usage"]                  # beware, self.usage is updated automatically
         self.day_peak = self.data["day_peak"]
         self.e_meter = self.data["meters"]["Electricity"]

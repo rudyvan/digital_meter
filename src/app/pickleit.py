@@ -24,6 +24,10 @@ class PickleIt:
                 with open(pickle_file, "rb") as f:
                     selfie.data = pickle.load(f)
                 self.log_app.add(f"{pickle_file} loaded")
+
+                # the following line is to remove!!!!!!!, after running the program once
+                selfie.data.pop("log", None)
+
             except Exception as e:
                 self.log_app.add(f"!! err_pickle_load {pickle_file} {e}", tpe="error")
         else:
