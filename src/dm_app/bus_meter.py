@@ -158,9 +158,9 @@ class BusMeter(Screens, Usage):
                 res_dct = {"value": value, "unit": unit, "time": value_time}
                 match th_n:
                     case "gas_meter":
-                        self.g_meter = res_dct  # update self.data dict version
+                        self.meters["Gas"] = res_dct  # update self.data dict version
                     case "water_meter":
-                        self.w_meter = res_dct  # update self.data dict version
+                        self.meters["Water"] = res_dct  # update self.data dict version
                 return ret_val({"value": res_dct},
                                f"{self.ts_str(value_time)} {value} {unit}")
             case 7:  # profile generic
