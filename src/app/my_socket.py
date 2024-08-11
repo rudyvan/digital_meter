@@ -84,6 +84,9 @@ class SocketApp:
             now = datetime.datetime.now()
             self.DM_selfie.water_meter = {"value": water, "unit": "m3", "time": now}
             self.DM_selfie.w_meter = {"value": water, "unit": "m3", "time": now}
+
+            self.log_app.add(f"{self.DM_selfie.w_meter=}, {self.DM_selfie.data['meters']=}")
+
             if data_dct["cmd"] == "reply":  # bye if reply to our initial ask
                 return
             # assume cmd==set -> return with cmd=reply
