@@ -101,7 +101,7 @@ class SocketApp:
                 data_dct["val"] = self.get_val(getattr(self.DM_selfie, obdis_th, 0.0))
                 return await self.send_ws(data_dct, ip)
             case "cum" | "usage":  # ask for a cum or usage
-                pass
+                self.log_app.add(f"Things_sync ignored Forensics request: {data}")
             case _:
                 return
 
