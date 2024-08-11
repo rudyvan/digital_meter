@@ -94,12 +94,16 @@ class SocketApp:
                               f"Websocket {ip} ?? {th=} not in {ths_map}"):
             return
         # ignore if not ask command
-        if data_dct["cmd"] != "ask":
-            return
-        data_dct["cmd"] = "reply"
-        obdis_th = ths_map[th]
-        data_dct["val"] = self.get_val(getattr(self.DM_selfie, obdis_th, 0.0))
-        return await self.send_ws(data_dct, ip)
+        match data_dct["cmd"]:
+            case "ask":  # ask for a th value
+                data_dct["cmd"] = "reply"
+                obdis_th = ths_map[th]
+                data_dct["val"] = self.get_val(getattr(self.DM_selfie, obdis_th, 0.0))
+                return await self.send_ws(data_dct, ip)
+            case "cum" | "usage":  # ask for a cum or usage
+                pass
+            case _:
+                return
 
     async def send_ths(self):
         """ every config.socket_info[update_freq] seconds send the digital meter things to the remote server
