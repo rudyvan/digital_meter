@@ -95,6 +95,15 @@ Maybe half is consumed by the house and therefore only the other half is availab
 Trips are retrieved from the Google Calendar API, and the car is charged to the required level before the trip.
 Car use in the calendar is indicated by the word @car_x@ in the title of the event with car_x the name of the car in the config.py file.
 
+One of the issues however is that the charging station does not have any information on the car in terms of battery level or required charge.
+
+Therefore, one must 'read' the car to determine the required charge and to ensure the particular car is attached to the charging station.
+
+Unfortunately more complications to overcome as the car is not always attached to the charging station, and the charging station does not have a way to communicate with the car.
+
+Who designed that there is no comms between the car and the charging station other than the max ampere the car accepts and the abort?
+
+Stupid, as the car knows the battery level and the required charge, and the charging station knows the available power and the max ampere the car accepts.
 
 ![nrgkick.jpg](./docs/nrgkick.jpg)
 

@@ -190,15 +190,15 @@ class Usage:
         self.data["prev_quarter_peak"], self.data["quarter_peak"] = self.data["quarter_peak"], self.quarter_peak
         self.sum_utilities
         pi.pickle_app.var_save(self)
-        # 7. make special notification when producing energy
-        if self.producing and self.kW_min < 0.01:
+        # 7. make special notification when producing energy, but make a dead band of 1 kW to avoid flooding messages
+        if self.producing and self.kW_plus > 0.5:
             self.producing = False
             pi.log_app.add("Producing stopped")
             self.prev_kW_min = self.kW_min
-        elif not self.producing and self.kW_min > 0.01:
+        elif not self.producing and self.kW_min > 0.5:
             self.producing = True
             pi.log_app.add(f"Producing Energy Started {self.kW_min=}")
-        if self.producing and abs(self.kW_min - self.prev_kW_min) > 1:
+        if self.producing and abs(self.kW_min - self.prev_kW_min) > 2:
             pi.log_app.add(f"Producing Energy going {'up' if self.kW_min > self.prev_kW_min else 'down'} {self.kW_min=}")
             self.prev_kW_min = self.kW_min
         # 7. update the quarter_peak

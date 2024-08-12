@@ -89,6 +89,9 @@ class SocketApp:
             data_dct["cmd"] = "reply"
             return await self.send_ws(data_dct, ip)
         # continue with the rest of the things
+        if data_dct == {"type": "cum"}:
+            # is request to flip cumulative, ignore
+            return
         if not self.my_assert(all(x in data_dct for x in all_keys),
                               f"Websocket {ip} ? data missing keys {all_keys} not in {data_dct}") or \
            not self.my_assert((th := data_dct["th"]) in ths_map,
