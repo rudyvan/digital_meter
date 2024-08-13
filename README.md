@@ -70,7 +70,7 @@ The quarter progress is highlighted in a red bar.
 
 Another tmux session is created with the logging output of the application:
 
-![log tmux session](./docs/screen_log.jpg)
+![log tmux session](./docs/screen_log2.jpg)
 
 
 
