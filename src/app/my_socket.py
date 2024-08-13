@@ -67,6 +67,7 @@ class SocketApp:
 
     # convert gas and water to liter and only take the value
     get_val = lambda self, val: val.get("value", 0) * 1000 if isinstance(val, dict) else val
+    get_val_th = lambda self, th: 0.0 if not hasattr(self.DM_selfie, th) else self.get_val(getattr(self.DM_selfie, th))
 
     async def reply_ws(self, data, ip, ws):
         """ reply to a websocket server request
@@ -88,6 +89,9 @@ class SocketApp:
             # assume cmd==set -> return with cmd=reply
             data_dct["cmd"] = "reply"
             return await self.send_ws(data_dct, ip)
+        elif "gas^purchased_gas^cooking" in data:
+            # is a virtual thing and difference between gas_purchased and gas_heating (has its own meter)
+            self.DM_selfie.gas_cooking = self.get_val_th("gas_meter") - self.get_val_th("gas_heating")
         # continue with the rest of the things
         if data_dct == {"type": "cum"}:
             # is request to flip cumulative, ignore
@@ -102,7 +106,7 @@ class SocketApp:
             case "ask":  # ask for a th value
                 data_dct["cmd"] = "reply"
                 obdis_th = ths_map[th]
-                data_dct["val"] = self.get_val(getattr(self.DM_selfie, obdis_th, 0.0))
+                data_dct["val"] = self.get_val_th(obdis_th)
                 return await self.send_ws(data_dct, ip)
             case "cum" | "usage":  # ask for a cum or usage
                 self.log_app.add(f"Things_sync ignored Forensics request: {data}", tpe="debug")
