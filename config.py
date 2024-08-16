@@ -73,7 +73,7 @@ ths_map = {
     "electricity^fluvius_day^minus_meter": "kwH_day_min",
     "electricity^fluvius_day^plus_meter": "kwH_day_plus",
     "gas^purchased_gas": "gas_meter",
-    "gas^purchased_gas^cooking": "gas_cooking",
-    "gas^purchased_gas^heating": "gas_heating",
+    # "gas^purchased_gas^cooking": "gas_cooking",
+    # "gas^purchased_gas^heating": "gas_heating",
     "domestic_water^pidpa": "water_meter",
 }

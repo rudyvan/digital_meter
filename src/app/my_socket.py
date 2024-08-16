@@ -79,7 +79,7 @@ class SocketApp:
         all_keys = ["type", "cmd", "th", "val"]
         data_dct = json.loads(data)
         # intercept special case of domestic_water^purchased_water, as the digital_meter does not registrate water from
-        # pidpa, i have my own water meter registering consumption, therefore i can update
+        # pidpa, with own water meter registering consumption, pidpa consumption is derived
         if "domestic_water^purchased_water" in data:
             water = data_dct.get("val", 0) / 1000.0  # convert from liters to m3
             self.DM_selfie.water_meter = {"value": water, "unit": "m3", "time": datetime.datetime.now()}
