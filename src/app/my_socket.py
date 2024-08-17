@@ -92,6 +92,12 @@ class SocketApp:
         elif "gas^purchased_gas^cooking" in data:
             # is a virtual thing and difference between gas_purchased and gas_heating (has its own meter)
             self.DM_selfie.gas_cooking = self.get_val_th("gas_meter") - self.get_val_th("gas_heating")
+            data_dct["cmd"] = "reply"
+            return await self.send_ws(data_dct, ip)
+        elif "gas^purchased_gas^heating" in data:
+            self.DM_selfie.gas_heating = data_dct["val"]
+            data_dct["cmd"] = "reply"
+            return await self.send_ws(data_dct, ip)
         # continue with the rest of the things
         if data_dct == {"type": "cum"}:
             # is request to flip cumulative, ignore
@@ -123,7 +129,7 @@ class SocketApp:
         if not hasattr(self, "_last_send") or (now - self._last_send).total_seconds() > self.socket_info["update_freq"]:
             ths_map = self.DM_selfie.ths_map
             data_dct = [{"type": "th", "cmd": "set", "th": th, "val": self.get_val(getattr(self.DM_selfie, th_attr, 0.0))}
-                        for th, th_attr in ths_map.items()]
+                        for th, th_attr in ths_map.items() if th_attr]
             await self.send_ws(data_dct, self.socket_info["ws_ip"])
             self._last_send = now
 
