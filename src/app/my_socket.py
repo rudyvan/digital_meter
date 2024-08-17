@@ -82,8 +82,9 @@ class SocketApp:
         self.log_app.add(f"Websocket Server: rcv from {ip}: {data}", tpe="debug")
         all_keys = ["type", "cmd", "th", "val"]
         data_dct = json.loads(data)
-        # intercept special case of domestic_water^purchased_water, as the digital_meter does not registrate water from
+        # intercept special cases of domestic_water^purchased_water, as the digital_meter does not registrate water from
         # pidpa, with own water meter registering consumption, pidpa consumption is derived
+        # other case gas^purchased_gas^cooking and heating is similar, see PI-Energy for more information
         if "domestic_water^purchased_water" in data:
             water = data_dct.get("val", 0) / 1000.0  # convert from liters to m3
             self.DM_selfie.water_meter = {"value": water, "unit": "m3", "time": datetime.datetime.now()}
