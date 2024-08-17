@@ -74,6 +74,10 @@ class SocketApp:
             below code is propriety and should be adapted to your specific needs in communicating obdis values to
             external websocket servers
         """
+        async def reply_cmd():
+            # assume cmd==set -> return with cmd=reply
+            data_dct["cmd"] = "reply"
+            return await self.send_ws(data_dct, ip)
         ths_map = self.DM_selfie.ths_map
         self.log_app.add(f"Websocket Server: rcv from {ip}: {data}", tpe="debug")
         all_keys = ["type", "cmd", "th", "val"]
@@ -86,18 +90,16 @@ class SocketApp:
             self.DM_selfie.meters["Water"] = self.DM_selfie.water_meter.copy()
             if data_dct["cmd"] in ["reply", "cum"]:  # bye if reply to our initial ask
                 return
-            # assume cmd==set -> return with cmd=reply
-            data_dct["cmd"] = "reply"
-            return await self.send_ws(data_dct, ip)
+            return await reply_cmd()
         elif "gas^purchased_gas^cooking" in data:
             # is a virtual thing and difference between gas_purchased and gas_heating (has its own meter)
             self.DM_selfie.gas_cooking = self.get_val_th("gas_meter") - self.get_val_th("gas_heating")
-            data_dct["cmd"] = "reply"
-            return await self.send_ws(data_dct, ip)
+            self.log_app.add(f"{self.DM_selfie.gas_cooking=}", tpe="debug")
+            return await reply_cmd()
         elif "gas^purchased_gas^heating" in data:
             self.DM_selfie.gas_heating = data_dct["val"]
-            data_dct["cmd"] = "reply"
-            return await self.send_ws(data_dct, ip)
+            self.log_app.add(f"{self.DM_selfie.gas_heating=}", tpe="debug")
+            return await reply_cmd()
         # continue with the rest of the things
         if data_dct == {"type": "cum"}:
             # is request to flip cumulative, ignore
