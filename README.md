@@ -148,8 +148,9 @@ Information has to be retrieved through the Smartcar API and the car is controll
 Issue is that you need to have ngrok running on your machine to receive the callback from Smartcar, and the callback has to be forwarded to the raspberry pi.
 This reverse uri has to be set in the Smartcar app.
 
-Not impossible, but a little bit of a hassle.
+Not impossible, but a little bit of a hassle and ngrok does not come for free if you want a tunnel that is always open.
 
+So what are the alternatives?
 
 ## Audi Connect
 
@@ -164,6 +165,10 @@ There is a library for the audi connect api:
 https://github.com/timgursky/audiconnectpy.git   and after some testing, it seems to work well.
 
 So then i settled with the audi connect api, and the ev_app is now able to retrieve the car information and to control the car through the Audi Connect API.
+
+Edit and complete the _secrets.json file in the root of the project with the required information and move it to secrets.json in the home directory of the user pi.
+
+
 
 # Management of Energy Storage
 

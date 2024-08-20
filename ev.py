@@ -61,17 +61,14 @@ async def main():
                 inspect(vehicle, methods=True)
             break
         await api.async_close()
-
+    with Live(Text("[bold red]vehicle management still to make"), refresh_per_second=4) as live:
+        while True:
+            for i in range(100):
+                live.update(Text(f"[bold red]vehicle management still to make {i}"))
+                sleep(0.1)
 
 if __name__ == "__main__":
     asyncio.run(main())
 
 
 
-# if __name__ == '__main__':
-#     # ElectricalVehicle(socket_info, vehicle_info).run()
-#     with Live(Text("[bold red]vehicle management still to make"), refresh_per_second=4) as live:
-#         while True:
-#             for i in range(100):
-#                 live.update(Text(f"[bold red]vehicle management still to make {i}"))
-#                 sleep(0.1)
