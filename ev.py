@@ -15,6 +15,7 @@ from pathlib import Path
 from rich import print
 from rich.live import Live
 from rich.text import Text
+from rich.console import Console
 from rich import inspect
 
 from rich.traceback import install
@@ -22,7 +23,6 @@ from rich.traceback import install
 install(width=180, extra_lines=10, show_locals=True)
 
 from config import cable_info, cable_control_json
-
 
 socket_info = {
     "remote_ips":  ["192.168.15.89"],  # hosts able to give instructions to the meter
@@ -43,32 +43,31 @@ with open(Path.home() / "secrets.json", encoding="UTF-8", mode="r") as f:
 
 async def main():
     # set the logging to debug level for now
+    console = Console(color_system="truecolor")
     logger = logging.getLogger("audiconnectpy")
     logger.setLevel(logging.DEBUG)
     logger.addHandler(logging.StreamHandler())
-
-    async with ClientSession() as session:
-        api = AudiConnect(session, *[secrets["audiconnect"][x] for x in ["username", "password", "country", "spin"]])
-        try:
-            await api.async_login()
-        except Exception as error:
-            import traceback
-            traceback.print_exception(type(error), error, error.__traceback__)
-        while api.is_connected:
-            for vehicle in api.vehicles:
-                if vehicle.vin not in secrets["e-cars"]:
-                    continue
-                inspect(vehicle, methods=True)
-            break
-        await api.async_close()
-    with Live(Text("[bold red]vehicle management still to make"), refresh_per_second=4) as live:
+    with Live(Text("[bold red]vehicle management"), refresh_per_second=4) as live:
         while True:
-            for i in range(100):
+            async with ClientSession() as session:
+                api = AudiConnect(session, *[secrets["audiconnect"][x] for x in ["username", "password", "country", "spin"]])
+                try:
+                    await api.async_login()
+                except Exception as error:
+                    import traceback
+                    traceback.print_exception(type(error), error, error.__traceback__)
+                while api.is_connected:
+                    for vehicle in api.vehicles:
+                        if vehicle.vin not in secrets["e-cars"]:
+                            continue
+                        inspect(vehicle, console=console)
+                    # sleep 15 minutes and try again
+                    for i in range(15):
+                        for y in range(60):
+                            asyncio.sleep(1)
+                    # now go mary round again
+                await api.async_close()
                 live.update(Text(f"[bold red]vehicle management still to make {i}"))
-                sleep(0.1)
 
 if __name__ == "__main__":
     asyncio.run(main())
-
-
-
