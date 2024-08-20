@@ -14,33 +14,14 @@ socket_info = {
     "update_freq": 30,                 # update frequency in seconds
     "ws_url": "ws://{ip}:{port}/ws"}   # websocket url
 
-vehicle_info = {
-    "car1": {
-        "name": "Audi e-tron Q4",
-        "capacity": 75,
-        "max_power": 11,
-        "charge_rate": 1,
-        "min_charge": 20,
-        "max_charge": 80,
-        "min_discharge": 20,
-        "max_discharge": 80,
-        "charge_efficiency": 0.9,
-        "discharge_efficiency": 0.9},
-    "car2": {
-        "name": "Tesla Model 3",
-        "capacity": 75,
-        "max_power": 11,
-        "charge_rate": 1,
-        "min_discharge": 20,
-        "max_discharge": 80,
-        "charge_efficiency": 0.9,
-        "discharge_efficiency": 0.9}
-}
 
+# NRG Kick cables
 cable_info = {
+    # assume the local api is enabled with the json variant (not modbus)
     "cable_main": {
         "name": "NRGKick Main 22kW",
         "ip": "192.168.15.216",
+        "end_points": ["info", "control", "values"],
         "port": 8765,
         "uuid": "56adc033-fbe0-40b1-93cc-513b63c78c73",
         "serial": "6241023",
@@ -50,12 +31,22 @@ cable_info = {
     "cable_backup": {
         "name": "NRGKick Backup 22kW",
         "ip": "192.168.15.231",
+        "end_points": ["info", "control", "values"],
         "port": 8765,
         "uuid": "",
         "serial": "2021023",
         "pin": "",
         "max_power": 11,
         "charge_rate": 1}
+}
+
+# NRG Kick control json
+# is used with the control endpoint to set the charge current
+cable_control_json = {
+    "current_set": 0,    # charge current in ampere
+    "charge_pause": 0,   # 0=charge, 1=pause
+    "energy_limit": 0,   # energy limit in Wh (Watt Hours)
+    "phase_count": 3     # 1=1 phase, 2=2 phase, 3=3 phase
 }
 
 battery_info = {

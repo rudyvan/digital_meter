@@ -105,6 +105,9 @@ Who designed that there is no comms between the car and the charging station oth
 
 Stupid, as the car knows the battery level and the required charge, and the charging station knows the available power and the max ampere the car accepts.
 
+## NRGKick Charging Station
+
+
 ![nrgkick.jpg](./docs/nrgkick.jpg)
 
 For the ev_app to work, one must request to enable the json NRGKick API by NRGKick.
@@ -114,8 +117,53 @@ The NRGKick API is a json API that allows to control the NRGKick charging statio
 
 If the Local API is not enabled, the ev_app will not work.
 See therefore the NRG Kick app, select Extended and press the Local API button.
-This allows to enroll for the lastest firmware and to enable the Local API, but at time of writing, this can take up to 17 days!
+This allows to enroll for the latest firmware and to enable the Local API, but at time of writing, this can take up to 17 days!
 
+The NRGKick API is used to control the charging station and to retrieve the current status of the charging station.
+The API is fairly simple with 3 GET requests:
+- Endpoint GET /info
+- Endpoint GET /control
+- Endpoint GET /values
+
+The control endpoint is used to start and stop the charging of the vehicle, and this is all it does:
+
+```json
+{
+    "current_set": 0,    # charge current in ampere
+    "charge_pause": 0,   # 0=charge, 1=pause
+    "energy_limit": 0,   # energy limit in Wh (Watt Hours)
+    "phase_count": 3     # 1=1 phase, 2=2 phase, 3=3 phase
+}
+```
+
+## Smartcar API
+
+Most cars have an online API to retrieve the car information and to control the car.
+Smartcar is a platform that connects to the car API and allows to retrieve the car information and to control the car through the Smartcar API, which is the same for all cars.
+
+For the car to work, one must request to enable the Smartcar API by Smartcar and link the car to the Smartcar API.
+It is a little complicated as the connection has to be made through the Smartcar app while logging in with the car credentials.
+Information has to be retrieved through the Smartcar API and the car is controlled through the Smartcar API.
+
+Issue is that you need to have ngrok running on your machine to receive the callback from Smartcar, and the callback has to be forwarded to the raspberry pi.
+This reverse uri has to be set in the Smartcar app.
+
+Not impossible, but a little bit of a hassle.
+
+
+## Audi Connect
+
+Audi Connect is a platform that connects to the car API and allows to retrieve the car information and to control the car through the Audi Connect API, which is the same for all Audi cars.
+
+For access to data of the car to work, one must use the Audi Connect APP and register the vehicles.
+
+I have an Audi Q4 e-tron, so i could just settle with audi connect and forgo a more generic solution with smartcar.
+
+There is a library for the audi connect api:
+
+https://github.com/timgursky/audiconnectpy.git   and after some testing, it seems to work well.
+
+So then i settled with the audi connect api, and the ev_app is now able to retrieve the car information and to control the car through the Audi Connect API.
 
 # Management of Energy Storage
 
