@@ -61,11 +61,11 @@ async def main():
                         if vehicle.vin not in secrets["e-cars"]:
                             continue
                         inspect(vehicle, console=console)
-                    # sleep 15 minutes and try again
-                    for i in range(15):
-                        for y in range(60):
-                            asyncio.sleep(1)
-                    # now go mary round again
+                        # sleep 15 minutes and try again
+                        for i in range(15):
+                            for y in range(60):
+                                asyncio.sleep(1)
+                        # now go mary round again
                 await api.async_close()
                 live.update(Text(f"[bold red]vehicle management still to make {i}"))
 
