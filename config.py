@@ -17,7 +17,7 @@ socket_info = {
 
 # NRG Kick cables
 cable_info = {
-    # assume the local api is enabled with the json variant (not modbus)
+    # ensure the local api is enabled with the json variant (not modbus)
     "cable_main": {
         "name": "NRGKick Main 22kW",
         "ip": "192.168.15.216",
@@ -55,14 +55,14 @@ battery_info = {
 
 # client specific mapping for web_socket communications purposes
 ths_map = {
-    "electricity^fluvius_night": "kW_night",
-    "electricity^fluvius_night^sensor": "kW_plus",
-    "electricity^fluvius_night^minus_meter": "kwH_night_min",
-    "electricity^fluvius_night^plus_meter": "kwH_night_plus",
-    "electricity^fluvius_day": "kW_day",
-    "electricity^fluvius_day^sensor": "kW_plus",
-    "electricity^fluvius_day^minus_meter": "kwH_day_min",
-    "electricity^fluvius_day^plus_meter": "kwH_day_plus",
+    "electricity_mains^fluvius_night": "kW_night",
+    "electricity_mains^fluvius_night^sensor": "kW_plus",
+    "electricity_mains^fluvius_night^minus_meter": "kwH_night_min",
+    "electricity_mains^fluvius_night^plus_meter": "kwH_night_plus",
+    "electricity_mains^fluvius_day": "kW_day",
+    "electricity_mains^fluvius_day^sensor": "kW_plus",
+    "electricity_mains^fluvius_day^minus_meter": "kwH_day_min",
+    "electricity_mains^fluvius_day^plus_meter": "kwH_day_plus",
     "gas^purchased_gas": "gas_meter",
     "gas^purchased_gas^cooking": "",
     "gas^purchased_gas^heating": "",
