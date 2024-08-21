@@ -145,7 +145,7 @@ class Usage:
         self.e_meter["-Day"] = self.kwH_day_min
         self.e_meter["+Night"] = self.kwH_night_plus
         self.e_meter["-Night"] = self.kwH_night_min
-        get_v = lambda x: x.get("value", 0)
+        get_v = lambda nme: 0 if not hasattr(self, nme) else getattr(self, nme).get("value", 0)
         # 3. current total of the meters
         self.now_cumul = \
             [self.kwH_day_plus, self.kwH_day_min, self.kwH_night_plus, self.kwH_night_min,
@@ -154,8 +154,8 @@ class Usage:
              self.kwH_night_plus * self.e_rate["+"]["Night"], self.kwH_night_min * self.e_rate["-"]["Night"],
              self.kwH_day_plus * self.e_rate["+"]["Day"] - self.kwH_day_min * self.e_rate["-"]["Day"] +
              self.kwH_night_plus * self.e_rate["+"]["Night"] - self.kwH_night_min * self.e_rate["-"]["Night"],
-             get_v(self.gas_meter), get_v(self.gas_meter) * self.g_rate,
-             get_v(self.water_meter), get_v(self.water_meter) * self.w_rate]
+             get_v("gas_meter"), get_v("gas_meter") * self.g_rate,
+             get_v("water_meter"), get_v("water_meter") * self.w_rate]
         # 4. when have prev_time, a previous total exists and the difference is 'added', else add zero and set prev_time
         if "cumul" in self.data:
             self.prev_cumul = self.data["cumul"]
