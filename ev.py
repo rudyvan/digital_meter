@@ -38,7 +38,7 @@ from audiconnectpy import AudiConnect
 # read the secrets from the secrets.json file located in the home directory
 # should contain the following keys in "audiconnect": "username", "password", "country", "spin"
 # and a list of cars in e-cars that the ev app should manage
-with open(Path.home() / "secrets.json", encoding="UTF-8", mode="r") as f:
+with open(Path.home() / ".secrets.json", encoding="UTF-8", mode="r") as f:
     secrets = json.loads(f.read())
 
 async def main():
