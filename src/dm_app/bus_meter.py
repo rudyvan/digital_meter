@@ -211,7 +211,7 @@ class BusMeter(Screens, Usage):
         # 4. set the last live refresh time
         last_live, refresh_s = None, 3
         # 5. start the main loop with the live screens
-        with Live(self.layout, console=pi.console) as live:
+        with Live(self.layout, console=pi.console, auto_refresh=False) as live:
             while True:
                 self.togather = []
                 try:
@@ -249,6 +249,7 @@ class BusMeter(Screens, Usage):
                     # make the async magic happen, but add sleep to avoid 100% cpu
                     self.togather.append(asyncio.sleep(0))
                     await asyncio.gather(*self.togather, return_exceptions=True)
+                    live.update(self.layout, refresh=True)
                 except (asyncio.CancelledError, KeyboardInterrupt) as error:
                     self.serial_bye(f"{error}")
                     break

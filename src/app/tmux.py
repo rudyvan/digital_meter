@@ -85,10 +85,11 @@ class TMux:
                     self.log_console.print(f"!! screens.session wrap {selfie!r} must have make_layout and update_layout methods")
                 selfie.console = self.create_session(name, switch=switch)
                 selfie.layout = selfie.make_layout()
-                while True:
-                    with Live(selfie.layout, console=selfie.console) as live:
+                with Live(selfie.layout, console=selfie.console, auto_refresh=False) as live:
+                    while True:
                         await asyncio.gather(coro(selfie, *args, **kwargs), asyncio.sleep(sleep))
-                        live.update(await selfie.update_layout(selfie.layout), refresh=True)
+                        await selfie.update_layout(selfie.layout)
+                        live.update(selfie.layout, refresh=True)
             return _a_session_wrap
         return _session_wrap
 
