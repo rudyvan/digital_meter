@@ -5,14 +5,26 @@ from rich.panel import Panel
 from rich.table import Table
 from rich.progress import Progress, SpinnerColumn, BarColumn, TextColumn
 
-import datetime
+import datetime, socket
 
 from ..config import rate_columns, usage_columns, usage_rows
+
+
+
 
 class Screens:
     """ this is a class to make a screen for the console"""
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+    @property
+    def my_ip(self):  # return my ip address
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sc:
+                sc.connect(("8.8.8.8", 80))
+                return sc.getsockname()[0]
+        except Exception:
+            return ""
 
     def make_layout(self) -> Layout:
         """ return layout of the console"""
@@ -30,7 +42,7 @@ class Screens:
         grid = Table.grid(expand=True)
         grid.add_column(justify="center", ratio=1)
         grid.add_column(justify="center")
-        grid.add_row("Digital Meter - P1 Telegram",
+        grid.add_row(f"Digital Meter - P1 Telegram @{self.my_ip}",
                      f"Version 1.0 {self.ts_str(self.cur_time) if hasattr(self, 'cur_time') else 'no time yet'}")
         return Panel(grid, style="white on blue")
 
