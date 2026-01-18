@@ -19,6 +19,7 @@ from rich.markup import escape
 
 from ..config import dir_history, log_name, log_file
 
+
 class Logger:
     def __init__(self, console, log_console, *args, **kwargs):
         self.console, self.log_console = console, log_console

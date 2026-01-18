@@ -35,7 +35,7 @@ class TMux:
         win_cmd = "cat {} & cat > {}".format(*[sn[st] for st in ["stdout", "stdin"]])
         for session in self.tmux.sessions:
             if session_name == session.name:
-                session.kill_session()
+                session.kill()
         self.tmux.new_session(session_name=session_name, attach=False, window_command=win_cmd)
         if switch:
             self.tmux.cmd("switch",  "-t", f"{session_name}:0")
@@ -55,7 +55,7 @@ class TMux:
             return
         for session in self.tmux.sessions:
             if session.name == session_name:
-                session.kill_session()
+                session.kill()
         for st in ["stdout", "stderr", "stdin"]:
             if st in self.tmux_sessions[session_name]["files"]:
                 self.tmux_sessions[session_name]["files"][st].close()

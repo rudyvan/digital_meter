@@ -25,7 +25,7 @@ install(width=180, extra_lines=10, show_locals=True)
 from config import cable_info, cable_control_json
 
 socket_info = {
-    "remote_ips":  ["192.168.15.89"],  # hosts able to give instructions to the meter
+    "remote_ips":  ["192.168.15.130"],  # hosts able to give instructions to the meter
     "server_port": 8080,               # port for the digital meter server
     "dest_ip": "192.168.15.89",        # destination ip for meter data and notifications
     "dest_port": 8080,                 # destination port for meter data and notifications
