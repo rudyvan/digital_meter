@@ -1,6 +1,6 @@
 {
   "Gas": {"+": 1.576, "cnv": ["kWh", 11.510]},
-  "Water": {"+": 6.1},
-  "Electricity": {"+": {"Day": 0.4, "Night": 0.3},
+  "Water": {"+": 6.2},
+  "Electricity": {"+": {"Day": 0.32, "Night": 0.28},
                   "-": {"Day": 0.1, "Night": 0.1}}
 }
