@@ -20,23 +20,13 @@ cable_info = {
     # ensure the local api is enabled with the json variant (not modbus)
     "cable_main": {
         "name": "NRGKick Main 22kW",
-        "ip": "192.168.15.216",
+        "ip": "192.168.15.39",
         "end_points": ["info", "control", "values"],
         "port": 8765,
         "uuid": "56adc033-fbe0-40b1-93cc-513b63c78c73",
         "serial": "6241023",
         "pin": "",
         "max_power": 22,
-        "charge_rate": 1},
-    "cable_backup": {
-        "name": "NRGKick Backup 22kW",
-        "ip": "192.168.15.231",
-        "end_points": ["info", "control", "values"],
-        "port": 8765,
-        "uuid": "",
-        "serial": "2021023",
-        "pin": "",
-        "max_power": 11,
         "charge_rate": 1}
 }
 
