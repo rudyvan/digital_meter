@@ -187,13 +187,13 @@ class Usage:
         # 6. update Σ € Utilities
         self.data["cur_time"] = self.cur_time
         self.data["cumul"] = self.now_cumul
-
-        if self.data["usage"]["Day-3"][9] < 0:
-            self.data["usage"]["Day-3"][9]=22.28
-            self.data["usage"]["Week"][9]=65.42+13.20
-            self.data["usage"]["Month"][9]=269.88+0.01+156.99
-            self.data["usage"]["Year"][9]=269.88+0.01+156.99
-        
+        # 2026-01-22: example of making correction in the usage data
+        # index 9 = "Σ € kWh" in usage_rows
+        # if self.data["usage"]["Day-3"][9] < 0:
+        #     self.data["usage"]["Day-3"][9]=22.28
+        #     self.data["usage"]["Week"][9]=65.42+13.20
+        #     self.data["usage"]["Month"][9]=269.88+0.01+156.99
+        #     self.data["usage"]["Year"][9]=269.88+0.01+156.99
         self.data["prev_quarter_peak"], self.data["quarter_peak"] = self.data["quarter_peak"], self.quarter_peak
         self.sum_utilities
         pi.pickle_app.var_save(self)
