@@ -170,7 +170,8 @@ class SocketApp:
         if request.remote not in self.socket_info.get("remote_ips", []):
             self.log_app.add(f"rejected {request.remote=}", tpe="error")
             return web.Response(text=f"<p>NOK - rejected</p>", status=400)
-        ws = web.WebSocketResponse()
+        # Set compress to 15 (default max window bits) to allow compressed frames
+        ws = web.WebSocketResponse(compress=15, autoping=True, heartbeat=30.0)
         try:
             await ws.prepare(request)
             async for msg in ws:
