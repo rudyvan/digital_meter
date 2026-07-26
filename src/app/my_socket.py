@@ -50,7 +50,7 @@ class SocketApp:
             This lets you decide which errors trigger a reconnection and which errors are fatal.
             """
         end_p = self.socket_info["ws_url"].format(ip=ip, port=self.socket_info["dest_port"])
-        async for websocket in websockets.connect(end_p):
+        async for websocket in websockets.connect(end_p, compression=None):
             try:
                 data = await self._send_queues[ip].get()
                 data_str = json.dumps(json.loads(data))  # remove newlines and tabs
@@ -170,8 +170,7 @@ class SocketApp:
         if request.remote not in self.socket_info.get("remote_ips", []):
             self.log_app.add(f"rejected {request.remote=}", tpe="error")
             return web.Response(text=f"<p>NOK - rejected</p>", status=400)
-        # Set compress to 15 (default max window bits) to allow compressed frames
-        ws = web.WebSocketResponse(compress=15, autoping=True, heartbeat=30.0)
+        ws = web.WebSocketResponse()
         try:
             await ws.prepare(request)
             async for msg in ws:
